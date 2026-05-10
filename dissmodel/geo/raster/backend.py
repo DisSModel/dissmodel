@@ -360,10 +360,10 @@ class RasterBackend:
                 res_x = float(xs[1] - xs[0])
                 origin_x = float(xs[0]) - res_x / 2
                 origin_y = float(ys[0]) - res_y / 2
+                # rasterio.transform.from_origin expects (west, north, xsize, ysize)
+                # origin_y is already the north edge if res_y < 0
                 transform = rasterio.transform.from_origin(
-                    origin_x, origin_y - res_y * (rows - 1), res_x, abs(res_y)
-                ) if res_y < 0 else rasterio.transform.Affine(
-                    res_x, 0, origin_x, 0, res_y, origin_y
+                    origin_x, origin_y, res_x, abs(res_y)
                 )
         except Exception:
             pass  # transform recovery is best-effort

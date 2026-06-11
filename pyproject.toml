@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dissmodel"
-version = "0.5.1"
+version = "0.6.0"
 description = "Discrete Spatial Modeling framework for raster and vector simulations"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
@@ -89,7 +89,7 @@ docs = [
 [project.urls]
 Homepage = "https://github.com/DisSModel/dissmodel"
 Repository = "https://github.com/DisSModel/dissmodel"
-Documentation = "https://lambdageo.github.io/dissmodel"
+Documentation = "https://dissmodel.github.io/dissmodel/"
 Issues = "https://github.com/DisSModel/dissmodel/issues"
 
 [tool.setuptools]
@@ -101,6 +101,11 @@ include = ["dissmodel*"]
 
 [tool.setuptools.package-data]
 "dissmodel" = ["*.json", "*.csv", "*.shp", "*.geojson", "*.tif"]
+
+[tool.pytest.ini_options]
+# tests/ is not a package; test modules import helpers as
+# "tests.executor.conftest", which requires the repo root on sys.path.
+pythonpath = ["."]
 
 [tool.mypy]
 python_version = "3.10"

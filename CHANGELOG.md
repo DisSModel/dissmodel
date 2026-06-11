@@ -6,6 +6,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.0] — 2026-06-11
+
+### Breaking Changes
+- `Environment.run()`: `end_time` is now **inclusive** (TerraME-style) — the
+  simulation executes every scheduled tick `t` with
+  `start_time <= t <= end_time`. A model's own `end_time` is inclusive as well.
+  **Migration:** if you previously used `end_time=N_STEPS` expecting `N_STEPS`
+  executions starting at 0, use `end_time=N_STEPS-1`.
+
+### Fixed
+- `RasterBackend.from_xarray`: fixed Affine transform reconstruction when
+  rebuilding a backend from an `xarray.Dataset`
+- Scheduler: clock no longer stalls when models finish before the
+  environment's `end_time` (carried over from the unreleased 0.5.x line)
+
+### Changed
+- Version is now single-sourced from package metadata
+  (`importlib.metadata.version`); `dissmodel.__version__`, `pyproject.toml`,
+  `CITATION.cff` and the README citation no longer drift apart
+- README: ecosystem table now uses `pip install "git+https://…"` install
+  commands for satellite libraries not yet published on PyPI, and repository
+  links were fixed to point to existing repositories
+- README citation (BibTeX) aligned with `CITATION.cff` and the JOSS paper
+  author list
+
+### Internal
+- `mypy dissmodel --ignore-missing-imports` is now clean (0 errors)
+
+---
+
 ## [0.5.0] — 2026-05-02
 
 ### Breaking Changes

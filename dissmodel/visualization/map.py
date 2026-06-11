@@ -55,7 +55,10 @@ class Map(Model):
     >>> env.run()
     """
 
-    def setup(
+    # Narrowing the base Model.setup(**kwargs) contract is intentional:
+    # Model.__init__ forwards extra kwargs to setup, and each component
+    # declares the keywords it accepts.
+    def setup(  # type: ignore[override]
         self,
         gdf:         gpd.GeoDataFrame,
         plot_params: dict[str, Any],

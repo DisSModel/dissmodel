@@ -25,7 +25,9 @@ class Model:
     start_time : float, optional
         Time at which the model starts executing, by default 0.
     end_time : float, optional
-        Time at which the model stops executing, by default ``math.inf``.
+        Last time at which the model executes (inclusive), by default
+        ``math.inf``. The model still executes at ``t == end_time`` and
+        stops being scheduled afterwards.
     name : str, optional
         Human-readable model name, by default ``""``.
     **kwargs :
@@ -51,7 +53,18 @@ class Model:
     2
     3
     4
+    5
     """
+
+    # Declared here because __init__ assigns them via object.__setattr__
+    # (to bypass the plot-tracking __setattr__), which static checkers
+    # cannot see.
+    name: str
+    start_time: float
+    end_time: float
+    env: Environment
+    _step: float
+    _next_time: float
 
     def __init__(
         self,

@@ -17,6 +17,16 @@ class Environment:
     end_time : float, optional
         Simulation end time. Can also be set via ``till`` in :meth:`run`.
 
+    Notes
+    -----
+    **Time semantics.** ``end_time`` is inclusive: the simulation executes
+    every scheduled tick ``t`` with ``start_time <= t <= end_time``,
+    matching TerraME's ``Timer:run(finalTime)`` semantics. For example,
+    ``Environment(start_time=0, end_time=10)`` with a model of ``step=1``
+    executes 11 steps (``t = 0, 1, ..., 10``). A model's own ``end_time``
+    is inclusive as well: the model still executes at ``t == end_time``
+    and stops being scheduled afterwards.
+
     Examples
     --------
     >>> env = Environment(start_time=0, end_time=10)
@@ -91,6 +101,10 @@ class Environment:
         current simulation time has its :meth:`~dissmodel.core.Model.execute`
         method called. The clock then advances to the nearest pending event.
 
+        ``end_time`` is inclusive (TerraME-style): every scheduled tick
+        ``t`` with ``start_time <= t <= end_time`` is executed, so the
+        final tick at ``t == end_time`` runs.
+
         Parameters
         ----------
         till : float, optional
@@ -131,23 +145,29 @@ class Environment:
 
         self._now = self.start_time
 
-        while self._now < self.end_time:
+        # end_time is inclusive (TerraME-style): the final tick at
+        # t == end_time is executed, both for the environment window and
+        # for each model's own [start_time, end_time] window.
+        while self._now <= self.end_time:
             for model in self._models:
                 if (
                     model._next_time <= self._now
-                    and self._now < model.end_time
+                    and self._now <= model.end_time
                 ):
                     model.pre_execute()
                     model.execute()
                     model.post_execute()
                     model._next_time = self._now + model._step
 
-            # Advance clock to the nearest pending event
+            # Advance clock to the nearest pending event. Events past the
+            # environment's end_time or past the owning model's end_time
+            # are discarded, which guarantees termination even when models
+            # keep the default end_time = math.inf.
             pending = [
                 m._next_time
                 for m in self._models
-                if m._next_time < self.end_time
-                and m._next_time < m.end_time
+                if m._next_time <= self.end_time
+                and m._next_time <= m.end_time
             ]
             if not pending:
                 break

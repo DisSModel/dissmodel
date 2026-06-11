@@ -121,17 +121,29 @@ Running from 2010 to 2016 (duration: 6)
 [B] t=2012
 [C] t=2012
 [A] t=2013
+[B] t=2013
 [C] t=2013
 [A] t=2014
 [C] t=2014
 [A] t=2015
 [C] t=2015
+[A] t=2016
+[C] t=2016
 ```
 
 !!! note
     Models with no `start_time` / `end_time` inherit the environment's interval.
     Models are synchronised — all active models execute at each time step before
     the clock advances.
+
+### Time semantics
+
+`end_time` is **inclusive**: the simulation executes every scheduled tick `t`
+with `start_time <= t <= end_time`, matching TerraME's `Timer:run(finalTime)`
+semantics. For example, `Environment(start_time=0, end_time=10)` with a model
+of `step=1` executes 11 steps (`t = 0, 1, ..., 10`). A model's own `end_time`
+is inclusive as well: the model still executes at `t == end_time` and stops
+being scheduled afterwards.
 
 ---
 

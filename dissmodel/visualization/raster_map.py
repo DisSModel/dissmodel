@@ -147,7 +147,14 @@ class RasterMap(Model):
         Value in ``mask_band`` to mask.
     """
 
-    def setup(
+    # Created lazily in _render so each instance owns its own figure.
+    _fig: matplotlib.figure.Figure | None
+    _ax: Any
+
+    # Narrowing the base Model.setup(**kwargs) contract is intentional:
+    # Model.__init__ forwards extra kwargs to setup, and each component
+    # declares the keywords it accepts.
+    def setup(  # type: ignore[override]
         self,
         backend,
         band:            str              = "state",
@@ -231,7 +238,7 @@ class RasterMap(Model):
             return fig
 
         if self.color_map:
-            self._render_categorical(ax, arr)
+            self._render_categorical(ax, arr, self.color_map)
         else:
             self._render_continuous(ax, arr)
 
@@ -261,9 +268,11 @@ class RasterMap(Model):
         # 3. cobre NaN / Inf (inclui os inseridos pelos passos acima)
         return np.ma.masked_invalid(data)
 
-    def _render_categorical(self, ax, arr: np.ndarray) -> None:
-        vals = sorted(self.color_map)
-        cmap = mcolors.ListedColormap([self.color_map[v] for v in vals])
+    def _render_categorical(
+        self, ax, arr: np.ndarray, color_map: dict[int, str]
+    ) -> None:
+        vals = sorted(color_map)
+        cmap = mcolors.ListedColormap([color_map[v] for v in vals])
         norm = mcolors.BoundaryNorm(
             [v - 0.5 for v in vals] + [vals[-1] + 0.5], cmap.N
         )
@@ -274,7 +283,7 @@ class RasterMap(Model):
 
         present = set(np.unique(arr[~np.isnan(arr.astype(float))]))
         patches = [
-            matplotlib.patches.Patch(color=self.color_map[v],
+            matplotlib.patches.Patch(color=color_map[v],
                                      label=self.labels.get(v, str(v)))
             for v in vals if v in present
         ]

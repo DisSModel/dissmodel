@@ -143,7 +143,9 @@ class Chart(Model):
                 self._out = widgets.Output()
                 display(self._out)
             except ImportError:
-                pass  # ipywidgets ausente — cai no fallback clear_output
+                # ipywidgets is optional (pip install dissmodel[viz]);
+                # without it the clear_output fallback path is used.
+                pass
 
         if not is_notebook():
             self.fig, self.ax = plt.subplots()

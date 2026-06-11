@@ -2,21 +2,42 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
   workflow_dispatch:  # permite rodar manualmente para testar
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Install Ruff
+        run: pip install ruff
+
+      - name: Run Ruff
+        run: ruff check dissmodel/
+
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Install system dependencies
         run: |
@@ -28,8 +49,28 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
-      - name: Run tests
-        run: pytest tests/
+      # Coverage XML is produced but not uploaded anywhere yet — wiring
+      # Codecov (account + token) is a follow-up; the README badge is
+      # static until then.
+      - name: Run tests with coverage
+        run: pytest tests/ --cov=dissmodel --cov-report=term-missing --cov-report=xml
+
+      # Scoped to the modules whose Examples sections are runnable doctests;
+      # the remaining modules have illustrative pseudo-examples (external
+      # data / optional deps) — converting them is tracked as a follow-up.
+      - name: Run doctests
+        run: |
+          pytest --doctest-modules \
+            dissmodel/core/model.py \
+            dissmodel/core/environment.py \
+            dissmodel/geo/raster/backend.py \
+            dissmodel/geo/raster/raster_grid.py \
+            dissmodel/geo/raster/raster_model.py \
+            dissmodel/geo/raster/cellular_automaton.py \
+            dissmodel/geo/raster/sync_model.py \
+            dissmodel/geo/vector/vector_grid.py \
+            dissmodel/geo/vector/cellular_automaton.py \
+            dissmodel/geo/vector/sync_model.py
 
       - name: Run mypy
         run: mypy dissmodel --ignore-missing-imports

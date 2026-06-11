@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from typing import Literal
 from uuid import uuid4
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field
 
 
 class DataSource(BaseModel):
@@ -17,7 +17,7 @@ class DataSource(BaseModel):
 
 class ExperimentRecord(BaseModel):
     # Identidade
-    experiment_id: str      = Field(default_factory=lambda: __import__("uuid").uuid4().hex)
+    experiment_id: str      = Field(default_factory=lambda: uuid4().hex)
     # timezone.utc (not datetime.UTC) — the project supports Python 3.10.
     created_at:    datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)

@@ -7,7 +7,6 @@ import pathlib
 import shutil
 import tempfile
 import zipfile
-from typing import Any
 
 import numpy as np
 

@@ -114,9 +114,12 @@ class RasterBackend:
     >>> b.nodata_mask   # True = valid cell, False = outside extent
 
     >>> # temporal variable
+    >>> roads_3d = np.zeros((3, 10, 10))
     >>> b.set("dist_roads", roads_3d, time=np.array([2000, 2014, 2020]))
-    >>> b.get("dist_roads", time=2014).shape   # (10, 10)
-    >>> b.get("dist_roads").shape              # (3, 10, 10)
+    >>> b.get("dist_roads", time=2014).shape
+    (10, 10)
+    >>> b.get("dist_roads").shape
+    (3, 10, 10)
     """
 
     def __init__(

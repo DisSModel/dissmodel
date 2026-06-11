@@ -44,7 +44,9 @@ exposing it under the domain-specific alias ``LUCRasterModel``:
 """
 from __future__ import annotations
 
-from dissmodel.geo import RasterModel
+# import from the defining module (not the dissmodel.geo package) to avoid
+# a circular import while dissmodel.geo.__init__ is still initializing
+from dissmodel.geo.raster.raster_model import RasterModel
 
 
 class SyncRasterModel(RasterModel):

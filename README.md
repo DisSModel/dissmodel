@@ -5,7 +5,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![PyPI version](https://badge.fury.io/py/dissmodel.svg)](https://pypi.org/project/dissmodel/)
 [![LambdaGeo](https://img.shields.io/badge/LambdaGeo-Research-green.svg)](https://github.com/DisSModel)
-[![JOSS Status](https://joss.theoj.org/papers/placeholder/status.svg)](https://joss.theoj.org)
+[![JOSS Status](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec/status.svg)](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec)
 
 > *"Science should not need to be rewritten to go into production."*  
 > *(A ciência não deve ser reescrita para ir para a produção.)*
@@ -216,10 +216,11 @@ DisSModel is a core framework. To maintain a clean and specialized environment, 
 
 | Repository | Description | Install |
 |------------|-------------|---------|
-| [`DisSModel-CA`](https://github.com/DisSModel/dissmodel-ca) | Classic Cellular Automata (Game of Life, Forest Fire, Growth) | `pip install dissmodel-ca` |
-| [`DisSModel-SysDyn`](https://github.com/DisSModel/dissmodel-sysdyn) | System Dynamics (SIR, Predator-Prey, Lorenz) | `pip install dissmodel-sysdyn` |
-| [`coastal-dynamics`](https://github.com/DisSModel/coastal-dynamics) | Coastal flooding and mangrove succession models | `pip install coastal-dynamics` |
-| [`DisSLUCC`](https://github.com/DisSModel/DisSLUCC) | Land Use and Cover Change models (CLUE-inspired) | `pip install disslucc` |
+| [`dissmodel-ca`](https://github.com/DisSModel/dissmodel-ca) | Classic Cellular Automata (Game of Life, Forest Fire, Growth) | `pip install "git+https://github.com/DisSModel/dissmodel-ca.git"` |
+| [`dissmodel-sysdyn`](https://github.com/DisSModel/dissmodel-sysdyn) | System Dynamics (SIR, Predator-Prey, Lorenz) | `pip install "git+https://github.com/DisSModel/dissmodel-sysdyn.git"` |
+| [`coastal-dynamics`](https://github.com/DisSModel/coastal-dynamics) | Coastal flooding and mangrove succession models | `pip install "git+https://github.com/DisSModel/coastal-dynamics.git"` |
+| [`disslucc-continuous`](https://github.com/DisSModel/disslucc-continuous) | Land Use and Cover Change models, continuous allocation (CLUE-inspired) | `pip install "git+https://github.com/DisSModel/disslucc-continuous.git"` |
+| [`disslucc-discrete`](https://github.com/DisSModel/disslucc-discrete) | Land Use and Cover Change models, discrete allocation (CLUE-inspired) | `pip install "git+https://github.com/DisSModel/disslucc-discrete.git"` |
 
 ### 🛠 Implementation Templates
 
@@ -233,8 +234,8 @@ Each repository demonstrates how to:
 ## 📚 Documentation
 
 - 📘 **User Guide**: [https://dissmodel.github.io/dissmodel/](https://dissmodel.github.io/dissmodel/)
-- 🧪 **API Reference**: [https://dissmodel.github.io/dissmodel/api/](https://dissmodel.github.io/dissmodel/api/)
-- 🎓 **Tutorials**: [https://dissmodel.github.io/dissmodel/tutorials/](https://dissmodel.github.io/dissmodel/tutorials/)
+- 🧪 **API Reference**: [https://dissmodel.github.io/dissmodel/api/core/](https://dissmodel.github.io/dissmodel/api/core/)
+- 🎓 **Examples**: [https://dissmodel.github.io/dissmodel/examples/](https://dissmodel.github.io/dissmodel/examples/)
 
 ---
 
@@ -243,7 +244,7 @@ Each repository demonstrates how to:
 Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting a pull request.
 
 - 🐛 Report bugs → [GitHub Issues](https://github.com/DisSModel/dissmodel/issues)
-- 💡 Request features → [GitHub Discussions](https://github.com/DisSModel/dissmodel/discussions)
+- 💡 Request features → [GitHub Issues](https://github.com/DisSModel/dissmodel/issues)
 - 📝 Improve docs → Fork, edit, and submit a PR
 
 ---
@@ -252,8 +253,8 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
 
 ```bibtex
 @software{dissmodel2026,
-  author = {Costa, Sérgio and Santos Junior, Nerval},
-  title = {DisSModel: A Discrete Spatial Modeling Framework for Python},
+  author = {Costa, Sérgio Souza and Santos Junior, Nerval de Jesus and Sousa, Felipe Martins and Alves, José Magno Pinheiro and Bezerra, Denilson da Silva},
+  title = {DisSModel: A Python Framework for Spatially Explicit Dynamic Modeling},
   year = {2026},
   publisher = {LambdaGeo, Federal University of Maranhão (UFMA)},
   url = {https://github.com/DisSModel/dissmodel},

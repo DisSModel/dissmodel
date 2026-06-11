@@ -89,7 +89,7 @@ docs = [
 [project.urls]
 Homepage = "https://github.com/DisSModel/dissmodel"
 Repository = "https://github.com/DisSModel/dissmodel"
-Documentation = "https://lambdageo.github.io/dissmodel"
+Documentation = "https://dissmodel.github.io/dissmodel/"
 Issues = "https://github.com/DisSModel/dissmodel/issues"
 
 [tool.setuptools]

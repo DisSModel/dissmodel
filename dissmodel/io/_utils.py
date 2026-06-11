@@ -7,7 +7,6 @@ import pathlib
 
 import io
 
-from typing import Union
  
 
 
@@ -24,9 +23,12 @@ def detect_format(uri: str) -> str:
     path = uri.split("?")[0]   # strip query string
     ext  = pathlib.Path(path).suffix.lower()
 
-    if ext in VECTOR_EXTENSIONS:  return "vector"
-    if ext in RASTER_EXTENSIONS:  return "raster"
-    if ext in XARRAY_EXTENSIONS:  return "xarray"
+    if ext in VECTOR_EXTENSIONS:
+        return "vector"
+    if ext in RASTER_EXTENSIONS:
+        return "raster"
+    if ext in XARRAY_EXTENSIONS:
+        return "xarray"
 
     raise ValueError(
         f"Cannot detect format from extension '{ext}' in URI: {uri}\n"

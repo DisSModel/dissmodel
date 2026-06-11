@@ -43,18 +43,21 @@ classifiers = [
 dependencies = [
     "pydantic-settings",
     "pydantic>=2.0",
-    "numpy>=1.24,<2.0",
+    "numpy>=1.24,<3.0",
     "geopandas>=1.0.0",
     "shapely>=2.0.0",
     "libpysal>=4.9.0",
     "matplotlib>=3.7.0",
     "rasterstats>=0.19.0",
     "affine>=2.4.0",
-    "streamlit>=1.40.0",
-    "ipywidgets>=8.0.0",   # Colab/Jupyter visualization — Output widget
+    "tomli>=2.0; python_version < '3.11'",   # tomllib backport for Python 3.10
 ]
 
 [project.optional-dependencies]
+
+viz = [
+    "ipywidgets>=8.0.0",   # Colab/Jupyter visualization — anchored Output widget
+]
 
 xarray = [
     "xarray>=2023.1.0",
@@ -67,6 +70,8 @@ xarray = [
 dev = [
     "mypy",
     "pytest",
+    "pytest-cov",
+    "ruff",
     "mkdocs",
     "mkdocstrings[python]",
     "mkdocs-jupyter",
@@ -102,6 +107,14 @@ include = ["dissmodel*"]
 [tool.setuptools.package-data]
 "dissmodel" = ["*.json", "*.csv", "*.shp", "*.geojson", "*.tif"]
 
+[tool.ruff]
+# Permissive baseline: default rule set (pyflakes + pycodestyle errors).
+# line-length is informational for now — E501 is not in the default rules,
+# so existing long lines do not fail the lint step.
+line-length = 120
+target-version = "py310"
+exclude = ["docs", "site", "build"]
+
 [tool.pytest.ini_options]
 # tests/ is not a package; test modules import helpers as
 # "tests.executor.conftest", which requires the repo root on sys.path.
@@ -129,3 +142,10 @@ module = [
     "rasterio.*",
 ]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# zarr 3.x ships py.typed source using PEP 695 syntax (Python 3.12+),
+# which mypy cannot parse under python_version = "3.10". Never analyze it.
+module = ["zarr.*"]
+follow_imports = "skip"
+ignore_errors = true

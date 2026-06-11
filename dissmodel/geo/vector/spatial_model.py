@@ -52,8 +52,9 @@ import geopandas as gpd
 from libpysal.weights import Queen
 
 from dissmodel.core import Model
-from dissmodel.geo import attach_neighbors
-from dissmodel.geo.vector.neighborhood import StrategyType
+# import from the defining module (not the dissmodel.geo package) to avoid
+# a circular import while dissmodel.geo.__init__ is still initializing
+from dissmodel.geo.vector.neighborhood import StrategyType, attach_neighbors
 
 
 class SpatialModel(Model):

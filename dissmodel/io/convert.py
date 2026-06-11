@@ -67,15 +67,17 @@ def vector_to_raster_backend(
 
     Examples
     --------
-    >>> # From file path
-    >>> b = vector_to_raster_backend(
-    ...     "data/mangue_grid.shp", resolution=100, attrs=["uso", "alt"]
-    ... )
+    ```python
+    # From file path
+    b = vector_to_raster_backend(
+        "data/mangue_grid.shp", resolution=100, attrs=["uso", "alt"]
+    )
 
-    >>> # From in-memory GeoDataFrame
-    >>> import geopandas as gpd
-    >>> gdf = gpd.read_file("data/mangue_grid.shp").to_crs("EPSG:31984")
-    >>> b = vector_to_raster_backend(gdf, resolution=100, attrs={"uso": -1})
+    # From in-memory GeoDataFrame
+    import geopandas as gpd
+    gdf = gpd.read_file("data/mangue_grid.shp").to_crs("EPSG:31984")
+    b = vector_to_raster_backend(gdf, resolution=100, attrs={"uso": -1})
+    ```
     """
     try:
         import rasterio

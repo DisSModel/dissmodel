@@ -50,9 +50,10 @@ def load_xarray(uri: str, minio_client=None, **kwargs):
 
     Examples
     --------
-    >>> backend, checksum = load_xarray("simulation_step_42.nc")
-    >>> backend.band_names()
-    ['uso', 'alt', 'solo']
+    ```python
+    backend, checksum = load_xarray("simulation_step_42.nc")
+    backend.band_names()  # ['uso', 'alt', 'solo']
+    ```
     """
     try:
         import xarray as xr
@@ -119,10 +120,13 @@ def save_xarray(
 
     Examples
     --------
-    >>> checksum = save_xarray(backend, "output_step_42.nc", step=42)
+    ```python
+    # backend: a RasterBackend (e.g. from load_xarray or vector_to_raster_backend)
+    checksum = save_xarray(backend, "output_step_42.nc", step=42)
 
-    >>> # save as Zarr (requires zarr package)
-    >>> checksum = save_xarray(backend, "output.zarr", step=42)
+    # save as Zarr (requires zarr package)
+    checksum = save_xarray(backend, "output.zarr", step=42)
+    ```
     """
     try:
         import xarray  # noqa: F401 — availability check; used via to_xarray()

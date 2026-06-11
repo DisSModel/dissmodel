@@ -127,10 +127,14 @@ def attach_neighbors(
 
     Examples
     --------
-    >>> from libpysal.weights import Queen
-    >>> gdf = attach_neighbors(gdf, strategy=Queen)
-    >>> gdf = attach_neighbors(gdf, neighbors_dict="neighborhood.json")
-    >>> gdf = attach_neighbors(gdf, strategy=Queen, ids="cell_id")
+    ```python
+    from libpysal.weights import Queen
+
+    # gdf: an existing GeoDataFrame (e.g. from vector_grid or read_file)
+    gdf = attach_neighbors(gdf, strategy=Queen)
+    gdf = attach_neighbors(gdf, neighbors_dict="neighborhood.json")
+    gdf = attach_neighbors(gdf, strategy=Queen, ids="cell_id")
+    ```
     """
     resolved = _resolve_neighbors_dict(neighbors_dict)
 
@@ -173,8 +177,10 @@ def get_neighbors(gdf: gpd.GeoDataFrame, idx: Any) -> list[Any]:
 
     Examples
     --------
-    >>> get_neighbors(gdf, "10-5")
-    ['9-5', '11-5', '10-4', '10-6']
+    ```python
+    # gdf: a GeoDataFrame with a "_neighs" column from attach_neighbors()
+    get_neighbors(gdf, "10-5")  # ['9-5', '11-5', '10-4', '10-6']
+    ```
     """
     if "_neighs" not in gdf.columns:
         raise ValueError(
@@ -216,8 +222,10 @@ def get_neighbor_values(
 
     Examples
     --------
-    >>> get_neighbor_values(gdf, "10-5", "land_use")
-    [1, 1, 2, 1]
+    ```python
+    # gdf: a GeoDataFrame with a "_neighs" column from attach_neighbors()
+    get_neighbor_values(gdf, "10-5", "land_use")  # [1, 1, 2, 1]
+    ```
     """
     neighbors = get_neighbors(gdf, idx)
     if attr not in gdf.columns:
@@ -246,7 +254,10 @@ def export_neighbors(gdf: gpd.GeoDataFrame, path: str) -> None:
 
     Examples
     --------
-    >>> export_neighbors(gdf, "neighborhood.json")
+    ```python
+    # gdf: a GeoDataFrame with a "_neighs" column from attach_neighbors()
+    export_neighbors(gdf, "neighborhood.json")
+    ```
     """
     if "_neighs" not in gdf.columns:
         raise ValueError(

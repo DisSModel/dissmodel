@@ -56,6 +56,16 @@ class Model:
     5
     """
 
+    # Declared here because __init__ assigns them via object.__setattr__
+    # (to bypass the plot-tracking __setattr__), which static checkers
+    # cannot see.
+    name: str
+    start_time: float
+    end_time: float
+    env: Environment
+    _step: float
+    _next_time: float
+
     def __init__(
         self,
         step: float = 1,

@@ -66,7 +66,10 @@ class RasterModel(Model):
     ...         self.backend.arrays["temp"] = temp
     """
 
-    def setup(self, backend: RasterBackend) -> None:
+    # Narrowing the base Model.setup(**kwargs) contract is intentional:
+    # Model.__init__ forwards extra kwargs to setup, and each component
+    # declares the keywords it accepts.
+    def setup(self, backend: RasterBackend) -> None:  # type: ignore[override]
         self.backend = backend
         self.shape   = backend.shape
         self.shift   = RasterBackend.shift2d

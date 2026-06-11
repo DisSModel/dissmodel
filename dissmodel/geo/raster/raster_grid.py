@@ -90,9 +90,9 @@ def raster_grid(
             if dtype is not None:
                 arr_dtype = dtype
             elif isinstance(value, float):
-                arr_dtype = np.float64
+                arr_dtype = np.dtype(np.float64)
             else:
-                arr_dtype = np.int32
+                arr_dtype = np.dtype(np.int32)
             b.set(name, np.full((rows, cols), value, dtype=arr_dtype))
 
     return b

@@ -9,7 +9,7 @@ from pathlib import Path
 
 def _parse_params(param_list: list[str] | None) -> dict:
     """Parse KEY=VALUE strings into a typed dict."""
-    params = {}
+    params: dict[str, int | float | bool | str] = {}
     for item in param_list or []:
         key, _, raw = item.partition("=")
         for cast in (int, float):

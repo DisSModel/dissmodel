@@ -44,9 +44,13 @@ The `geo` module provides two independent spatial substrates:
 
 ## Quickstart: System Dynamics
 
+This example uses the SIR model from
+[dissmodel-sysdyn](https://github.com/DisSModel/dissmodel-sysdyn)
+(`pip install "git+https://github.com/DisSModel/dissmodel-sysdyn.git"`):
+
 ```python
 from dissmodel.core import Environment
-from examples.models.sysdyn import SIR
+from dissmodel_sysdyn.models import SIR
 from dissmodel.visualization import Chart
 
 env = Environment()

@@ -6,7 +6,7 @@ tags:
   - Dynamic Spatial Modeling
   - Cellular Automata
   - Land Use and Cover Change (LUCC)
-  - Discrete-Event Simulation
+  - Time-Stepped Simulation
 authors:
   - name: Sérgio Souza Costa
     orcid: 0000-0002-0232-4549
@@ -63,9 +63,11 @@ evolve over time — has historically required specialised platforms like TerraM
 
 While TerraME is conceptually robust, the requirement for Lua scripting creates a
 barrier for data scientists already invested in the Python ecosystem. Furthermore,
-while discrete-event simulation libraries exist, they lack native "glue code" to
-synchronise a simulation clock with the geographical state of a GeoDataFrame.
-DisSModel fulfils this need by providing a Pythonic implementation of the TerraME
+general-purpose simulation libraries lack native "glue code" to synchronise a
+time-stepped simulation clock with the geographical state of a GeoDataFrame.
+DisSModel fulfils this need with a lightweight, purpose-built time-stepped
+scheduler coupled directly to vector and raster spatial state, providing a
+Pythonic implementation of the TerraME
 paradigm, democratising access to complex modeling for territorial planners and
 environmental scientists. It offers native support for hybrid data
 types — Geo-fields and Geo-objects — allowing for simulations that remain
@@ -140,7 +142,8 @@ interactive dashboards, and `RasterMap` for step-by-step raster rendering in bot
 headless and interactive modes.
 
 The extensibility of DisSModel's class hierarchy has already produced domain
-packages distributed independently on PyPI. `dissmodel-ca` [@DisSModelCA] provides
+packages distributed as independent Python packages through the DisSModel GitHub
+organisation. `dissmodel-ca` [@DisSModelCA] provides
 ready-to-use Cellular Automata patterns built on `RasterCellularAutomaton`.
 `dissmodel-sysdyn` [@DisSModelSysDyn] adds System Dynamics compartmental models as
 first-class DisSModel components. `DisSLUCC-Continuous` [@DisSLUCCContinuous]

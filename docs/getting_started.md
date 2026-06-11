@@ -6,12 +6,21 @@
 pip install dissmodel
 ```
 
-For development mode (including examples and tests):
+For development mode (tests and dev tooling — mypy, ruff, pytest, docs):
 
 ```bash
-git clone [https://github.com/DisSModel/dissmodel](https://github.com/DisSModel/dissmodel)
+git clone https://github.com/DisSModel/dissmodel
 cd dissmodel
-pip install -e .
+pip install -e ".[dev]"
+```
+
+Runnable example models (cellular automata, system dynamics) live in the
+satellite repositories [dissmodel-ca](https://github.com/DisSModel/dissmodel-ca)
+and [dissmodel-sysdyn](https://github.com/DisSModel/dissmodel-sysdyn):
+
+```bash
+pip install "git+https://github.com/DisSModel/dissmodel-ca.git"
+pip install "git+https://github.com/DisSModel/dissmodel-sysdyn.git"
 ```
 
 ---
@@ -30,20 +39,30 @@ Environment  →  Model  →  Visualization  →  env.run()
 
 ## Execution Modes
 
-DisSModel 0.4.0 supports three main ways to interact with your models:
+DisSModel supports three main ways to interact with your models:
 
 ### 1. Command Line (CLI)
-Standardized via the `dissmodel.executor`. Best for batch experiments and experiment tracking.
+Standardized via the `dissmodel.executor`. Best for batch experiments and
+experiment tracking. Ready-to-run CLI scripts ship with the satellite
+repositories — for example, from a clone of
+[dissmodel-ca](https://github.com/DisSModel/dissmodel-ca):
 
 ```bash
-python -m examples.cli.ca.ca_fire_model run --param end_time=50
+git clone https://github.com/DisSModel/dissmodel-ca.git
+cd dissmodel-ca
+pip install .
+python examples/cli/ca_game_of_life.py
 ```
 
 ### 2. Jupyter Notebooks
-Best for teaching and incremental analysis. DisSModel renders visualizations inline automatically. See `examples/notebooks/`.
+Best for teaching and incremental analysis. DisSModel renders visualizations
+inline automatically. See the executed notebooks in this documentation under
+[Examples → Notebooks](examples/notebooks/ca_game_of_life.ipynb), or the
+larger educational collections in the satellite repositories.
 
 ### 3. Streamlit Apps
-Reactive web interfaces with zero boilerplate. Parameters are automatically mapped to sidebar widgets.
+Reactive web interfaces with zero boilerplate. Parameters are automatically
+mapped to sidebar widgets. From a clone of `dissmodel-ca`:
 
 ```bash
 streamlit run examples/streamlit/ca_all.py

@@ -184,7 +184,7 @@ def _cmd_run(executor_cls, args) -> None:
     # ── Final JSON record and summary prints ──────────────────────────────────
     _save_record_locally(record, args.output)
 
-    print(f"\n✅ Completed")
+    print("\n✅ Completed")
     print(f"   output:  {record.output_path}")
     print(f"   record:  {_record_path(args.output)}")
 
@@ -225,7 +225,7 @@ def _cmd_show(executor_cls, args) -> None:
     if hasattr(executor_cls, "name"):
         print(f"Name:     {executor_cls.name}")
 
-    print(f"\nResolved parameters (model.toml + CLI overrides):")
+    print("\nResolved parameters (model.toml + CLI overrides):")
     if params:
         for k, v in params.items():
             print(f"  {k} = {v!r}")

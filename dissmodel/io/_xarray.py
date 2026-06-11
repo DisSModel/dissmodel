@@ -125,7 +125,7 @@ def save_xarray(
     >>> checksum = save_xarray(backend, "output.zarr", step=42)
     """
     try:
-        import xarray as xr
+        import xarray  # noqa: F401 — availability check; used via to_xarray()
     except ImportError:
         raise ImportError(
             "xarray is required for save_xarray(). "

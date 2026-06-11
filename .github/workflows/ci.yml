@@ -8,6 +8,22 @@ on:
   workflow_dispatch:  # permite rodar manualmente para testar
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Ruff
+        run: pip install ruff
+
+      - name: Run Ruff
+        run: ruff check dissmodel/
+
   test:
     runs-on: ubuntu-latest
 
@@ -35,6 +51,23 @@ jobs:
 
       - name: Run tests
         run: pytest tests/
+
+      # Scoped to the modules whose Examples sections are runnable doctests;
+      # the remaining modules have illustrative pseudo-examples (external
+      # data / optional deps) — converting them is tracked as a follow-up.
+      - name: Run doctests
+        run: |
+          pytest --doctest-modules \
+            dissmodel/core/model.py \
+            dissmodel/core/environment.py \
+            dissmodel/geo/raster/backend.py \
+            dissmodel/geo/raster/raster_grid.py \
+            dissmodel/geo/raster/raster_model.py \
+            dissmodel/geo/raster/cellular_automaton.py \
+            dissmodel/geo/raster/sync_model.py \
+            dissmodel/geo/vector/vector_grid.py \
+            dissmodel/geo/vector/cellular_automaton.py \
+            dissmodel/geo/vector/sync_model.py
 
       - name: Run mypy
         run: mypy dissmodel --ignore-missing-imports

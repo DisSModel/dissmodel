@@ -94,9 +94,13 @@ class Chart(Model):
 
     Examples
     --------
-    >>> env = Environment(end_time=30)
-    >>> Chart(show_legend=True, show_grid=True, title="SIR Model")
-    >>> env.run()
+    ```python
+    from dissmodel.core import Environment
+
+    env = Environment(end_time=30)
+    Chart(show_legend=True, show_grid=True, title="SIR Model")
+    env.run()
+    ```
     """
 
     fig: matplotlib.figure.Figure

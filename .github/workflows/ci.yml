@@ -55,22 +55,11 @@ jobs:
       - name: Run tests with coverage
         run: pytest tests/ --cov=dissmodel --cov-report=term-missing --cov-report=xml
 
-      # Scoped to the modules whose Examples sections are runnable doctests;
-      # the remaining modules have illustrative pseudo-examples (external
-      # data / optional deps) — converting them is tracked as a follow-up.
+      # All >>> examples in the package are self-contained doctests;
+      # illustrative snippets use plain ```python fences instead
+      # (see CONTRIBUTING.md, "Documentation / Docstrings").
       - name: Run doctests
-        run: |
-          pytest --doctest-modules \
-            dissmodel/core/model.py \
-            dissmodel/core/environment.py \
-            dissmodel/geo/raster/backend.py \
-            dissmodel/geo/raster/raster_grid.py \
-            dissmodel/geo/raster/raster_model.py \
-            dissmodel/geo/raster/cellular_automaton.py \
-            dissmodel/geo/raster/sync_model.py \
-            dissmodel/geo/vector/vector_grid.py \
-            dissmodel/geo/vector/cellular_automaton.py \
-            dissmodel/geo/vector/sync_model.py
+        run: pytest --doctest-modules dissmodel
 
       - name: Run mypy
         run: mypy dissmodel --ignore-missing-imports

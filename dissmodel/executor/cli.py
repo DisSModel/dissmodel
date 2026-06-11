@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 import sys
-import tomllib
 from pathlib import Path
+
+if sys.version_info >= (3, 11):
+    import tomllib
+else:
+    # tomllib entered the stdlib in 3.11; tomli is its backport for 3.10
+    import tomli as tomllib
 
 
 # ── Parameter helpers ─────────────────────────────────────────────────────────

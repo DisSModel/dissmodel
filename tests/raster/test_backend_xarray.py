@@ -149,7 +149,7 @@ class TestFromXarray:
 
     def test_no_spatial_vars_raises(self):
         ds = xr.Dataset({"scalar": xr.DataArray(42)})
-        with pytest.raises(ValueError, match="No 2D"):
+        with pytest.raises(ValueError, match="No spatial"):
             RasterBackend.from_xarray(ds)
 
     def test_nodata_value_forwarded(self, simple_backend):

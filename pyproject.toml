@@ -142,3 +142,10 @@ module = [
     "rasterio.*",
 ]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# zarr 3.x ships py.typed source using PEP 695 syntax (Python 3.12+),
+# which mypy cannot parse under python_version = "3.10". Never analyze it.
+module = ["zarr.*"]
+follow_imports = "skip"
+ignore_errors = true

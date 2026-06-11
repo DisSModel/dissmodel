@@ -15,7 +15,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   **Migration:** if you previously used `end_time=N_STEPS` expecting `N_STEPS`
   executions starting at 0, use `end_time=N_STEPS-1`.
 
+### Added
+- `RasterBackend`: temporal `(time, y, x)` variable support — `set(name, arr,
+  time=coords)` / `get(name, time=t)` (ceiling lookup via `searchsorted`,
+  clamped at the boundaries), `is_temporal`, `time_axis`, and the
+  `temporal_band_names()` / `static_band_names()` partition helpers;
+  `from_xarray` / `to_xarray` import and export temporal variables with their
+  time coordinates preserved. This is the integration substrate for DisSCube's
+  `CubeClient.to_lucc_data()`
+- `ExperimentRecord.period`: optional `(start, end)` temporal window recording
+  which cube slices fed the simulation (provenance/reproducibility)
+
 ### Fixed
+- `ExperimentRecord.created_at`: deprecated `datetime.utcnow` replaced by
+  `datetime.now(timezone.utc)` — timestamps are now timezone-aware (ISO
+  serialization gains a `+00:00` offset)
 - `RasterBackend.from_xarray`: fixed Affine transform reconstruction when
   rebuilding a backend from an `xarray.Dataset`
 - Scheduler: clock no longer stalls when models finish before the

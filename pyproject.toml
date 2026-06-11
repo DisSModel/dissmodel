@@ -102,6 +102,11 @@ include = ["dissmodel*"]
 [tool.setuptools.package-data]
 "dissmodel" = ["*.json", "*.csv", "*.shp", "*.geojson", "*.tif"]
 
+[tool.pytest.ini_options]
+# tests/ is not a package; test modules import helpers as
+# "tests.executor.conftest", which requires the repo root on sys.path.
+pythonpath = ["."]
+
 [tool.mypy]
 python_version = "3.10"
 ignore_missing_imports = true

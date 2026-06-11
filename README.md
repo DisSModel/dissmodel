@@ -97,7 +97,11 @@ pip install "git+https://github.com/DisSModel/dissmodel.git@main"
 
 ```python
 # forest_fire_model.py
-from dissmodel.core import Environment, SpatialModel
+from dissmodel.core import Environment
+from dissmodel.geo import SpatialModel, vector_grid
+
+# 10x10 grid where every cell starts as forest
+gdf = vector_grid(dimension=(10, 10), resolution=1.0, attrs={"state": "forest"})
 
 class ForestFireModel(SpatialModel):
     def setup(self, prob_spread=0.3):

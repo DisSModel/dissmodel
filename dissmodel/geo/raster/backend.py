@@ -12,6 +12,25 @@ project-specific constants.
 Domain models (FloodRasterModel, MangroveRasterModel, …) import
 RasterBackend and operate on named arrays stored in ``self.arrays``.
 
+Temporal variables
+------------------
+Arrays may be static ``(y, x)`` or temporal ``(time, y, x)``.
+Static variables are stored without a time axis and behave exactly as before.
+Temporal variables are stored with an explicit time coordinate array
+in ``self.time_coords``.
+
+    # static — backward compatible
+    b.set("slope", slope_arr)
+    b.get("slope")                   # → (y, x)
+
+    # temporal
+    b.set("dist_roads", roads_arr, time=np.array([2000, 2014, 2020]))
+    b.get("dist_roads")              # → (time, y, x) full series
+    b.get("dist_roads", time=2014)   # → (y, x) slice at 2014
+
+CA models always call ``get(name, time=step)`` or ``get(name)`` for static
+vars — they never see the time dimension directly.
+
 Minimal example
 ---------------
     from dissmodel.geo.raster.backend import RasterBackend, DIRS_MOORE
@@ -57,9 +76,23 @@ class RasterBackend:
 
     Arrays
     ------
-    Stored in ``self.arrays`` as ``np.ndarray`` of shape ``(rows, cols)``.
+    Stored in ``self.arrays`` as ``np.ndarray`` of shape ``(rows, cols)``
+    for static variables, or ``(time, rows, cols)`` for temporal variables.
     No names are reserved — domain models define their own
-    (``"uso"``, ``"alt"``, ``"solo"``, ``"state"``, ``"temperature"``, …).
+    (``"uso"``, ``"alt"``, ``"solo"``, ``"state"``, ``"dist_roads"``, …).
+
+    Time coordinates for temporal variables are stored in ``self.time_coords``
+    as a parallel dict mapping variable name → 1D ``np.ndarray`` of time values
+    (int or str), sorted ascending and matching the array's first dimension.
+
+    Time lookup rule
+    ----------------
+    ``get(name, time=t)`` selects the slice with ``np.searchsorted`` and a
+    clamped index — a *ceiling* lookup: an exact match returns that slice;
+    a ``t`` between two coordinates returns the next (later) slice; a ``t``
+    outside the axis clamps to the first/last slice and never raises.
+    Re-setting a temporal variable with a 2D array and ``time=None`` demotes
+    it to static (its time axis is removed).
 
     Parameters
     ----------
@@ -67,9 +100,8 @@ class RasterBackend:
         Grid shape as ``(rows, cols)``.
     nodata_value : float | int | None
         Sentinel value used to mark cells outside the study extent.
-        When provided, ``nodata_mask`` derives the extent mask automatically,
-        so ``RasterMap`` renders those cells as transparent without any extra
-        configuration. Default: ``None``.
+        When provided, ``nodata_mask`` derives the extent mask automatically.
+        Default: ``None``.
 
     Examples
     --------
@@ -80,6 +112,11 @@ class RasterBackend:
 
     >>> b = RasterBackend(shape=(10, 10), nodata_value=-1)
     >>> b.nodata_mask   # True = valid cell, False = outside extent
+
+    >>> # temporal variable
+    >>> b.set("dist_roads", roads_3d, time=np.array([2000, 2014, 2020]))
+    >>> b.get("dist_roads", time=2014).shape   # (10, 10)
+    >>> b.get("dist_roads").shape              # (3, 10, 10)
     """
 
     def __init__(
@@ -91,10 +128,21 @@ class RasterBackend:
     ) -> None:
         self.shape        = shape
         self.arrays: dict[str, np.ndarray] = {}
-        self.nodata_value = nodata_value   # sentinel for out-of-extent cells
+        self.time_coords: dict[str, np.ndarray] = {}  # name → 1D time axis
+        self.nodata_value = nodata_value
 
         self.transform    = transform
         self.crs          = crs
+
+    # ── temporal helpers ──────────────────────────────────────────────────────
+
+    def is_temporal(self, name: str) -> bool:
+        """Return ``True`` if ``name`` has an associated time axis."""
+        return name in self.time_coords
+
+    def time_axis(self, name: str) -> np.ndarray | None:
+        """Return the time coordinate array for ``name``, or ``None``."""
+        return self.time_coords.get(name)
 
     # ── extent mask ───────────────────────────────────────────────────────────
 
@@ -104,71 +152,133 @@ class RasterBackend:
         Boolean mask: ``True`` = valid cell, ``False`` = outside extent / nodata.
 
         Derived in priority order:
-        1. ``arrays["mask"]``  — explicit mask band (dissluc / coastal convention:
-                                 non-zero = valid).
-        2. ``nodata_value``    — applied over the first available array.
-        3. ``None``            — no information; ``RasterMap`` skips auto-masking.
-
-        Used by ``RasterMap`` (``auto_mask=True``) to render out-of-extent pixels
-        as transparent without any per-project configuration.
+        1. ``arrays["mask"]``  — explicit mask band.
+        2. ``nodata_value``    — applied over the first available static array.
+        3. ``None``            — no information.
         """
         if "mask" in self.arrays:
             return self.arrays["mask"] != 0
 
         if self.nodata_value is not None and self.arrays:
-            first = next(iter(self.arrays.values()))
-            return first != self.nodata_value
+            # use first static (2D) array for the mask
+            for arr in self.arrays.values():
+                if arr.ndim == 2:
+                    return arr != self.nodata_value
 
         return None
 
     # ── read / write ──────────────────────────────────────────────────────────
 
-    def set(self, name: str, array: np.ndarray) -> None:
-        """Store a copy of ``array`` under ``name``."""
-        self.arrays[name] = np.asarray(array).copy()
-
-    def get(self, name: str) -> np.ndarray:
+    def set(
+        self,
+        name: str,
+        array: np.ndarray,
+        time: np.ndarray | list | None = None,
+    ) -> None:
         """
-        Return a direct reference to the named array.
+        Store ``array`` under ``name``.
 
-        Use ``.copy()`` to obtain a snapshot equivalent to TerraME's ``.past``.
+        Parameters
+        ----------
+        name : str
+            Variable name.
+        array : np.ndarray
+            Shape ``(y, x)`` for static variables, ``(time, y, x)`` for temporal.
+        time : array-like | None
+            1D sequence of time coordinate values (int or str) matching the
+            first dimension of ``array``. If provided, the variable is marked
+            as temporal and ``get(name, time=t)`` will return a 2D slice.
+            Must be ``None`` for static (2D) arrays.
+
+        Raises
+        ------
+        ValueError
+            If ``time`` length does not match the first dimension of ``array``.
+        """
+        arr = np.asarray(array).copy()
+
+        if time is not None:
+            t = np.asarray(time)
+            if arr.ndim != 3:
+                raise ValueError(
+                    f"Expected 3D array (time, y, x) when time is given, "
+                    f"got shape {arr.shape}"
+                )
+            if len(t) != arr.shape[0]:
+                raise ValueError(
+                    f"time length ({len(t)}) must match array first dim ({arr.shape[0]})"
+                )
+            self.time_coords[name] = t
+        else:
+            # remove any stale time axis when overwriting with static array
+            self.time_coords.pop(name, None)
+
+        self.arrays[name] = arr
+
+    def get(
+        self,
+        name: str,
+        time: int | str | None = None,
+    ) -> np.ndarray:
+        """
+        Return array for ``name``.
+
+        Behaviour
+        ---------
+        - Static variable (no time axis): always returns ``(y, x)``.
+          The ``time`` argument is silently ignored, so CA models can call
+          ``get(name, time=step)`` uniformly without checking variable type.
+        - Temporal variable + ``time=None``: returns full ``(time, y, x)`` series.
+        - Temporal variable + ``time=t``: returns the ``(y, x)`` slice selected
+          by a ceiling lookup — exact match returns that slice, a ``t`` between
+          coordinates returns the next (later) slice, and out-of-range values
+          clamp to the first/last slice without raising.
+
+        Parameters
+        ----------
+        name : str
+        time : int | str | None
+            Time value to select. Uses ``np.searchsorted`` with a clamped
+            index (ceiling rule).
 
         Raises
         ------
         KeyError
             If ``name`` is not in ``self.arrays``.
         """
-        return self.arrays[name]
+        arr = self.arrays[name]
+
+        if time is None or name not in self.time_coords:
+            return arr
+
+        idx = int(np.searchsorted(self.time_coords[name], time))
+        # clamp to valid range
+        idx = max(0, min(idx, arr.shape[0] - 1))
+        return arr[idx]
 
     def snapshot(self) -> dict[str, np.ndarray]:
         """
         Return a deep copy of all arrays — equivalent to TerraME's ``.past`` mechanism.
 
-        Typical usage::
-
-            past     = backend.snapshot()
-            uso_past = past["uso"]   # state at the beginning of the step
+        For temporal variables the full ``(time, y, x)`` array is copied.
+        Use ``get(name, time=t)`` on the backend directly to snapshot a single
+        time slice.
 
         Returns
         -------
         dict[str, np.ndarray]
-            Dictionary mapping array names to independent copies.
         """
         return {k: v.copy() for k, v in self.arrays.items()}
 
     def rename_band(self, old: str, new: str) -> None:
         """
         Rename an array in-place. No-op if ``old`` does not exist.
-
-        Parameters
-        ----------
-        old : str
-            Current band name.
-        new : str
-            Target band name.
+        Time coordinates are renamed alongside the array.
         """
         if old in self.arrays:
             self.arrays[new] = self.arrays.pop(old)
+            if old in self.time_coords:
+                self.time_coords[new] = self.time_coords.pop(old)
 
     # ── xarray interoperability ───────────────────────────────────────────────
 
@@ -176,41 +286,22 @@ class RasterBackend:
         """
         Convert the backend to an ``xr.Dataset``.
 
-        Each array in ``self.arrays`` becomes a ``DataVariable`` with
-        dimensions ``(y, x)``. If ``time`` is given, a scalar ``time``
-        coordinate is added — useful when assembling multi-step outputs.
+        Static variables become ``DataArray(y, x)``.
+        Temporal variables become ``DataArray(time, y, x)`` with explicit
+        time coordinates from ``self.time_coords``.
 
-        Spatial coordinates are derived from ``self.transform`` when available
-        (rasterio Affine), following the Pangeo convention of cell centres.
-        When ``transform`` is ``None`` (e.g. backends rasterized from vector),
-        integer pixel indices are used instead.
-
-        CRS is stored as a ``spatial_ref`` coordinate (CF convention) when
-        ``self.crs`` is set and ``pyproj`` is available.
+        If ``time`` is given (simulation step), a scalar ``time`` coordinate
+        is added to static variables — useful when assembling multi-step outputs.
 
         Parameters
         ----------
         time : int | None
-            Optional simulation step to attach as a scalar ``time`` coordinate.
+            Optional simulation step to attach as a scalar coordinate
+            (applies to static variables only).
 
         Returns
         -------
         xr.Dataset
-
-        Raises
-        ------
-        ImportError
-            If ``xarray`` is not installed.
-
-        Examples
-        --------
-        >>> ds = backend.to_xarray()
-        >>> ds["uso"].dims
-        ('y', 'x')
-
-        >>> ds = backend.to_xarray(time=42)
-        >>> ds.coords["time"].item()
-        42
         """
         try:
             import xarray as xr
@@ -222,41 +313,35 @@ class RasterBackend:
 
         rows, cols = self.shape
 
-        # spatial coordinates — cell centres from Affine transform or pixel indices
         if self.transform is not None:
             try:
-                # rasterio Affine: transform * (col + 0.5, row + 0.5) = centre
                 xs = np.array([self.transform.c + (c + 0.5) * self.transform.a
                                 for c in range(cols)])
                 ys = np.array([self.transform.f + (r + 0.5) * self.transform.e
                                 for r in range(rows)])
             except AttributeError:
-                # transform present but not rasterio Affine — fall back to indices
                 xs = np.arange(cols, dtype=float)
                 ys = np.arange(rows, dtype=float)
         else:
             xs = np.arange(cols, dtype=float)
             ys = np.arange(rows, dtype=float)
 
-        coords: dict = {"y": ys, "x": xs}
-
-        if time is not None:
-            coords["time"] = time
+        base_coords: dict = {"y": ys, "x": xs}
 
         # CRS as spatial_ref coordinate (CF / rioxarray convention)
         if self.crs is not None:
             try:
                 from pyproj import CRS as ProjCRS
+                import xarray as xr
                 crs_obj = ProjCRS.from_user_input(self.crs)
-                coords["spatial_ref"] = xr.DataArray(
+                base_coords["spatial_ref"] = xr.DataArray(
                     0,
                     attrs={
-                        "crs_wkt":       crs_obj.to_wkt(),
-                        "grid_mapping":  "spatial_ref",
+                        "crs_wkt":      crs_obj.to_wkt(),
+                        "grid_mapping": "spatial_ref",
                     },
                 )
             except Exception:
-                # pyproj unavailable or CRS unresolvable — skip spatial_ref
                 pass
 
         data_vars = {}
@@ -264,17 +349,35 @@ class RasterBackend:
             attrs: dict = {}
             if self.nodata_value is not None:
                 attrs["_FillValue"] = self.nodata_value
-            if self.crs is not None and "spatial_ref" in coords:
+            if self.crs is not None and "spatial_ref" in base_coords:
                 attrs["grid_mapping"] = "spatial_ref"
 
-            data_vars[name] = xr.DataArray(
-                arr.copy(),
-                dims=["y", "x"],
-                coords={"y": ys, "x": xs},
-                attrs=attrs,
-            )
+            if name in self.time_coords:
+                # temporal variable — emit (time, y, x)
+                data_vars[name] = xr.DataArray(
+                    arr.copy(),
+                    dims=["time", "y", "x"],
+                    coords={
+                        "time": self.time_coords[name],
+                        "y": ys,
+                        "x": xs,
+                    },
+                    attrs=attrs,
+                )
+            else:
+                # static variable — emit (y, x)
+                # holds both coordinate arrays and the optional scalar time
+                coords: dict[str, Any] = {"y": ys, "x": xs}
+                if time is not None:
+                    coords["time"] = time
+                data_vars[name] = xr.DataArray(
+                    arr.copy(),
+                    dims=["y", "x"],
+                    coords=coords,
+                    attrs=attrs,
+                )
 
-        ds = xr.Dataset(data_vars, coords=coords)
+        ds = xr.Dataset(data_vars, coords=base_coords)
         ds.attrs["Conventions"] = "CF-1.8"
         return ds
 
@@ -283,20 +386,14 @@ class RasterBackend:
         """
         Build a ``RasterBackend`` from an ``xr.Dataset`` or ``xr.DataArray``.
 
-        All variables with exactly two dimensions ``(y, x)`` (in any order)
-        are imported as arrays. Variables with other dimensionality
-        (e.g. ``spatial_ref`` scalars) are silently skipped.
-
-        CRS is recovered from the ``spatial_ref`` coordinate (CF convention)
-        when present and ``pyproj`` is available.
+        Variables with dimensions ``(y, x)`` are imported as static arrays.
+        Variables with dimensions ``(time, y, x)`` are imported as temporal
+        arrays with their time coordinates stored in ``self.time_coords``.
 
         Parameters
         ----------
         ds : xr.Dataset | xr.DataArray
-            Source dataset. A ``DataArray`` is wrapped into a single-variable
-            ``Dataset`` using ``da.name`` (falling back to ``"data"``).
         nodata_value : float | int | None
-            Forwarded to the new backend's ``nodata_value``. Default: ``None``.
 
         Returns
         -------
@@ -304,16 +401,8 @@ class RasterBackend:
 
         Raises
         ------
-        ImportError
-            If ``xarray`` is not installed.
         ValueError
-            If ``ds`` contains no variables with ``(y, x)`` dimensions.
-
-        Examples
-        --------
-        >>> backend2 = RasterBackend.from_xarray(ds)
-        >>> np.array_equal(backend2.get("uso"), backend.get("uso"))
-        True
+            If ``ds`` contains no spatial variables.
         """
         try:
             import xarray as xr
@@ -323,52 +412,57 @@ class RasterBackend:
                 "Install it with: pip install xarray"
             )
 
-        # normalise DataArray → Dataset
         if isinstance(ds, xr.DataArray):
             name = ds.name or "data"
             ds = ds.to_dataset(name=name)
 
-        # collect 2D (y, x) variables — skip scalars and non-spatial vars
         spatial_vars = {
             name: var
             for name, var in ds.data_vars.items()
-            if set(var.dims) >= {"y", "x"} and var.ndim == 2
+            if set(var.dims) >= {"y", "x"} and var.ndim in (2, 3)
         }
 
         if not spatial_vars:
             raise ValueError(
-                "No 2D (y, x) variables found in the Dataset. "
-                "Ensure dimensions are named 'y' and 'x'."
+                "No spatial (y, x) or (time, y, x) variables found in Dataset."
             )
 
-        # infer shape from first variable
-        first_var = next(iter(spatial_vars.values()))
-        y_idx = first_var.dims.index("y")
-        x_idx = first_var.dims.index("x")
-        rows = first_var.shape[y_idx]
-        cols = first_var.shape[x_idx]
+        # infer shape from first 2D variable, or spatial slice of first 3D
+        shape_2d = None
+        for var in spatial_vars.values():
+            if var.ndim == 2:
+                yi = var.dims.index("y")
+                xi = var.dims.index("x")
+                shape_2d = (var.shape[yi], var.shape[xi])
+                break
+        if shape_2d is None:
+            var = next(iter(spatial_vars.values()))
+            yi = var.dims.index("y")
+            xi = var.dims.index("x")
+            shape_2d = (var.shape[yi], var.shape[xi])
 
-        # recover transform from y/x coords if they look like spatial coords
+        rows, cols = shape_2d
+
+        # recover transform
         transform = None
         try:
             import rasterio.transform
             ys = ds.coords["y"].values
             xs = ds.coords["x"].values
             if len(ys) >= 2 and len(xs) >= 2:
-                # reconstruct Affine from cell-centre coordinates
-                res_y = float(ys[1] - ys[0])   # negative for north-up
+                res_y = float(ys[1] - ys[0])
                 res_x = float(xs[1] - xs[0])
                 origin_x = float(xs[0]) - res_x / 2
                 origin_y = float(ys[0]) - res_y / 2
-                # rasterio.transform.from_origin expects (west, north, xsize, ysize)
-                # origin_y is already the north edge if res_y < 0
                 transform = rasterio.transform.from_origin(
-                    origin_x, origin_y, res_x, abs(res_y)
+                    origin_x, origin_y - res_y * (rows - 1), res_x, abs(res_y)
+                ) if res_y < 0 else rasterio.transform.Affine(
+                    res_x, 0, origin_x, 0, res_y, origin_y
                 )
         except Exception:
-            pass  # transform recovery is best-effort
+            pass
 
-        # recover CRS from spatial_ref coordinate (CF convention)
+        # recover CRS
         crs = None
         if "spatial_ref" in ds.coords:
             try:
@@ -387,9 +481,16 @@ class RasterBackend:
         )
 
         for name, var in spatial_vars.items():
-            # transpose to (y, x) canonical order before storing
-            arr = var.transpose("y", "x").values
-            backend.arrays[name] = arr.copy()
+            if var.ndim == 3 and "time" in var.dims:
+                # temporal variable
+                arr = var.transpose("time", "y", "x").values
+                t   = ds.coords["time"].values
+                backend.arrays[name]      = arr.copy()
+                backend.time_coords[name] = t
+            else:
+                # static variable
+                arr = var.transpose("y", "x").values
+                backend.arrays[name] = arr.copy()
 
         return backend
 
@@ -403,16 +504,13 @@ class RasterBackend:
 
         Parameters
         ----------
-        arr : np.ndarray
+        arr : np.ndarray  shape (y, x)
         dr : int
-            Row offset (positive = down, negative = up).
         dc : int
-            Column offset (positive = right, negative = left).
 
         Returns
         -------
         np.ndarray
-            Shifted array of the same shape as ``arr``.
         """
         rows, cols = arr.shape
         out = np.zeros_like(arr)
@@ -427,6 +525,14 @@ class RasterBackend:
         """Return the names of all arrays currently stored in the backend."""
         return list(self.arrays.keys())
 
+    def temporal_band_names(self) -> list[str]:
+        """Return the names of temporal (time, y, x) arrays."""
+        return list(self.time_coords.keys())
+
+    def static_band_names(self) -> list[str]:
+        """Return the names of static (y, x) arrays."""
+        return [k for k in self.arrays if k not in self.time_coords]
+
     @staticmethod
     def neighbor_contact(
         condition: np.ndarray,
@@ -438,14 +544,12 @@ class RasterBackend:
 
         Parameters
         ----------
-        condition : np.ndarray
+        condition : np.ndarray  shape (y, x)
         neighborhood : list[tuple[int, int]] | None
-            ``None`` uses Moore neighbourhood via ``binary_dilation``.
 
         Returns
         -------
-        np.ndarray
-            Boolean array.
+        np.ndarray  bool
         """
         if neighborhood is None:
             return binary_dilation(condition.astype(bool), structure=np.ones((3, 3)))
@@ -460,20 +564,24 @@ class RasterBackend:
         neighborhood: list[tuple[int, int]] = DIRS_MOORE,
     ) -> np.ndarray:
         """
-        Focal sum: for each cell, sum the values of ``name`` across its neighbours.
-        The cell itself is not included.
+        Focal sum across neighbours for a static (y, x) array.
 
         Parameters
         ----------
         name : str
         neighborhood : list[tuple[int, int]]
-            Default: ``DIRS_MOORE``.
 
         Returns
         -------
         np.ndarray
         """
         arr    = self.arrays[name]
+        if arr.ndim != 2:
+            raise ValueError(
+                f"focal_sum requires a static 2D array. "
+                f"'{name}' has shape {arr.shape}. "
+                f"Use get('{name}', time=t) to select a slice first."
+            )
         result = np.zeros_like(arr, dtype=float)
         for dr, dc in neighborhood:
             result += self.shift2d(arr, dr, dc)
@@ -489,14 +597,12 @@ class RasterBackend:
 
         Parameters
         ----------
-        mask : np.ndarray
+        mask : np.ndarray  shape (y, x)
         neighborhood : list[tuple[int, int]]
-            Default: ``DIRS_MOORE``.
 
         Returns
         -------
-        np.ndarray
-            Integer array with per-cell neighbour counts.
+        np.ndarray  int
         """
         result = np.zeros(self.shape, dtype=int)
         m = mask.astype(np.int8)
@@ -507,7 +613,9 @@ class RasterBackend:
     # ── utilities ─────────────────────────────────────────────────────────────
 
     def __repr__(self) -> str:
-        bands = ", ".join(
-            f"{k}:{v.dtype}[{v.shape}]" for k, v in self.arrays.items()
-        )
-        return f"RasterBackend(shape={self.shape}, arrays=[{bands}])"
+        static   = [f"{k}:{v.dtype}{list(v.shape)}"
+                    for k, v in self.arrays.items() if k not in self.time_coords]
+        temporal = [f"{k}:{v.dtype}{list(v.shape)}@{list(self.time_coords[k])}"
+                    for k, v in self.arrays.items() if k in self.time_coords]
+        parts = static + temporal
+        return f"RasterBackend(shape={self.shape}, arrays=[{', '.join(parts)}])"

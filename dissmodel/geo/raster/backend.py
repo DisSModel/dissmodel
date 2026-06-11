@@ -82,7 +82,17 @@ class RasterBackend:
     (``"uso"``, ``"alt"``, ``"solo"``, ``"state"``, ``"dist_roads"``, …).
 
     Time coordinates for temporal variables are stored in ``self.time_coords``
-    as a parallel dict mapping variable name → 1D ``np.ndarray`` of time values.
+    as a parallel dict mapping variable name → 1D ``np.ndarray`` of time values
+    (int or str), sorted ascending and matching the array's first dimension.
+
+    Time lookup rule
+    ----------------
+    ``get(name, time=t)`` selects the slice with ``np.searchsorted`` and a
+    clamped index — a *ceiling* lookup: an exact match returns that slice;
+    a ``t`` between two coordinates returns the next (later) slice; a ``t``
+    outside the axis clamps to the first/last slice and never raises.
+    Re-setting a temporal variable with a 2D array and ``time=None`` demotes
+    it to static (its time axis is removed).
 
     Parameters
     ----------
@@ -219,13 +229,17 @@ class RasterBackend:
           The ``time`` argument is silently ignored, so CA models can call
           ``get(name, time=step)`` uniformly without checking variable type.
         - Temporal variable + ``time=None``: returns full ``(time, y, x)`` series.
-        - Temporal variable + ``time=t``: returns ``(y, x)`` slice nearest to ``t``.
+        - Temporal variable + ``time=t``: returns the ``(y, x)`` slice selected
+          by a ceiling lookup — exact match returns that slice, a ``t`` between
+          coordinates returns the next (later) slice, and out-of-range values
+          clamp to the first/last slice without raising.
 
         Parameters
         ----------
         name : str
         time : int | str | None
-            Time value to select. Uses ``np.searchsorted`` for lookup.
+            Time value to select. Uses ``np.searchsorted`` with a clamped
+            index (ceiling rule).
 
         Raises
         ------

@@ -50,9 +50,14 @@ class Map(Model):
 
     Examples
     --------
-    >>> env = Environment(end_time=10)
-    >>> Map(gdf=grid, plot_params={"column": "state", "cmap": "viridis"})
-    >>> env.run()
+    ```python
+    from dissmodel.core import Environment
+
+    # grid: a GeoDataFrame (e.g. from vector_grid or read_file)
+    env = Environment(end_time=10)
+    Map(gdf=grid, plot_params={"column": "state", "cmap": "viridis"})
+    env.run()
+    ```
     """
 
     # Narrowing the base Model.setup(**kwargs) contract is intentional:

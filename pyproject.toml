@@ -43,7 +43,7 @@ classifiers = [
 dependencies = [
     "pydantic-settings",
     "pydantic>=2.0",
-    "numpy>=1.24,<2.0",
+    "numpy>=1.24,<3.0",
     "geopandas>=1.0.0",
     "shapely>=2.0.0",
     "libpysal>=4.9.0",

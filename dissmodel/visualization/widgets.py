@@ -30,8 +30,11 @@ def display_inputs(obj: Any, st: Any) -> None:
 
     Examples
     --------
-    >>> display_inputs(sir_model, st.sidebar)
-    >>> display_inputs(ca_model, st)
+    ```python
+    # sir_model, ca_model: Model instances; st: the imported streamlit module
+    display_inputs(sir_model, st.sidebar)
+    display_inputs(ca_model, st)
+    ```
     """
     annotations: dict[str, Any] = getattr(obj, "__annotations__", {})
 

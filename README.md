@@ -257,7 +257,7 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
   year = {2026},
   publisher = {LambdaGeo, Federal University of Maranhão (UFMA)},
   url = {https://github.com/DisSModel/dissmodel},
-  version = {0.5.0}
+  version = {0.6.0}
 }
 ```
 

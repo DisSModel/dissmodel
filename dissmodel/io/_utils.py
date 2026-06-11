@@ -118,11 +118,19 @@ def write_bytes(
     plt.savefig(buf, format="png", dpi=150)
     checksum = write_bytes(buf, "s3://bucket/scatter.png", "image/png")
     """
+    raw: bytes
     if isinstance(data, (io.RawIOBase, io.BufferedIOBase, io.BytesIO)):
         data.seek(0)
-        raw = data.read()
+        raw = data.read() or b""
+    elif isinstance(data, bytes):
+        raw = data
     else:
-        raw = bytes(data)
+        # Remaining io.IOBase subclasses (e.g. text streams) carry str,
+        # not bytes, and cannot be written as binary content.
+        raise TypeError(
+            "write_bytes expects bytes or a binary stream, "
+            f"got {type(data).__name__}"
+        )
  
     return _write_raw(raw, uri, content_type)
  

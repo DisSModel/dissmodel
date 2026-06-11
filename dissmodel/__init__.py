@@ -1,3 +1,8 @@
 """Pacote dissmodel - modelagem espacial discreta"""
 
-__version__ = "0.4.0"
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("dissmodel")
+except PackageNotFoundError:  # pragma: no cover
+    __version__ = "0.0.0+unknown"

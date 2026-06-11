@@ -111,7 +111,10 @@ class Chart(Model):
     title: str
     save_frames: bool
 
-    def setup(
+    # Narrowing the base Model.setup(**kwargs) contract is intentional:
+    # Model.__init__ forwards extra kwargs to setup, and each component
+    # declares the keywords it accepts.
+    def setup(  # type: ignore[override]
         self,
         select: Optional[list[str]] = None,
         pause: bool = True,

@@ -17,7 +17,7 @@ authors:
     given-names: "Denilson da Silva"
     orcid: "https://orcid.org/0000-0002-9567-7828"
 title: "DisSModel: A Python Framework for Spatially Explicit Dynamic Modeling"
-version: 0.4.0
+version: 0.6.0
 date-released: 2026-04-12
 url: "https://github.com/DisSModel/dissmodel"
 repository-code: "https://github.com/DisSModel/dissmodel"

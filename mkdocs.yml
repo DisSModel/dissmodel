@@ -39,10 +39,13 @@ nav:
   - Home: index.md
   - Getting Started: getting_started.md
   - Why DisSModel?: why_dissmodel.md
-  - Examples: examples.md
-
-
-
+  - Examples:
+    - Overview: examples.md
+    - CLI Examples: examples/cli.md
+    - Streamlit Examples: examples/streamlit.md
+    - Notebooks:
+      - Game of Life: examples/notebooks/ca_game_of_life.ipynb
+      - SIR Model: examples/notebooks/sysdyn_sir.ipynb
   - API Reference:
     - Core: api/core.md
     - Geo:

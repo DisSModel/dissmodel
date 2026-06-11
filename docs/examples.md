@@ -72,24 +72,34 @@ plt.title("Risk distribution (RANDOM_SAMPLE)")
 plt.show()
 ```
 
-### Loading Real-World Data (Shapefile)
+### Visualizing a GeoDataFrame with Map
 
-DisSModel leverages GeoPandas to integrate real-world geographic datasets. This example demonstrates how to load a zipped shapefile and render it using the built-in Map component.
+DisSModel leverages GeoPandas, so any `GeoDataFrame` — built in code or
+loaded from disk with `gpd.read_file(...)` — can be rendered with the
+built-in observer-based `Map` component. This self-contained example
+builds a small grid and displays it:
 
 ```python
-import geopandas as gpd
 from dissmodel.core import Environment
+from dissmodel.geo import FillStrategy, fill, vector_grid
 from dissmodel.visualization.map import Map
 
-# Load geographic data (Example: Maranhão Island)
-gdf = gpd.read_file("examples/data/ilha_do_maranhao.zip")
+# Build a GeoDataFrame (swap for gpd.read_file("your_data.gpkg") to use real data)
+gdf = vector_grid(dimension=(10, 10), resolution=1.0)
+fill(
+    strategy=FillStrategy.RANDOM_SAMPLE,
+    gdf=gdf,
+    attr="state",
+    data={"forest": 0.7, "cleared": 0.3},
+    seed=42,
+)
 
-env = Environment(start_time=0, end_time=1)
+env = Environment(start_time=0, end_time=0)
 
 # Render the data using the framework's observer-based Map
 Map(
     gdf=gdf,
-    plot_params={"edgecolor": "black", "linewidth": 0.5},
+    plot_params={"column": "state", "edgecolor": "black", "linewidth": 0.5},
 )
 
 env.run()
@@ -124,9 +134,16 @@ Advanced research models focused on coastal processes, demonstrating model equiv
 
 ## 🚀 Execution Modes
 
-You can run the included examples in different environments depending on your needs:
+You can run examples in different environments depending on your needs:
 
-* **Command Line**: Best for performance and automation.
-* **Jupyter Notebooks**: Located in `examples/notebooks/`, ideal for step-by-step interactive exploration.
-* **Streamlit**: Use `streamlit run examples/streamlit/ca_all.py` to explore models with a reactive UI.
+* **Command Line**: Best for performance and automation — see
+  [CLI Examples](examples/cli.md).
+* **Jupyter Notebooks**: Executed notebooks are rendered in this
+  documentation under
+  [Examples → Notebooks](examples/notebooks/ca_game_of_life.ipynb),
+  ideal for step-by-step interactive exploration.
+* **Streamlit**: From a clone of
+  [dissmodel-ca](https://github.com/DisSModel/dissmodel-ca), run
+  `streamlit run examples/streamlit/ca_all.py` to explore models with a
+  reactive UI — see [Streamlit Examples](examples/streamlit.md).
 

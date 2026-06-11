@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Literal
 from uuid import uuid4
 
@@ -18,7 +18,10 @@ class DataSource(BaseModel):
 class ExperimentRecord(BaseModel):
     # Identidade
     experiment_id: str      = Field(default_factory=lambda: __import__("uuid").uuid4().hex)
-    created_at:    datetime = Field(default_factory=datetime.utcnow)
+    # timezone.utc (not datetime.UTC) — the project supports Python 3.10.
+    created_at:    datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
     # Proveniência
     model_name:    str  = ""

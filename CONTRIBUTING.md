@@ -50,5 +50,16 @@ If you have an idea for a new feature or improvement, please open an issue and t
 - Use type hints where possible.
 - Write docstrings for new functions and classes (NumPy style).
 
+## Documentation / Docstrings
+
+Examples in NumPy-style docstrings that use `>>>` prompts are executed as
+doctests in CI (`pytest --doctest-modules dissmodel`) and must be fully
+self-contained and runnable — every name they use must be defined within the
+example itself, and the expected output must match exactly. Longer
+illustrative examples that assume objects from a broader context (e.g. an
+existing GeoDataFrame, `Environment`, or model instance) should use plain
+` ```python ` fenced code blocks instead of `>>>` prompts; mkdocstrings
+renders both forms in the API reference.
+
 ## License
 By contributing, you agree that your contributions will be licensed under the MIT License.

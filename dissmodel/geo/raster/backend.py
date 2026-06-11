@@ -352,7 +352,8 @@ class RasterBackend:
                 )
             else:
                 # static variable — emit (y, x)
-                coords = {"y": ys, "x": xs}
+                # holds both coordinate arrays and the optional scalar time
+                coords: dict[str, Any] = {"y": ys, "x": xs}
                 if time is not None:
                     coords["time"] = time
                 data_vars[name] = xr.DataArray(

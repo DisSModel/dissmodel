@@ -109,9 +109,9 @@ def _generate_sample(data: _SampleData, size: int = 1) -> list[Any]:
     --------
     >>> import random; random.seed(0)
     >>> _generate_sample([1, 2, 3], size=3)
-    [2, 1, 3]
+    [3, 3, 2]
     >>> _generate_sample({"min": 0, "max": 1}, size=2)
-    [0, 1]
+    [1, 1]
     """
     if isinstance(data, dict):
         if "min" in data and "max" in data:

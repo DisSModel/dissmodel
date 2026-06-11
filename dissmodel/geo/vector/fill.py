@@ -286,12 +286,15 @@ def fill(strategy: FillStrategy | str, **kwargs: Any) -> Any:
 
     Examples
     --------
-    >>> fill(FillStrategy.RANDOM_SAMPLE, gdf=grid, attr="state",
-    ...      data=[0, 1], seed=42)
-    >>> fill("min_distance", from_gdf=grid, to_gdf=roads,
-    ...      attr_name="dist_road")
-    >>> fill(FillStrategy.PATTERN, gdf=grid, attr="zone",
-    ...      pattern=[[1, 2], [3, 4]])
+    ```python
+    # grid, roads: existing GeoDataFrames (e.g. from vector_grid / read_file)
+    fill(FillStrategy.RANDOM_SAMPLE, gdf=grid, attr="state",
+         data=[0, 1], seed=42)
+    fill("min_distance", from_gdf=grid, to_gdf=roads,
+         attr_name="dist_road")
+    fill(FillStrategy.PATTERN, gdf=grid, attr="zone",
+         pattern=[[1, 2], [3, 4]])
+    ```
     """
     key = FillStrategy(strategy)
     if key not in _fill_strategies:

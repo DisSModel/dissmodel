@@ -86,7 +86,9 @@ class Map(Model):
                 self._out = widgets.Output()
                 display(self._out)
             except ImportError:
-                pass  # ipywidgets ausente — cai no fallback clear_output
+                # ipywidgets is optional (pip install dissmodel[viz]);
+                # without it the clear_output fallback path is used.
+                pass
 
         # always create fig so _render() can always call self.fig.clf()
         self.fig, self.ax = plt.subplots(1, 1, figsize=self.figsize)

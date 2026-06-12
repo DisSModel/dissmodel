@@ -125,8 +125,8 @@ Implementations of classic **System Dynamics** models:
 * **Lorenz Attractor** (Deterministic chaos)
 * **Coffee Cooling** (Newton's Law of Cooling)
 
-### 🌊 [Coastal-Dynamics](https://github.com/DisSModel/coastal-dynamics)
-Advanced research models focused on coastal processes, demonstrating model equivalence between vector and raster substrates for:
+### 🌊 [BR-MANGUE](https://github.com/DisSModel/brmangue-dissmodel)
+The BR-MANGUE coastal dynamics model, demonstrating model equivalence between vector and raster substrates — validated against the original TerraME implementation — for:
 * **Mangrove Succession**
 * **Coastal Flooding** (Flood models)
 

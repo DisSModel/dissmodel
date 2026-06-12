@@ -44,7 +44,7 @@ DisSModel is the synthesis: a Python-native, FAIR-aligned, cloud-ready simulatio
 |--------------------------|---------------------|------|
 | **TerraME** | `dissmodel` | Generic framework for dynamic spatial modeling |
 | **LUCCME** | `DisSLUCC` | LUCC domain models built on dissmodel |
-| — | `coastal-dynamics` | Coastal domain models built on dissmodel |
+| — | `brmangue-dissmodel` | Coastal domain models (BR-MANGUE) built on dissmodel |
 | **TerraLib** | `geopandas` / `rasterio` | Geographic data handling |
 
 ---
@@ -220,7 +220,7 @@ DisSModel is a core framework. To maintain a clean and specialized environment, 
 |------------|-------------|---------|
 | [`dissmodel-ca`](https://github.com/DisSModel/dissmodel-ca) | Classic Cellular Automata (Game of Life, Forest Fire, Growth) | `pip install "git+https://github.com/DisSModel/dissmodel-ca.git"` |
 | [`dissmodel-sysdyn`](https://github.com/DisSModel/dissmodel-sysdyn) | System Dynamics (SIR, Predator-Prey, Lorenz) | `pip install "git+https://github.com/DisSModel/dissmodel-sysdyn.git"` |
-| [`coastal-dynamics`](https://github.com/DisSModel/coastal-dynamics) | Coastal flooding and mangrove succession models | `pip install "git+https://github.com/DisSModel/coastal-dynamics.git"` |
+| [`brmangue-dissmodel`](https://github.com/DisSModel/brmangue-dissmodel) | BR-MANGUE coastal flooding and mangrove succession model (raster + vector, validated against TerraME) | `pip install "git+https://github.com/DisSModel/brmangue-dissmodel.git"` |
 | [`disslucc-continuous`](https://github.com/DisSModel/disslucc-continuous) | Land Use and Cover Change models, continuous allocation (CLUE-inspired) | `pip install "git+https://github.com/DisSModel/disslucc-continuous.git"` |
 | [`disslucc-discrete`](https://github.com/DisSModel/disslucc-discrete) | Land Use and Cover Change models, discrete allocation (CLUE-inspired) | `pip install "git+https://github.com/DisSModel/disslucc-discrete.git"` |
 

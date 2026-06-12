@@ -56,7 +56,7 @@ DisSModel is the synthesis: a Python-native, FAIR-aligned, cloud-ready simulatio
 - **Executor pattern** — strict separation between science (models) and infrastructure (I/O, CLI, reproducible execution).
 - **Experiment tracking** — every run generates an immutable `ExperimentRecord` with SHA-256 checksums, TOML snapshot, and full provenance.
 - **Storage-agnostic I/O** — `dissmodel.io` handles local paths and `s3://` URIs transparently.
-- **Cloud-ready** — deploy via Docker, FastAPI, and Redis without changing model code.
+- **Platform-ready contract** — the `ModelExecutor` interface is designed so the same model code can later run on the [DisSModel Platform](#-roadmap-dissmodel-platform), a separate project under development.
 
 ---
 
@@ -189,12 +189,9 @@ Every run produces an immutable provenance record:
 }
 ```
 
-Reproduce any past experiment exactly:
-
-```bash
-curl -X POST http://localhost:8000/experiments/abc123/reproduce \
-  -H "X-API-Key: chave-sergio"
-```
+The `record.json` written next to every output contains everything needed to
+re-run the experiment: the input URI and its SHA-256 checksum, the resolved
+parameters (TOML + CLI overrides), per-phase timings, and the output checksum.
 
 ---
 
@@ -233,6 +230,19 @@ Each repository demonstrates how to:
 1. **Define a Model**: Using `SpatialModel` and `Environment`.
 2. **Wrap an Executor**: Using `ModelExecutor` for I/O and provenance.
 3. **Deploy**: Running via CLI or API.
+
+---
+
+## 🔭 Roadmap: DisSModel Platform
+
+The **DisSModel Platform** is a distributed execution environment (FastAPI,
+Redis, Docker, MinIO/S3) currently under development as a **separate project**.
+It consumes the same `ModelExecutor` contract documented above — executors run
+through its job queue without any change to their scientific code, including
+remote experiment reproduction from a stored `ExperimentRecord`.
+
+**The platform is not part of this package.** Everything described in this
+README works locally with `pip install dissmodel` alone.
 
 ---
 

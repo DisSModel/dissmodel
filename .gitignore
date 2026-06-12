@@ -1,6 +1,9 @@
 raster_map_frames
 testes
 
+chart_frames/
+map_frames/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

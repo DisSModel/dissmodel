@@ -1,0 +1,1778 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://dissmodel.github.io/dissmodel/api/geo/">
+      
+      
+        <link rel="prev" href="../core/">
+      
+      
+        <link rel="next" href="vector/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Overview - DisSModel</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="green">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#geo" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="DisSModel" class="md-header__button md-logo" aria-label="DisSModel" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            DisSModel
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="green"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/DisSModel/dissmodel" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dissmodel
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="DisSModel" class="md-nav__button md-logo" aria-label="DisSModel" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    DisSModel
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/DisSModel/dissmodel" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dissmodel
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../why_dissmodel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Why DisSModel?
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/streamlit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Streamlit Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Notebooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Notebooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/notebooks/ca_game_of_life/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conway's Game of Life
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../examples/notebooks/sysdyn_sir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SIR Epidemiological Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Geo
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Geo
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dual-substrate-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dual-substrate design
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vector-substrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vector substrate
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sync-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sync models
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sync models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syncspatialmodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SyncSpatialModel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syncrastermodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SyncRasterModel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#raster-substrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Raster substrate
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Raster substrate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#xarray-interoperability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Xarray interoperability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filling-grid-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filling grid attributes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Filling grid attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zonal-statistics-from-a-raster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zonal statistics from a raster
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minimum-distance-to-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minimum distance to features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#random-sampling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Random sampling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed-pattern-useful-for-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed pattern (useful for tests)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neighbourhood" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Neighbourhood
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="vector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vector
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="raster/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Raster
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Executor
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Executor
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../executor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../executor/schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../executor/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../executor/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../io/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../visualization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Visualization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#dual-substrate-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dual-substrate design
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vector-substrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vector substrate
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sync-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sync models
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sync models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syncspatialmodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SyncSpatialModel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syncrastermodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SyncRasterModel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#raster-substrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Raster substrate
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Raster substrate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#xarray-interoperability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Xarray interoperability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#filling-grid-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filling grid attributes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Filling grid attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#zonal-statistics-from-a-raster" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zonal statistics from a raster
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minimum-distance-to-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Minimum distance to features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#random-sampling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Random sampling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed-pattern-useful-for-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fixed pattern (useful for tests)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#neighbourhood" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Neighbourhood
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="geo">Geo</h1>
+<p>The <code>dissmodel.geo</code> module provides the spatial infrastructure for building
+simulation models. It handles grid generation, neighbourhood computation, and
+attribute initialization — without imposing any domain logic.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.geo</span><span class="w"> </span><span class="kn">import</span> <span class="n">vector_grid</span><span class="p">,</span> <span class="n">fill</span><span class="p">,</span> <span class="n">FillStrategy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.geo.vector.neighborhood</span><span class="w"> </span><span class="kn">import</span> <span class="n">attach_neighbors</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.geo.raster.backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">RasterBackend</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.geo.raster.raster_grid</span><span class="w"> </span><span class="kn">import</span> <span class="n">raster_grid</span>
+</code></pre></div>
+<hr />
+<h2 id="dual-substrate-design">Dual-substrate design</h2>
+<p>The module provides two independent spatial substrates. Both share the same
+<code>Environment</code> and clock — a vector model and a raster model can run
+side by side in the same <code>env.run()</code>.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Vector</th>
+<th>Raster</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Module</strong></td>
+<td><code>dissmodel.geo.vector</code></td>
+<td><code>dissmodel.geo.raster</code></td>
+</tr>
+<tr>
+<td><strong>Data structure</strong></td>
+<td><code>GeoDataFrame</code> (GeoPandas)</td>
+<td><code>RasterBackend</code> (NumPy 2D arrays)</td>
+</tr>
+<tr>
+<td><strong>Grid factory</strong></td>
+<td><code>vector_grid()</code></td>
+<td><code>raster_grid()</code></td>
+</tr>
+<tr>
+<td><strong>Neighbourhood</strong></td>
+<td>Queen / Rook (libpysal)</td>
+<td>Moore / Von Neumann (<code>shift2d</code>)</td>
+</tr>
+<tr>
+<td><strong>Rule pattern</strong></td>
+<td><code>rule(idx)</code> per cell</td>
+<td><code>rule(arrays) → dict</code> vectorized</td>
+</tr>
+<tr>
+<td><strong>GIS integration</strong></td>
+<td>CRS, projections, spatial joins</td>
+<td>rasterio I/O, Xarray interop</td>
+</tr>
+<tr>
+<td><strong>Best for</strong></td>
+<td>Irregular grids, real-world data</td>
+<td>Large grids, performance-critical models</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="vector-substrate">Vector substrate</h2>
+<p>The vector substrate uses a <code>GeoDataFrame</code> as the spatial grid. Any model can
+operate directly on real geographic data — shapefiles, GeoJSON, real CRS — with
+no conversion step.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">geopandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gpd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Model</span><span class="p">,</span> <span class="n">Environment</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.visualization.map</span><span class="w"> </span><span class="kn">import</span> <span class="n">Map</span>
+
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;area.shp&quot;</span><span class="p">)</span>
+<span class="n">gdf</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;object_id&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">start_time</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">end_time</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ElevationModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gdf</span>  <span class="o">=</span> <span class="n">gdf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rate</span> <span class="o">=</span> <span class="n">rate</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;alt&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rate</span>
+
+<span class="n">ElevationModel</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+<span class="n">Map</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">plot_params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;column&quot;</span><span class="p">:</span> <span class="s2">&quot;alt&quot;</span><span class="p">,</span> <span class="s2">&quot;cmap&quot;</span><span class="p">:</span> <span class="s2">&quot;Blues&quot;</span><span class="p">,</span> <span class="s2">&quot;legend&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+<span class="n">env</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</code></pre></div>
+<p>For abstract (non-georeferenced) grids, use <code>vector_grid()</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.geo</span><span class="w"> </span><span class="kn">import</span> <span class="n">vector_grid</span>
+
+<span class="c1"># from dimension + resolution</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">vector_grid</span><span class="p">(</span><span class="n">dimension</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># from bounding box + resolution</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">vector_grid</span><span class="p">(</span><span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">1000</span><span class="p">),</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># from an existing GeoDataFrame</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">vector_grid</span><span class="p">(</span><span class="n">gdf</span><span class="o">=</span><span class="n">base_gdf</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="sync-models">Sync models</h2>
+<p>Both substrates provide a synchronised variant that manages <code>_past</code> snapshots
+automatically — equivalent to TerraME's <code>cs:synchronize()</code>.</p>
+<h3 id="syncspatialmodel"><code>SyncSpatialModel</code></h3>
+<p>Declare <code>self.land_use_types</code> in <code>setup()</code> and <code>&lt;col&gt;_past</code> columns are
+created and updated before and after each step:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.geo.vector.sync_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyncSpatialModel</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LUCCModel</span><span class="p">(</span><span class="n">SyncSpatialModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gdf</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gdf</span>             <span class="o">=</span> <span class="n">gdf</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">land_use_types</span>  <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;outros&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">uso_past</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gdf</span><span class="p">[</span><span class="s2">&quot;f_past&quot;</span><span class="p">]</span>   <span class="c1"># state at beginning of step</span>
+        <span class="c1"># ... update self.gdf[&quot;f&quot;] ...</span>
+</code></pre></div>
+<h3 id="syncrastermodel"><code>SyncRasterModel</code></h3>
+<p>Same semantics for the raster substrate. Copies each array in <code>land_use_types</code>
+to <code>&lt;n&gt;_past</code> in the <code>RasterBackend</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.geo.raster.sync_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyncRasterModel</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">LUCCRasterModel</span><span class="p">(</span><span class="n">SyncRasterModel</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">backend</span>         <span class="o">=</span> <span class="n">backend</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">land_use_types</span>  <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;outros&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">f_past</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;f_past&quot;</span><span class="p">)</span>   <span class="c1"># state at beginning of step</span>
+        <span class="c1"># ... update self.backend.arrays[&quot;f&quot;] ...</span>
+</code></pre></div>
+<p>Both expose <code>synchronize()</code> as a public method for manual use when the
+automatic pre/post-step timing is not sufficient.</p>
+<hr />
+<h2 id="raster-substrate">Raster substrate</h2>
+<p>The raster substrate stores named NumPy arrays in a <code>RasterBackend</code>. All
+operations (<code>shift2d</code>, <code>focal_sum</code>, <code>neighbor_contact</code>) are fully vectorized —
+no Python loops over cells.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.geo.raster.raster_grid</span><span class="w"> </span><span class="kn">import</span> <span class="n">raster_grid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.geo.raster.backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">RasterBackend</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">backend</span> <span class="o">=</span> <span class="n">raster_grid</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">cols</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;state&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;alt&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">})</span>
+
+<span class="c1"># read / write arrays</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;state&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>    <span class="c1"># snapshot — equivalent to .past in TerraME</span>
+<span class="n">backend</span><span class="o">.</span><span class="n">arrays</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_state</span>
+
+<span class="c1"># vectorized neighbourhood operations</span>
+<span class="n">shifted</span>    <span class="o">=</span> <span class="n">RasterBackend</span><span class="o">.</span><span class="n">shift2d</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>   <span class="c1"># northern neighbour of each cell</span>
+<span class="n">n_active</span>   <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">focal_sum_mask</span><span class="p">(</span><span class="n">state</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>    <span class="c1"># count active Moore neighbours</span>
+<span class="n">has_active</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">neighbor_contact</span><span class="p">(</span><span class="n">state</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># bool mask: any active neighbour?</span>
+</code></pre></div>
+<h3 id="xarray-interoperability">Xarray interoperability</h3>
+<p><code>RasterBackend</code> can be converted to and from <code>xr.Dataset</code>, enabling integration
+with the Pangeo ecosystem (Zarr, Dask, JupyterHub):</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># export — each array becomes a DataVariable with (y, x) dimensions</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">to_xarray</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">to_zarr</span><span class="p">(</span><span class="s2">&quot;output.zarr&quot;</span><span class="p">)</span>
+
+<span class="c1"># import — recovers arrays, transform, and CRS</span>
+<span class="n">backend2</span> <span class="o">=</span> <span class="n">RasterBackend</span><span class="o">.</span><span class="n">from_xarray</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+</code></pre></div>
+<p>Spatial coordinates are derived from <code>backend.transform</code> (rasterio Affine) when
+available. CRS is stored as a <code>spatial_ref</code> coordinate following the CF-1.8
+convention.</p>
+<hr />
+<h2 id="filling-grid-attributes">Filling grid attributes</h2>
+<p>The <code>fill()</code> function initialises GeoDataFrame columns from spatial data sources,
+avoiding manual cell-by-cell loops.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.geo</span><span class="w"> </span><span class="kn">import</span> <span class="n">fill</span><span class="p">,</span> <span class="n">FillStrategy</span>
+</code></pre></div>
+<h3 id="zonal-statistics-from-a-raster">Zonal statistics from a raster</h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">rasterio</span>
+
+<span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;altitude.tif&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+    <span class="n">raster</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">affine</span> <span class="o">=</span> <span class="n">src</span><span class="o">.</span><span class="n">transform</span>
+
+<span class="n">fill</span><span class="p">(</span>
+    <span class="n">FillStrategy</span><span class="o">.</span><span class="n">ZONAL_STATS</span><span class="p">,</span>
+    <span class="n">vectors</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">raster_data</span><span class="o">=</span><span class="n">raster</span><span class="p">,</span> <span class="n">affine</span><span class="o">=</span><span class="n">affine</span><span class="p">,</span>
+    <span class="n">stats</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="s2">&quot;max&quot;</span><span class="p">],</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;alt_&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="c1"># → adds columns alt_mean, alt_min, alt_max to gdf</span>
+</code></pre></div>
+<h3 id="minimum-distance-to-features">Minimum distance to features</h3>
+<div class="highlight"><pre><span></span><code><span class="n">rivers</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;rivers.shp&quot;</span><span class="p">)</span>
+
+<span class="n">fill</span><span class="p">(</span><span class="n">FillStrategy</span><span class="o">.</span><span class="n">MIN_DISTANCE</span><span class="p">,</span> <span class="n">from_gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">to_gdf</span><span class="o">=</span><span class="n">rivers</span><span class="p">,</span> <span class="n">attr_name</span><span class="o">=</span><span class="s2">&quot;dist_river&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="random-sampling">Random sampling</h3>
+<div class="highlight"><pre><span></span><code><span class="n">fill</span><span class="p">(</span>
+    <span class="n">FillStrategy</span><span class="o">.</span><span class="n">RANDOM_SAMPLE</span><span class="p">,</span>
+    <span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;land_use&quot;</span><span class="p">,</span>
+    <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="mf">0.3</span><span class="p">},</span>   <span class="c1"># 70% class 0, 30% class 1</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="fixed-pattern-useful-for-tests">Fixed pattern (useful for tests)</h3>
+<div class="highlight"><pre><span></span><code><span class="n">pattern</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+           <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+           <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]</span>
+
+<span class="n">fill</span><span class="p">(</span><span class="n">FillStrategy</span><span class="o">.</span><span class="n">PATTERN</span><span class="p">,</span> <span class="n">gdf</span><span class="o">=</span><span class="n">gdf</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="s2">&quot;zone&quot;</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="n">pattern</span><span class="p">)</span>
+</code></pre></div>
+<p>Custom strategies can be registered:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.geo.vector.fill</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_strategy</span>
+
+<span class="nd">@register_strategy</span><span class="p">(</span><span class="s2">&quot;my_strategy&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fill_my_strategy</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="o">...</span>
+</code></pre></div>
+<hr />
+<h2 id="neighbourhood">Neighbourhood</h2>
+<p>Spatial neighbourhoods are built via <code>attach_neighbors()</code> or directly through
+<code>create_neighborhood()</code> on any <code>CellularAutomaton</code> or <code>SpatialModel</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">libpysal.weights</span><span class="w"> </span><span class="kn">import</span> <span class="n">Queen</span><span class="p">,</span> <span class="n">Rook</span><span class="p">,</span> <span class="n">KNN</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dissmodel.geo.vector.neighborhood</span><span class="w"> </span><span class="kn">import</span> <span class="n">attach_neighbors</span>
+
+<span class="c1"># topological (Queen — edge or vertex contact)</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">attach_neighbors</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="n">Queen</span><span class="p">)</span>
+
+<span class="c1"># topological (Rook — edge contact only)</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">attach_neighbors</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="n">Rook</span><span class="p">)</span>
+
+<span class="c1"># distance-based (k nearest neighbours)</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">attach_neighbors</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="n">KNN</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="c1"># precomputed (from dict or JSON file — faster for large grids)</span>
+<span class="n">gdf</span> <span class="o">=</span> <span class="n">attach_neighbors</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">neighbors_dict</span><span class="o">=</span><span class="s2">&quot;neighborhood.json&quot;</span><span class="p">)</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Queen</code></td>
+<td>Standard CA — cells share an edge or vertex</td>
+</tr>
+<tr>
+<td><code>Rook</code></td>
+<td>Von Neumann-style — edge contact only</td>
+</tr>
+<tr>
+<td><code>KNN</code></td>
+<td>Point data, non-contiguous polygons</td>
+</tr>
+<tr>
+<td><code>neighbors_dict</code></td>
+<td>Precomputed — skip recomputation on repeated runs</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="vector/">Vector API Reference</a></li>
+<li><a href="raster/">Raster API Reference</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

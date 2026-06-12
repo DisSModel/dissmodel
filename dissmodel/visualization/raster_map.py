@@ -97,25 +97,7 @@ class RasterMap(Model):
     """
     Visualization model for RasterBackend.
 
-    Parameters
-    ----------
-    backend : RasterBackend
-    band : str
-        Array to visualize.
-    title : str
-        Figure title prefix. Default: ``"RasterMap"``.
-    figsize : tuple[int, int]
-        Default: ``(7, 7)``.
-    pause : bool
-        Use ``plt.pause()`` in interactive mode. Default: ``True``.
-    interval : float
-        Seconds between steps in interactive mode. Default: ``0.5``.
-    plot_area : st.empty() | None
-        Streamlit placeholder.
-    auto_mask : bool
-        Apply the backend's extent mask automatically so pixels outside
-        the study area are transparent. Default: ``True``.
-        Set to ``False`` to restore the pre-v2 behaviour.
+    See :meth:`setup` for the keyword arguments accepted by this component.
 
     Categorical mode  (``color_map`` provided)
     -------------------------------------------
@@ -179,6 +161,34 @@ class RasterMap(Model):
         mask_band:       str | None       = None,
         mask_value:      int | float | None = None,
     ) -> None:
+        """
+        Configure the raster map component.
+
+        Called automatically by ``Model.__init__`` with any keyword
+        arguments passed to the constructor. Mode-specific keywords
+        (categorical vs. continuous) are described in the class docstring.
+
+        Parameters
+        ----------
+        backend : RasterBackend
+            Backend whose arrays will be rendered.
+        band : str
+            Array to visualize.
+        title : str
+            Figure title prefix. Default: ``"RasterMap"``.
+        figsize : tuple[int, int]
+            Default: ``(7, 7)``.
+        pause : bool
+            Use ``plt.pause()`` in interactive mode. Default: ``True``.
+        interval : float
+            Seconds between steps in interactive mode. Default: ``0.5``.
+        plot_area : st.empty() | None
+            Streamlit placeholder.
+        auto_mask : bool
+            Apply the backend's extent mask automatically so pixels outside
+            the study area are transparent. Default: ``True``.
+            Set to ``False`` to restore the pre-v2 behaviour.
+        """
         self.backend        = backend
         self.band           = band
         self.title          = title

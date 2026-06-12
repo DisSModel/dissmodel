@@ -94,7 +94,7 @@ its positioning:
 | GIS Integration | TerraLib | Native Raster | GeoPandas / Rasterio |
 | Extensibility | Script-based | Block-based | Class Inheritance |
 | Reproducibility | Manual | Manual | Automated (ExperimentRecord) |
-| Anisotropy | GPM Support | Limited | GPM Support |
+| Neighborhoods | GPM Support | Limited | libpysal weights (Queen, Rook, KNN, custom) |
 
 While frameworks like **NetLogo** and **Mesa** are excellent for ABM, they often
 require significant boilerplate to handle real-world spatial projections. DisSModel
@@ -126,10 +126,8 @@ lifecycle — `validate`, `load`, `run`, `save` — that the framework orchestra
 `ExecutorRegistry` through Python's `__init_subclass__` mechanism, requiring no
 boilerplate. Every execution produces an `ExperimentRecord` Pydantic object capturing
 the input URI, SHA-256 checksum, resolved parameters, per-phase timing, output path,
-and free-form logs. Executors are distributed as standard Python packages and
-resolved at runtime from a TOML-based model registry, enabling institutional
-governance of calibrated model configurations through version-controlled pull
-requests.
+and free-form logs. Executors are distributed as standard Python packages, with run
+parameters resolved from a version-controllable TOML specification.
 
 **IO** provides a unified dataset abstraction (`load_dataset` / `save_dataset`) that
 detects format automatically and dispatches to the appropriate backend —
@@ -137,9 +135,10 @@ GeoDataFrame, rasterio GeoTIFF, or Xarray/Zarr — based on file extension or an
 explicit `fmt` argument. For cloud deployments, the same API resolves
 `s3://` URIs transparently via the configured MinIO/S3 client.
 
-**Visualization** integrates Matplotlib for static outputs, Streamlit for
-interactive dashboards, and `RasterMap` for step-by-step raster rendering in both
-headless and interactive modes.
+**Visualization** integrates Matplotlib for static outputs, Streamlit-compatible
+input widgets (interactive dashboards are provided by the satellite packages), and
+`RasterMap` for step-by-step raster rendering in both headless and interactive
+modes.
 
 The extensibility of DisSModel's class hierarchy has already produced domain
 packages distributed as independent Python packages through the DisSModel GitHub
@@ -235,7 +234,7 @@ The emergence of independent domain packages — `dissmodel-ca`, `dissmodel-sysd
 `DisSLUCC-Continuous`, and `coastal-dynamics` — without modifications to the core
 framework demonstrates that the `ModelExecutor` contract is stable and sufficient for
 real-world modeling requirements. This is further evidenced by the DisSModel
-Platform, a distributed execution environment currently under development that
+Platform, a separate distributed execution environment currently under development that
 already orchestrates both `DisSLUCC-Continuous` and `coastal-dynamics` in a shared
 test infrastructure, running each through the same job queue without any change to
 their scientific code. The platform validates the central design principle of

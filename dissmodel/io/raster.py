@@ -139,6 +139,13 @@ def save_geotiff(
         Affine geotransform. Overrides meta["transform"].
     compress : str
         Compression algorithm. Default: "deflate".
+
+    Notes
+    -----
+    GeoTIFF stores a single dtype per file. When band dtypes differ
+    (e.g. an int32 categorical band alongside a float32 continuous band),
+    all bands are promoted to their common NumPy result type
+    (``np.result_type``) before writing.
     """
     if not HAS_RASTERIO:
         raise ImportError("rasterio is required — pip install rasterio")
@@ -211,6 +218,15 @@ def _write_geotiff(
 
     if transform is None:
         transform = rasterio.transform.from_bounds(0, 0, cols, rows, cols, rows)
+
+    # GeoTIFF requires a single dtype for all bands. When bands have mixed
+    # dtypes (e.g. int32 categorical + float32 continuous), promote every
+    # band to the common NumPy result type instead of silently truncating
+    # to the first band's dtype.
+    dtypes = {arr.dtype for arr in arrays}
+    if len(dtypes) > 1:
+        common = np.result_type(*dtypes)
+        arrays = [arr.astype(common) for arr in arrays]
 
     with rasterio.open(
         path, "w",

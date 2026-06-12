@@ -6,6 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.1] — 2026-06-12
+
+### Fixed
+- GeoTIFF write with mixed-dtype `band_spec` (e.g. int32 categorical +
+  float32 continuous) silently truncated float bands to the first band's
+  dtype. Bands are now promoted to the common NumPy result type
+  (`np.result_type`) before writing.
+
+### Added
+- Test suites for `dissmodel.io` (utils, dispatch, storage, raster, vector,
+  convert, xarray) and `dissmodel.visualization` (chart, map, env detection).
+  Coverage: 55% → 79% (319 → 441 tests).
+
+### Notes
+- GeoTIFFs containing mixed-dtype bands saved with v0.6.0 may have truncated
+  float bands. Re-exporting those files is recommended.
+
+---
+
 ## [0.6.0] — 2026-06-11
 
 ### Breaking Changes

@@ -1,22 +1,28 @@
-# dissmodel/config.py
-from pydantic_settings import BaseSettings
+# dissmodel/executor/config.py
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 class Settings(BaseSettings):
     """
-    Configurações globais da plataforma.
-    O Pydantic lê automaticamente do arquivo .env ou das variáveis do sistema.
+    Global platform settings.
+
+    Pydantic reads values automatically from the .env file or from
+    system environment variables.
     """
-    # Valor padrão se nada for configurado
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        # Ignore variables in .env that are not defined in this class
+        extra="ignore",
+    )
+
+    # Default value when nothing is configured
     default_output_base: str = "./outputs"
-    
-    # Futuramente você pode colocar coisas aqui, como:
+
+    # Future settings can go here, e.g.:
     # redis_url: str = "redis://localhost:6379/0"
     # minio_endpoint: str = "localhost:9000"
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = 'utf-8'
-        # Ignora variáveis no .env que não estejam definidas na classe
-        extra = "ignore" 
 
 settings = Settings()

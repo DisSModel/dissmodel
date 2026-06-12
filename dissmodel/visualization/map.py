@@ -31,22 +31,7 @@ class Map(Model):
     """
     Simulation model that renders a live choropleth map of a GeoDataFrame.
 
-    Parameters
-    ----------
-    gdf : geopandas.GeoDataFrame
-        GeoDataFrame to render.
-    plot_params : dict
-        Keyword arguments forwarded to :meth:`GeoDataFrame.plot`.
-    figsize : tuple[int, int]
-        Figure size in inches. Default: ``(10, 6)``.
-    pause : bool
-        Call ``plt.pause()`` after each update in interactive mode.
-    interval : float
-        Seconds passed to ``plt.pause()``. Default: ``0.01``.
-    plot_area : st.empty() | None
-        Streamlit placeholder. Default: ``None``.
-    save_frames : bool
-        Save one PNG per step to ``map_frames/``. Default: ``False``.
+    See :meth:`setup` for the keyword arguments accepted by this component.
 
     Examples
     --------
@@ -73,6 +58,29 @@ class Map(Model):
         plot_area:   Any             = None,
         save_frames: bool            = False,
     ) -> None:
+        """
+        Configure the map component.
+
+        Called automatically by ``Model.__init__`` with any keyword
+        arguments passed to the constructor.
+
+        Parameters
+        ----------
+        gdf : geopandas.GeoDataFrame
+            GeoDataFrame to render.
+        plot_params : dict
+            Keyword arguments forwarded to :meth:`GeoDataFrame.plot`.
+        figsize : tuple[int, int]
+            Figure size in inches. Default: ``(10, 6)``.
+        pause : bool
+            Call ``plt.pause()`` after each update in interactive mode.
+        interval : float
+            Seconds passed to ``plt.pause()``. Default: ``0.01``.
+        plot_area : st.empty() | None
+            Streamlit placeholder. Default: ``None``.
+        save_frames : bool
+            Save one PNG per step to ``map_frames/``. Default: ``False``.
+        """
         self.gdf         = gdf
         self.plot_params = plot_params
         self.figsize     = figsize

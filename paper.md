@@ -69,9 +69,7 @@ DisSModel fulfils this need with a lightweight, purpose-built time-stepped
 scheduler coupled directly to vector and raster spatial state, providing a
 Pythonic implementation of the TerraME
 paradigm, democratising access to complex modeling for territorial planners and
-environmental scientists. It offers native support for hybrid data
-types — Geo-fields and Geo-objects — allowing for simulations that remain
-interoperable with modern machine learning and GIS workflows.
+environmental scientists.
 
 Beyond simulation execution, reproducibility is a first-class concern in DisSModel.
 The `executor` module provides a standardised lifecycle — `validate → load → run → save`
@@ -94,7 +92,7 @@ its positioning:
 | GIS Integration | TerraLib | Native Raster | GeoPandas / Rasterio |
 | Extensibility | Script-based | Block-based | Class Inheritance |
 | Reproducibility | Manual | Manual | Automated (ExperimentRecord) |
-| Anisotropy | GPM Support | Limited | GPM Support |
+| Neighborhoods | GPM Support | Limited | libpysal weights (Queen, Rook, KNN, custom) |
 
 While frameworks like **NetLogo** and **Mesa** are excellent for ABM, they often
 require significant boilerplate to handle real-world spatial projections. DisSModel
@@ -126,10 +124,8 @@ lifecycle — `validate`, `load`, `run`, `save` — that the framework orchestra
 `ExecutorRegistry` through Python's `__init_subclass__` mechanism, requiring no
 boilerplate. Every execution produces an `ExperimentRecord` Pydantic object capturing
 the input URI, SHA-256 checksum, resolved parameters, per-phase timing, output path,
-and free-form logs. Executors are distributed as standard Python packages and
-resolved at runtime from a TOML-based model registry, enabling institutional
-governance of calibrated model configurations through version-controlled pull
-requests.
+and free-form logs. Executors are distributed as standard Python packages, with run
+parameters resolved from a version-controllable TOML specification.
 
 **IO** provides a unified dataset abstraction (`load_dataset` / `save_dataset`) that
 detects format automatically and dispatches to the appropriate backend —
@@ -137,9 +133,10 @@ GeoDataFrame, rasterio GeoTIFF, or Xarray/Zarr — based on file extension or an
 explicit `fmt` argument. For cloud deployments, the same API resolves
 `s3://` URIs transparently via the configured MinIO/S3 client.
 
-**Visualization** integrates Matplotlib for static outputs, Streamlit for
-interactive dashboards, and `RasterMap` for step-by-step raster rendering in both
-headless and interactive modes.
+**Visualization** integrates Matplotlib for static outputs, Streamlit-compatible
+input widgets (interactive dashboards are provided by the satellite packages), and
+`RasterMap` for step-by-step raster rendering in both headless and interactive
+modes.
 
 The extensibility of DisSModel's class hierarchy has already produced domain
 packages distributed as independent Python packages through the DisSModel GitHub
@@ -150,11 +147,9 @@ first-class DisSModel components. `DisSLUCC-Continuous` [@DisSLUCCContinuous]
 implements the continuous LUCC modeling components of the LUCCME framework — Demand,
 Potential, and Allocation — following the three-pillar architecture proposed by
 @Veldkamp1996 and @Verburg2004, on both vector and raster substrates and following
-the same `ModelExecutor` contract. This last package establishes an explicit Python
-counterpart to the original TerraME/LUCCME stack, where DisSModel occupies the role
-of TerraME and DisSLUCC-Continuous occupies the role of LUCCME. All three packages
-serve as reference implementations for researchers building their own domain
-extensions.
+the same `ModelExecutor` contract — an explicit Python counterpart to the original
+TerraME/LUCCME stack. All three packages serve as reference implementations for
+researchers building their own domain extensions.
 
 ## Performance
 
@@ -168,38 +163,46 @@ while throughput scales differently:
 
 | Grid | Cells | Raster (ms/step) | Vector (ms/step) | Speedup |
 |-----:|------:|-----------------:|-----------------:|--------:|
-| 10×10 | 100 | 0.15 | 30.11 | 206× |
-| 50×50 | 2,500 | 0.20 | 647.22 | 3,164× |
-| 100×100 | 10,000 | 0.60 | 2,715.16 | 4,491× |
-| 500×500 | 250,000 | 15.36 | — | — |
-| 1,000×1,000 | 1,000,000 | 25.85 | — | — |
+| 10×10 | 100 | 0.17 | 71.63 | 431× |
+| 50×50 | 2,500 | 0.20 | 2,273.33 | 11,278× |
+| 100×100 | 10,000 | 0.35 | 6,973.62 | 19,799× |
+| 500×500 | 250,000 | 9.67 | — | — |
+| 1,000×1,000 | 1,000,000 | 27.32 | — | — |
 
-The raster substrate processes grids of one million cells in approximately 26 ms per
+The raster substrate processes grids of one million cells in approximately 27 ms per
 step.
 
 **Domain validation — BR-MANGUE coastal dynamics model.** The conceptual foundation
 for coupled mangrove-flood modeling in Brazilian coastal zones was established by
 Bezerra et al. [@Bezerra2013], who discussed the integration of remote sensing and
 computational models to assess sea-level rise impacts on mangrove ecosystems. Building
-on this framework, the `coastal-dynamics` package [@CoastalDynamics] implements
-coupled flood and mangrove succession models over the same spatial domain on both
-substrates. Outputs are categorical land-use and soil classes; match percentage is
-therefore the appropriate primary metric [@Pontius2008]. Running 20 simulation steps
-over a 60×60 synthetic grid (3,600 cells, EPSG:31984) produces the following results:
+on this framework, the `brmangue-dissmodel` package [@BRMangue] implements the
+BR-MANGUE coupled flood and mangrove succession models on both substrates and
+validates them at two levels.
+
+First, the raster implementation is validated against the original TerraME
+implementation over the Maranhão Island dataset (50,496 cells, 20 steps). Outputs
+are categorical land-use and soil classes; match percentage is therefore the
+appropriate primary metric [@Pontius2008]. At the final step, land use matches on
+99.90% of cells and soil on 99.85%; elevation, compared under a strict 1 mm
+tolerance, matches on 90.67% of cells with a mean absolute divergence of 0.0033 m.
+
+Second, cross-substrate equivalence between the vector and raster implementations
+is checked over a 60×60 synthetic grid (3,600 cells, EPSG:31984), running 10
+simulation steps:
 
 | Band | Match % | MAE | RMSE | Max Error | Cells |
 |------|--------:|----:|-----:|----------:|------:|
 | uso (land use) | 100.00% | 0.000000 | 0.000000 | 0.000000 | 3,600 |
 | solo (soil)    | 100.00% | 0.000000 | 0.000000 | 0.000000 | 3,600 |
-| alt (elevation)| 99.92%  | 0.003086 | 0.008362 | 0.072591  | 3,600 |
+| alt (elevation)| 100.00% | 0.000959 | 0.002793 | 0.023864 | 3,600 |
 
-The raster substrate ran at 2.4 ms/step against 70.9 ms/step for the vector
-substrate (29.7× speedup). The minor divergence in the elevation band (0.08% of
-cells) reflects expected floating-point rounding differences between GeoDataFrame
-and NumPy computation paths, not algorithmic disagreement. The `ExperimentRecord`
-generated by this run captured the full execution provenance automatically:
-load phase 2.898 s (49.4%), run phase 2.972 s (50.6%), input SHA-256 checksum,
-and artifact paths — with zero additional instrumentation by the modeller.
+The raster substrate ran at 5.0 ms/step against 124.4 ms/step for the vector
+substrate (24.9× speedup). The residual elevation divergence (max 0.024 m, within
+the 0.05 m tolerance) reflects expected floating-point rounding differences between
+GeoDataFrame and NumPy computation paths, not algorithmic disagreement. Each run
+automatically produced an `ExperimentRecord` with per-phase timings, input SHA-256
+checksum, and artifact paths — no additional instrumentation by the modeller.
 
 **Domain validation — DisSLUCC-Continuous LUCC model.** The `DisSLUCC-Continuous`
 package implements the continuous CLUE-like allocation algorithm [@Veldkamp1996],
@@ -232,11 +235,11 @@ group (UFMA), supporting studies on mangrove ecosystem dynamics and land-use cha
 building upon established spatial modeling practices [@Verburg2004; @SantosJunior2025].
 
 The emergence of independent domain packages — `dissmodel-ca`, `dissmodel-sysdyn`,
-`DisSLUCC-Continuous`, and `coastal-dynamics` — without modifications to the core
+`DisSLUCC-Continuous`, and `brmangue-dissmodel` — without modifications to the core
 framework demonstrates that the `ModelExecutor` contract is stable and sufficient for
 real-world modeling requirements. This is further evidenced by the DisSModel
-Platform, a distributed execution environment currently under development that
-already orchestrates both `DisSLUCC-Continuous` and `coastal-dynamics` in a shared
+Platform, a separate distributed execution environment currently under development that
+already orchestrates both `DisSLUCC-Continuous` and `brmangue-dissmodel` in a shared
 test infrastructure, running each through the same job queue without any change to
 their scientific code. The platform validates the central design principle of
 DisSModel: that simulation science should not need to be rewritten to run in

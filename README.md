@@ -44,7 +44,7 @@ DisSModel is the synthesis: a Python-native, FAIR-aligned, cloud-ready simulatio
 |--------------------------|---------------------|------|
 | **TerraME** | `dissmodel` | Generic framework for dynamic spatial modeling |
 | **LUCCME** | `DisSLUCC` | LUCC domain models built on dissmodel |
-| — | `coastal-dynamics` | Coastal domain models built on dissmodel |
+| — | `brmangue-dissmodel` | Coastal domain models (BR-MANGUE) built on dissmodel |
 | **TerraLib** | `geopandas` / `rasterio` | Geographic data handling |
 
 ---
@@ -56,7 +56,7 @@ DisSModel is the synthesis: a Python-native, FAIR-aligned, cloud-ready simulatio
 - **Executor pattern** — strict separation between science (models) and infrastructure (I/O, CLI, reproducible execution).
 - **Experiment tracking** — every run generates an immutable `ExperimentRecord` with SHA-256 checksums, TOML snapshot, and full provenance.
 - **Storage-agnostic I/O** — `dissmodel.io` handles local paths and `s3://` URIs transparently.
-- **Cloud-ready** — deploy via Docker, FastAPI, and Redis without changing model code.
+- **Platform-ready contract** — the `ModelExecutor` interface is designed so the same model code can later run on the [DisSModel Platform](#-roadmap-dissmodel-platform), a separate project under development.
 
 ---
 
@@ -189,12 +189,9 @@ Every run produces an immutable provenance record:
 }
 ```
 
-Reproduce any past experiment exactly:
-
-```bash
-curl -X POST http://localhost:8000/experiments/abc123/reproduce \
-  -H "X-API-Key: chave-sergio"
-```
+The `record.json` written next to every output contains everything needed to
+re-run the experiment: the input URI and its SHA-256 checksum, the resolved
+parameters (TOML + CLI overrides), per-phase timings, and the output checksum.
 
 ---
 
@@ -223,7 +220,7 @@ DisSModel is a core framework. To maintain a clean and specialized environment, 
 |------------|-------------|---------|
 | [`dissmodel-ca`](https://github.com/DisSModel/dissmodel-ca) | Classic Cellular Automata (Game of Life, Forest Fire, Growth) | `pip install "git+https://github.com/DisSModel/dissmodel-ca.git"` |
 | [`dissmodel-sysdyn`](https://github.com/DisSModel/dissmodel-sysdyn) | System Dynamics (SIR, Predator-Prey, Lorenz) | `pip install "git+https://github.com/DisSModel/dissmodel-sysdyn.git"` |
-| [`coastal-dynamics`](https://github.com/DisSModel/coastal-dynamics) | Coastal flooding and mangrove succession models | `pip install "git+https://github.com/DisSModel/coastal-dynamics.git"` |
+| [`brmangue-dissmodel`](https://github.com/DisSModel/brmangue-dissmodel) | BR-MANGUE coastal flooding and mangrove succession model (raster + vector, validated against TerraME) | `pip install "git+https://github.com/DisSModel/brmangue-dissmodel.git"` |
 | [`disslucc-continuous`](https://github.com/DisSModel/disslucc-continuous) | Land Use and Cover Change models, continuous allocation (CLUE-inspired) | `pip install "git+https://github.com/DisSModel/disslucc-continuous.git"` |
 | [`disslucc-discrete`](https://github.com/DisSModel/disslucc-discrete) | Land Use and Cover Change models, discrete allocation (CLUE-inspired) | `pip install "git+https://github.com/DisSModel/disslucc-discrete.git"` |
 
@@ -233,6 +230,19 @@ Each repository demonstrates how to:
 1. **Define a Model**: Using `SpatialModel` and `Environment`.
 2. **Wrap an Executor**: Using `ModelExecutor` for I/O and provenance.
 3. **Deploy**: Running via CLI or API.
+
+---
+
+## 🔭 Roadmap: DisSModel Platform
+
+The **DisSModel Platform** is a distributed execution environment (FastAPI,
+Redis, Docker, MinIO/S3) currently under development as a **separate project**.
+It consumes the same `ModelExecutor` contract documented above — executors run
+through its job queue without any change to their scientific code, including
+remote experiment reproduction from a stored `ExperimentRecord`.
+
+**The platform is not part of this package.** Everything described in this
+README works locally with `pip install dissmodel` alone.
 
 ---
 

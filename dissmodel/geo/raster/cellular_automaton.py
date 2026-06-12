@@ -81,15 +81,7 @@ class RasterCellularAutomaton(RasterModel, ABC):
     vectorized transition rule — ``rule()`` receives all arrays as a
     snapshot and returns a dict of updated arrays.
 
-    Parameters
-    ----------
-    backend : RasterBackend
-        Shared backend with the simulation arrays.
-    state_attr : str, optional
-        Primary state array name, by default ``"state"``.
-        Used only for introspection/logging — rule() can update any array.
-    **kwargs :
-        Extra keyword arguments forwarded to RasterModel.
+    See :meth:`setup` for the keyword arguments accepted by this class.
 
     Examples
     --------
@@ -108,6 +100,20 @@ class RasterCellularAutomaton(RasterModel, ABC):
         backend:    RasterBackend,
         state_attr: str = "state"
     ) -> None:
+        """
+        Configure the cellular automaton.
+
+        Called automatically by ``Model.__init__`` with any keyword
+        arguments passed to the constructor.
+
+        Parameters
+        ----------
+        backend : RasterBackend
+            Shared backend with the simulation arrays.
+        state_attr : str, optional
+            Primary state array name, by default ``"state"``.
+            Used only for introspection/logging — rule() can update any array.
+        """
         super().setup(backend)
         self.state_attr = state_attr
 

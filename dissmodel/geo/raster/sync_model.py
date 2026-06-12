@@ -69,12 +69,9 @@ class SyncRasterModel(RasterModel):
     ``SyncRasterModel`` will manage all ``<name>_past`` arrays automatically.
     Subclasses must **not** create or update ``_past`` arrays manually.
 
-    Parameters
-    ----------
-    backend : RasterBackend
-        Passed through to :class:`~dissmodel.geo.raster.model.RasterModel`.
-    **kwargs
-        Any additional keyword arguments accepted by the parent class.
+    The ``backend`` argument is passed through to
+    :class:`~dissmodel.geo.raster.model.RasterModel`; any additional keyword
+    arguments are forwarded to the parent class.
 
     Examples
     --------

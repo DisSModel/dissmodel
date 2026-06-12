@@ -73,24 +73,7 @@ class Chart(Model):
     - **Colab**     — detected automatically via :func:`is_notebook`.
     - **Matplotlib window** — fallback for plain Python scripts.
 
-    Parameters
-    ----------
-    select : list of str, optional
-        Subset of labels to plot. If ``None``, all tracked variables are shown.
-    pause : bool, optional
-        If ``True``, call ``plt.pause()`` after each update, by default ``True``.
-        Required for live updates outside notebooks.
-    plot_area : any, optional
-        Streamlit ``st.empty()`` placeholder, by default ``None``.
-    show_legend : bool, optional
-        Whether to display the plot legend, by default ``True``.
-    show_grid : bool, optional
-        Whether to display the plot grid, by default ``False``.
-    title : str, optional
-        Chart title, by default ``"Variable History"``.
-    save_frames : bool, optional
-        Save one PNG per step to ``chart_frames/`` in headless mode.
-        Default: ``False``.
+    See :meth:`setup` for the keyword arguments accepted by this component.
 
     Examples
     --------
@@ -128,6 +111,31 @@ class Chart(Model):
         title: str = "Variable History",
         save_frames: bool = False,
     ) -> None:
+        """
+        Configure the chart component.
+
+        Called automatically by ``Model.__init__`` with any keyword
+        arguments passed to the constructor.
+
+        Parameters
+        ----------
+        select : list of str, optional
+            Subset of labels to plot. If ``None``, all tracked variables are shown.
+        pause : bool, optional
+            If ``True``, call ``plt.pause()`` after each update, by default ``True``.
+            Required for live updates outside notebooks.
+        plot_area : any, optional
+            Streamlit ``st.empty()`` placeholder, by default ``None``.
+        show_legend : bool, optional
+            Whether to display the plot legend, by default ``True``.
+        show_grid : bool, optional
+            Whether to display the plot grid, by default ``False``.
+        title : str, optional
+            Chart title, by default ``"Variable History"``.
+        save_frames : bool, optional
+            Save one PNG per step to ``chart_frames/`` in headless mode.
+            Default: ``False``.
+        """
         self.select      = select
         self.interval    = 1
         self.time_points = []

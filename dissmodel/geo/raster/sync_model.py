@@ -120,8 +120,16 @@ class SyncRasterModel(RasterModel):
 
         Does nothing if ``land_use_types`` has not been set yet (safe to
         call before ``setup()`` completes).
+
+        If a state variable was loaded from a temporal catalog entry (shape
+        ``(time, y, x)``), the first slice is used as the initial state.
+        After the first step the model always writes back 2D arrays, so
+        subsequent snapshots are 2D unconditionally.
         """
         if not hasattr(self, "land_use_types"):
             return
         for name in self.land_use_types:
-            self.backend.set(name + "_past", self.backend.get(name).copy())
+            arr = self.backend.get(name)
+            if arr.ndim > 2:
+                arr = arr[0]
+            self.backend.set(name + "_past", arr.copy())

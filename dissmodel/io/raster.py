@@ -209,6 +209,8 @@ def _write_geotiff(
                 name,
                 np.full((rows, cols), nodata, dtype=dtype),
             )
+            if np.issubdtype(np.dtype(dtype), np.integer):
+                arr = np.where(np.isfinite(arr), arr, nodata)
             arrays.append(arr.astype(dtype))
         names = [name for name, _, _ in band_spec]
     else:

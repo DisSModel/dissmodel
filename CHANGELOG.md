@@ -6,6 +6,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.2] — 2026-06-15
+
+### Fixed
+- `SyncRasterModel.synchronize()`: state variables loaded as temporal
+  `(time, y, x)` arrays (e.g. when `CubeClient.to_lucc_data()` finds
+  temporal catalog entries) now correctly use the first slice as the
+  initial `_past` snapshot instead of copying the full 3D array, which
+  caused `shift2d` to crash with `ValueError: too many values to unpack`.
+- `_write_geotiff`: casting a float array containing NaN to an integer
+  `dtype` (e.g. `int16`) now fills NaN/inf with the band's `nodata` value
+  before the cast, eliminating a `RuntimeWarning: invalid value encountered
+  in cast`.
+
+---
+
 ## [0.6.1] — 2026-06-12
 
 ### Fixed

@@ -229,25 +229,62 @@ introduces no algorithmic divergence.
 
 DisSModel provides a critical bridge for the environmental modeling community. By
 providing a Pythonic interface for complex spatial dynamics, it lowers the barrier
-for scientists to move from static GIS analysis to dynamic simulations. The
-framework has already been instrumental in academic research at the **LambdaGeo**
-group (UFMA), supporting studies on mangrove ecosystem dynamics and land-use change,
-building upon established spatial modeling practices [@Verburg2004; @SantosJunior2025].
+for scientists to move from static GIS analysis to dynamic simulations.
+
+The framework's scientific lineage is directly rooted in the TerraME/LuccME
+research program at INPE. The submitting author conducted doctoral research at INPE
+under the supervision of Prof. Gilberto Câmara and Dr. Ana Paula Dutra Aguiar —
+two of the principal architects of the TerraME/LuccME toolchain — and has
+co-authored LuccME since at least 2009. DisSModel is the direct Python-native
+successor to that work, implementing the same modeling contract in the modern
+geospatial Python ecosystem. On 7 May 2026, DisSModel was presented at the formal
+seminar series of INPE's Graduate Program in Applied Computing (CAP/INPE), titled
+*"Construindo simulações geoespaciais abertas e reprodutíveis com Python"*
+(recording available at: https://youtu.be/o7pMJt0CvXU), connecting the framework
+directly to the institutional community that maintains TerraME and LuccME.
+
+The framework is currently in active use across two research groups at UFMA.
+Within the LambdaGeo group, graduate students are developing the `disslucc-continuous`
+and `brmangue-dissmodel` satellite packages as part of their Master's research.
+Independently, Prof. Denilson da Silva Bezerra (UFMA, former INPE researcher),
+whose doctoral work established the scientific foundation of the BR-MANGUE model
+[@Bezerra2013], is actively using the DisSModel reimplementation in his ongoing
+coastal dynamics research program (PVCBS4959-2025, PVCBS4960-2025;
+https://sigaa.ufma.br/sigaa/public/docente/pesquisa.jsf?siape=1763530). This
+collaboration predates DisSModel itself: Denilson and the submitting author, along
+with Felipe Martins Sousa, are co-authors on a 2025 study extending this line of
+research to the Baixada Maranhense [@Bezerra2025BM], reflecting an established
+scientific partnership now being carried forward into the Python ecosystem.
+
+Starting August 2026, the project will receive its first cohort of undergraduate
+research fellows funded through PIBIC (Programa Institucional de Bolsas de
+Iniciação Científica), Brazil's national undergraduate research scholarship program
+administered by CNPq, under the approved institutional research project
+PVCET5136-2026 at UFMA. This will expand active contributors beyond the current
+graduate student group and accelerate the completion of the satellite packages.
+
+Since the original submission, development has continued with `disslucc-discrete`
+[@DisSLUCCDiscrete], a CLUE-S-like discrete allocation package using logistic
+regression for potential estimation — the discrete counterpart to
+`DisSLUCC-Continuous`'s CLUE-like continuous allocation. An initial version has
+been validated against the Lab6 reference case study distributed with the original
+TerraME/LuccME repository, following the same validation methodology applied to
+`DisSLUCC-Continuous`. This demonstrates that the `ModelExecutor` contract
+generalizes across both continuous and discrete LUCC allocation paradigms, each
+implemented as an independent package without changes to the DisSModel core.
 
 The emergence of independent domain packages — `dissmodel-ca`, `dissmodel-sysdyn`,
-`DisSLUCC-Continuous`, and `brmangue-dissmodel` — without modifications to the core
-framework demonstrates that the `ModelExecutor` contract is stable and sufficient for
-real-world modeling requirements. This is further evidenced by the DisSModel
-Platform, a separate distributed execution environment currently under development that
-already orchestrates both `DisSLUCC-Continuous` and `brmangue-dissmodel` in a shared
-test infrastructure, running each through the same job queue without any change to
-their scientific code. The platform validates the central design principle of
-DisSModel: that simulation science should not need to be rewritten to run in
-production.
+`DisSLUCC-Continuous`, `disslucc-discrete`, and `brmangue-dissmodel` — without
+modifications to the core framework demonstrates that the `ModelExecutor` contract
+is stable and sufficient for real-world modeling requirements. Studies such as
+@Bezerra2022, originally developed using the LuccME framework, represent the class
+of regional spatially-explicit LUCC models that the DisSLUCC packages are designed
+to reproduce and extend within the Python ecosystem. This architecture positions
+DisSModel as the simulation layer in the Brazilian Earth Observation stack —
+complementary to SITS [@Simoes2021] for present-state land classification and the
+Brazil Data Cube [@Ferreira2020] for satellite data access. 
 
-This architecture positions DisSModel as the simulation layer in the Brazilian Earth
-Observation stack — complementary to SITS [@Simoes2021] for present-state land
-classification and the Brazil Data Cube [@Ferreira2020] for satellite data access.
+
 
 ## AI Usage Disclosure
 

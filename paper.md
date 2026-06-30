@@ -24,7 +24,6 @@ authors:
     affiliation: "1"
     orcid: 0000-0002-9567-7828
 
-
 affiliations:
   - name: Universidade Federal do Maranhão (UFMA)
     index: "1"
@@ -37,52 +36,52 @@ bibliography: paper.bib
 
 ## Summary
 
-DisSModel (Discrete Spatial Modeling) is a modular Python framework designed for
-spatially explicit dynamic modeling, specifically targeting the complexities of
-Land Use and Land Cover Change (LUCC). Developed to bridge the gap between static
-geospatial analysis and high-level dynamic simulations, DisSModel translates the
-modeling paradigms of the TerraME framework [@Carneiro2013] into the Python
-ecosystem. It enables researchers to simulate complex socio-environmental
-systems — including forest fires, epidemiological spreads, and coastal dynamics —
-by coupling a time-stepped simulation clock with the spatial data structures of
-GeoPandas [@Jordahl2021].
+DisSModel (Discrete Spatial Modeling) is a modular Python framework for spatially
+explicit dynamic modeling, targeting the complexities of Land Use and Land Cover
+Change (LUCC). It translates the modeling paradigms of the TerraME framework
+[@Carneiro2013] into the Python ecosystem, enabling researchers to simulate
+complex socio-environmental systems — forest fires, epidemiological spreads,
+coastal dynamics — by coupling a time-stepped simulation clock with the spatial
+data structures of GeoPandas [@Jordahl2021].
 
-The framework provides a **dual-substrate architecture**: a vector substrate backed
-by GeoDataFrame for flexibility and spatial expressiveness, and a raster substrate
-backed by NumPy 2D arrays for high-performance vectorised computation. DisSModel is
+The framework provides a **dual-substrate architecture**: a vector substrate
+backed by GeoDataFrame for spatial expressiveness, and a raster substrate backed
+by NumPy 2D arrays for high-performance vectorised computation. DisSModel is
 available through the DisSModel GitHub organisation and on PyPI.
 
 ## Statement of Need
 
-In the Geographic Information Systems (GIS) landscape, Python has become the lingua
-franca for data science, supported by libraries such as GeoPandas for vector
-manipulation and PySAL for spatial statistics. However, these tools are primarily
-designed for static analysis. Dynamic spatial modeling — simulating how landscapes
-evolve over time — has historically required specialised platforms like TerraME
-[@Carneiro2013] or Dinamica EGO.
+Python has become the lingua franca for geospatial data science, supported by
+libraries such as GeoPandas and PySAL. However, these tools are designed for
+static analysis. Dynamic spatial modeling — simulating how landscapes evolve over
+time — has historically required specialised platforms. In Brazil, TerraME
+[@Carneiro2013] and Dinamica EGO are the most widely adopted general-purpose
+frameworks, while institutions elsewhere often rely on narrower, more specific
+allocation models such as CLUE and CLUE-S [@Veldkamp1996]. This fragmentation
+leaves researchers choosing between a general-purpose Lua-based toolchain and
+single-purpose implementations with no shared contract between them.
 
-While TerraME is conceptually robust, the requirement for Lua scripting creates a
-barrier for data scientists already invested in the Python ecosystem. Furthermore,
-general-purpose simulation libraries lack native "glue code" to synchronise a
-time-stepped simulation clock with the geographical state of a GeoDataFrame.
-DisSModel fulfils this need with a lightweight, purpose-built time-stepped
+While TerraME is conceptually robust, its reliance on Lua scripting — a language
+with substantially smaller adoption in the data science ecosystem than Python —
+creates a barrier for data scientists, and the framework itself has seen no new
+release since August 2020. General-purpose simulation libraries, meanwhile, lack
+native synchronisation between a time-stepped clock and the geographical state of
+a GeoDataFrame. DisSModel fills this gap with a lightweight, purpose-built
 scheduler coupled directly to vector and raster spatial state, providing a
-Pythonic implementation of the TerraME
-paradigm, democratising access to complex modeling for territorial planners and
-environmental scientists.
+Pythonic, actively maintained implementation of the TerraME paradigm — and,
+through its satellite packages, of specific allocation models like CLUE and
+CLUE-S as well.
 
-Beyond simulation execution, reproducibility is a first-class concern in DisSModel.
-The `executor` module provides a standardised lifecycle — `validate → load → run → save`
-— that captures provenance metadata (input checksums, parameters, timing, output
-paths) in an `ExperimentRecord` object automatically generated for every run. This
-design ensures that results produced locally or via CLI are fully traceable without
+Reproducibility is a first-class concern: the `executor` module provides a
+standardised lifecycle — `validate → load → run → save` — that captures
+provenance metadata (input checksums, parameters, timing, output paths) in an
+`ExperimentRecord` object generated automatically for every run, with no
 additional instrumentation by the modeller.
 
 ## State of the Field
 
-DisSModel occupies a unique niche between general-purpose agent-based modeling (ABM)
-libraries and specialised GIS simulation software. The following table highlights
-its positioning:
+DisSModel occupies a niche between general-purpose agent-based modeling (ABM)
+libraries and specialised GIS simulation software:
 
 | Aspect | TerraME | Dinamica EGO | DisSModel |
 |--------|---------|--------------|-----------|
@@ -94,166 +93,163 @@ its positioning:
 | Reproducibility | Manual | Manual | Automated (ExperimentRecord) |
 | Neighborhoods | GPM Support | Limited | libpysal weights (Queen, Rook, KNN, custom) |
 
-While frameworks like **NetLogo** and **Mesa** are excellent for ABM, they often
-require significant boilerplate to handle real-world spatial projections. DisSModel
-simplifies this by using GeoPandas as its core engine, following the discrete
-spatial modeling approach proposed by @SantosJunior2025.
+Frameworks like NetLogo and Mesa are excellent for ABM but require boilerplate to
+handle real-world spatial projections. DisSModel uses GeoPandas as its core
+engine, following the discrete spatial modeling approach proposed by
+@SantosJunior2025.
 
 ## Software Design
 
-DisSModel is organised into five modules, following a strict separation of concerns
-that allows researchers to extend the framework through class inheritance.
+DisSModel is organised into five modules with strict separation of concerns,
+extensible through class inheritance. **Core** manages the simulation clock: the
+`Environment` class orchestrates time progression, and spatial models auto-register
+at instantiation, receiving clock ticks through `setup / pre_execute / execute /
+post_execute` hooks. **Geo** provides the dual-substrate design: a vector
+substrate (`SpatialModel`, `CellularAutomaton`) on GeoDataFrame with libpysal
+neighbourhoods [@Rey2021], and a raster substrate (`RasterModel`,
+`RasterCellularAutomaton`) on NumPy arrays with vectorised operations (`shift2d`,
+`focal_sum`, `neighbor_contact`) replacing cell-by-cell loops. **Executor** defines
+the `ModelExecutor` four-phase lifecycle (`validate`, `load`, `run`, `save`);
+subclasses self-register via `__init_subclass__`, and every run produces an
+`ExperimentRecord` capturing input checksum, parameters, timing, and output paths.
+**IO** provides a unified dataset abstraction (`load_dataset` / `save_dataset`)
+across GeoDataFrame, GeoTIFF, and Xarray/Zarr, including transparent `s3://`
+resolution. **Visualization** integrates Matplotlib, Streamlit-compatible input
+widgets, and `RasterMap` for raster rendering.
 
-**Core** manages the simulation clock and time-stepped execution. The `Environment`
-class orchestrates time progression via a lightweight pure-Python scheduler, and all
-spatial models auto-register at instantiation, receiving clock ticks automatically
-through `setup / pre_execute / execute / post_execute` lifecycle hooks.
-
-**Geo** manages spatial representations through a dual-substrate design. The vector
-substrate (`vector_grid`, `SpatialModel`, `CellularAutomaton`) operates on
-GeoDataFrame structures with libpysal neighbourhoods [@Rey2021]. The raster
-substrate (`raster_grid`, `RasterModel`, `RasterCellularAutomaton`) operates on
-named NumPy arrays via `RasterBackend`, enabling fully vectorised spatial
-operations — `shift2d`, `focal_sum`, and `neighbor_contact` — that replace
-cell-by-cell iteration loops.
-
-**Executor** provides the standardised interface for packaging, deploying, and
-reproducing simulations. The `ModelExecutor` abstract base class defines a four-phase
-lifecycle — `validate`, `load`, `run`, `save` — that the framework orchestrates via
-`execute_lifecycle`. Subclasses register themselves automatically in
-`ExecutorRegistry` through Python's `__init_subclass__` mechanism, requiring no
-boilerplate. Every execution produces an `ExperimentRecord` Pydantic object capturing
-the input URI, SHA-256 checksum, resolved parameters, per-phase timing, output path,
-and free-form logs. Executors are distributed as standard Python packages, with run
-parameters resolved from a version-controllable TOML specification.
-
-**IO** provides a unified dataset abstraction (`load_dataset` / `save_dataset`) that
-detects format automatically and dispatches to the appropriate backend —
-GeoDataFrame, rasterio GeoTIFF, or Xarray/Zarr — based on file extension or an
-explicit `fmt` argument. For cloud deployments, the same API resolves
-`s3://` URIs transparently via the configured MinIO/S3 client.
-
-**Visualization** integrates Matplotlib for static outputs, Streamlit-compatible
-input widgets (interactive dashboards are provided by the satellite packages), and
-`RasterMap` for step-by-step raster rendering in both headless and interactive
-modes.
-
-The extensibility of DisSModel's class hierarchy has already produced domain
-packages distributed as independent Python packages through the DisSModel GitHub
-organisation. `dissmodel-ca` [@DisSModelCA] provides
-ready-to-use Cellular Automata patterns built on `RasterCellularAutomaton`.
-`dissmodel-sysdyn` [@DisSModelSysDyn] adds System Dynamics compartmental models as
-first-class DisSModel components. `DisSLUCC-Continuous` [@DisSLUCCContinuous]
-implements the continuous LUCC modeling components of the LUCCME framework — Demand,
-Potential, and Allocation — following the three-pillar architecture proposed by
-@Veldkamp1996 and @Verburg2004, on both vector and raster substrates and following
-the same `ModelExecutor` contract — an explicit Python counterpart to the original
-TerraME/LUCCME stack. All three packages serve as reference implementations for
-researchers building their own domain extensions.
+This extensibility has already produced independent domain packages:
+`dissmodel-ca` [@DisSModelCA] (Cellular Automata patterns), `dissmodel-sysdyn`
+[@DisSModelSysDyn] (System Dynamics components), and `DisSLUCC-Continuous`
+[@DisSLUCCContinuous], which implements the continuous LUCC modeling components of
+LUCCME — Demand, Potential, and Allocation [@Veldkamp1996; @Verburg2004] — on both
+substrates and the same `ModelExecutor` contract, an explicit Python counterpart
+to TerraME/LUCCME.
 
 ## Performance
 
-The dual-substrate design exposes a fundamental performance trade-off. The vector
-substrate offers spatial expressiveness and direct integration with GIS workflows,
-while the raster substrate achieves high throughput through NumPy vectorisation.
+The vector substrate offers spatial expressiveness; the raster substrate achieves
+high throughput via NumPy vectorisation. All benchmarks were run on an Intel Core
+i7-7700T CPU @ 2.90GHz, 15 GB RAM (Ubuntu, Python 3.12.3, NumPy 2.4.6, GeoPandas
+1.1.3); absolute timings vary by hardware, but the relative speedup pattern is the
+result of interest.
 
-**Synthetic benchmark — Conway's Game of Life.** Running identical rules on both
-substrates confirms that mathematical equivalence is preserved across substrates
-while throughput scales differently:
+**Conway's Game of Life** confirms mathematical equivalence across substrates with
+different throughput:
 
 | Grid | Cells | Raster (ms/step) | Vector (ms/step) | Speedup |
 |-----:|------:|-----------------:|-----------------:|--------:|
-| 10×10 | 100 | 0.17 | 71.63 | 431× |
-| 50×50 | 2,500 | 0.20 | 2,273.33 | 11,278× |
-| 100×100 | 10,000 | 0.35 | 6,973.62 | 19,799× |
-| 500×500 | 250,000 | 9.67 | — | — |
-| 1,000×1,000 | 1,000,000 | 27.32 | — | — |
+| 10×10 | 100 | 0.12 | 74.81 | 639× |
+| 50×50 | 2,500 | 0.19 | 1,707.76 | 8,809× |
+| 100×100 | 10,000 | 0.41 | 7,069.14 | 17,394× |
+| 200×200 | 40,000 | 1.21 | — | — |
+| 500×500 | 250,000 | 9.74 | — | — |
+| 1,000×1,000 | 1,000,000 | 30.60 | — | — |
 
-The raster substrate processes grids of one million cells in approximately 27 ms per
-step.
+**BR-MANGUE coastal dynamics.** The foundation for coupled mangrove-flood modeling
+was established by Bezerra et al. [@Bezerra2013] and extended in @Bezerra2025BM,
+co-authored by the submitting author and Felipe Martins Sousa, who now ports
+BR-MANGUE to DisSModel. The `brmangue-dissmodel` package [@BRMangue] validates the
+raster implementation against TerraME over the Maranhão Island dataset (50,496
+cells, 20 steps): land use matches on 99.9% of cells, soil on 99.8%, and
+elevation (1 mm tolerance) on 90.7% (MAE 0.0033 m); match percentage is the
+appropriate metric for these categorical outputs [@Pontius2008]. Reproducible via
+`brmangue-dissmodel/src/brmangue/executors/validation_executor.py` against the
+committed TerraME golden CSV references in `tests/fixtures/golden/`, with
+`tests/test_model_invariants.py` and `tests/test_transition_rules.py` covering
+structural correctness.
 
-**Domain validation — BR-MANGUE coastal dynamics model.** The conceptual foundation
-for coupled mangrove-flood modeling in Brazilian coastal zones was established by
-Bezerra et al. [@Bezerra2013], who discussed the integration of remote sensing and
-computational models to assess sea-level rise impacts on mangrove ecosystems. Building
-on this framework, the `brmangue-dissmodel` package [@BRMangue] implements the
-BR-MANGUE coupled flood and mangrove succession models on both substrates and
-validates them at two levels.
+Cross-substrate equivalence (60×60 synthetic grid, 3,600 cells, 10 steps) shows
+100% match for land use and soil and 100% match for elevation under tolerance
+(MAE 0.000959 m, max error 0.024 m), with the raster substrate running at 2.1
+ms/step against 84.2 ms/step for vector (40.1× speedup). The residual elevation
+divergence reflects floating-point rounding differences, not algorithmic
+disagreement. Each run automatically produces an `ExperimentRecord` with timings,
+checksums, and artifact paths.
 
-First, the raster implementation is validated against the original TerraME
-implementation over the Maranhão Island dataset (50,496 cells, 20 steps). Outputs
-are categorical land-use and soil classes; match percentage is therefore the
-appropriate primary metric [@Pontius2008]. At the final step, land use matches on
-99.90% of cells and soil on 99.85%; elevation, compared under a strict 1 mm
-tolerance, matches on 90.67% of cells with a mean absolute divergence of 0.0033 m.
-
-Second, cross-substrate equivalence between the vector and raster implementations
-is checked over a 60×60 synthetic grid (3,600 cells, EPSG:31984), running 10
-simulation steps:
-
-| Band | Match % | MAE | RMSE | Max Error | Cells |
-|------|--------:|----:|-----:|----------:|------:|
-| uso (land use) | 100.00% | 0.000000 | 0.000000 | 0.000000 | 3,600 |
-| solo (soil)    | 100.00% | 0.000000 | 0.000000 | 0.000000 | 3,600 |
-| alt (elevation)| 100.00% | 0.000959 | 0.002793 | 0.023864 | 3,600 |
-
-The raster substrate ran at 5.0 ms/step against 124.4 ms/step for the vector
-substrate (24.9× speedup). The residual elevation divergence (max 0.024 m, within
-the 0.05 m tolerance) reflects expected floating-point rounding differences between
-GeoDataFrame and NumPy computation paths, not algorithmic disagreement. Each run
-automatically produced an `ExperimentRecord` with per-phase timings, input SHA-256
-checksum, and artifact paths — no additional instrumentation by the modeller.
-
-**Domain validation — DisSLUCC-Continuous LUCC model.** The `DisSLUCC-Continuous`
-package implements the continuous CLUE-like allocation algorithm [@Veldkamp1996],
-in which each cell holds a fractional land-use proportion rather than a discrete
-class. For continuous outputs, fixed-threshold match statistics are not meaningful for
-real-valued spatial data [@Pontius2008]; MAE is the appropriate primary metric,
-as it provides a directly interpretable measure of average model error [@Willmott2005]. Running 6 simulation steps over the Lab1 study area (6,574 cells)
-and comparing against a TerraME/LUCCME reference result produces the following:
-
-| Comparison | MAE | RMSE | Max Error | Cells |
-|---|----:|-----:|----------:|------:|
-| Vector vs TerraME | 0.003583 | 0.006188 | 0.027355 | 6,574 |
-| Raster vs TerraME | 0.003583 | 0.006188 | 0.027355 | 6,574 |
-| Vector vs Raster  | 0.000000 | 0.000000 | 0.000000 | 6,574 |
-
-Both substrates reproduce the TerraME/LUCCME reference with a MAE of 0.0036 in
-[0,1] scale — consistent with expected floating-point divergence between independent
-Lua and Python implementations of the same continuous allocation algorithm. Vector
-and raster substrates are numerically identical (MAE = 0.000), confirming that the
-3.6× performance gain of the raster substrate (39.9 ms/step vs 143.2 ms/step)
-introduces no algorithmic divergence.
+**DisSLUCC-Continuous** implements the continuous CLUE-like allocation algorithm
+[@Veldkamp1996]; MAE is the appropriate metric for its fractional outputs
+[@Pontius2008; @Willmott2005]. Over the Lab1 study area (6,574 cells, 6 steps),
+both substrates reproduce the TerraME/LUCCME reference at MAE = 0.0036 (RMSE
+0.0062, max error 0.027) in [0,1] scale, consistent with expected divergence
+between independent implementations. Vector and raster are numerically identical
+(MAE = 0.000), and the raster substrate is 3.9× faster (44.0 ms/step vs 172.8
+ms/step). Reproducible via
+`disslucc-continuous/tests/test_benchmark_validation.py`. Full end-to-end
+provenance from raw inputs to final metrics is addressed by the
+`dissmodel-platform` satellite package.
 
 ## Research Impact Statement
 
-DisSModel provides a critical bridge for the environmental modeling community. By
-providing a Pythonic interface for complex spatial dynamics, it lowers the barrier
-for scientists to move from static GIS analysis to dynamic simulations. The
-framework has already been instrumental in academic research at the **LambdaGeo**
-group (UFMA), supporting studies on mangrove ecosystem dynamics and land-use change,
-building upon established spatial modeling practices [@Verburg2004; @SantosJunior2025].
+DisSModel's scientific lineage is rooted in the TerraME/LuccME research program at
+INPE. The submitting author conducted doctoral research at INPE under Prof.
+Gilberto Câmara and Dr. Ana Paula Dutra Aguiar — principal architects of
+TerraME/LuccME — and has co-authored LuccME since 2009. On 7 May 2026, DisSModel
+was presented at INPE's Graduate Program in Applied Computing seminar series
+(recording: https://youtu.be/o7pMJt0CvXU), connecting the framework to the
+institutional community that maintains TerraME and LuccME.
 
-The emergence of independent domain packages — `dissmodel-ca`, `dissmodel-sysdyn`,
-`DisSLUCC-Continuous`, and `brmangue-dissmodel` — without modifications to the core
-framework demonstrates that the `ModelExecutor` contract is stable and sufficient for
-real-world modeling requirements. This is further evidenced by the DisSModel
-Platform, a separate distributed execution environment currently under development that
-already orchestrates both `DisSLUCC-Continuous` and `brmangue-dissmodel` in a shared
-test infrastructure, running each through the same job queue without any change to
-their scientific code. The platform validates the central design principle of
-DisSModel: that simulation science should not need to be rewritten to run in
-production.
+The framework is in active use across two UFMA research groups. Within LambdaGeo,
+graduate students develop `disslucc-continuous` and `brmangue-dissmodel` as part
+of their Master's research. Independently, Prof. Denilson da Silva Bezerra (UFMA,
+former INPE researcher), whose doctoral work established BR-MANGUE's scientific
+foundation [@Bezerra2013], actively uses the DisSModel reimplementation in his own
+coastal dynamics research program (PVCBS4959-2025, PVCBS4960-2025;
+https://sigaa.ufma.br/sigaa/public/docente/pesquisa.jsf?siape=3104707), a
+collaboration predating DisSModel itself [@Bezerra2025BM].
 
-This architecture positions DisSModel as the simulation layer in the Brazilian Earth
-Observation stack — complementary to SITS [@Simoes2021] for present-state land
-classification and the Brazil Data Cube [@Ferreira2020] for satellite data access.
+Starting August 2026, the project receives its first PIBIC-funded undergraduate
+research fellows (CNPq), under approved institutional project PVCET5136-2026 at
+UFMA. The concentrated 2026 development effort was deliberately oriented toward
+this milestone: stabilizing the `ModelExecutor` contract so each fellow can own an
+independent repository — `disslucc-continuous`, `disslucc-discrete`,
+`brmangue-dissmodel`, or `disscube` — without core changes.
+
+Since the original submission, development has continued with `disslucc-discrete`
+[@DisSLUCCDiscrete], a CLUE-S-like discrete allocation package using logistic
+regression — the discrete counterpart to `DisSLUCC-Continuous`. An initial version
+has been validated against the Lab6 case study (Moju municipality, 5,914 cells, 6
+steps) from the original TerraME/LuccME repository, achieving 100% categorical
+agreement with the TerraME reference (kappa = 1.0, F1 = 1.0) at 56.8 ms/step.
+
+These independent domain packages — `dissmodel-ca`, `dissmodel-sysdyn`,
+`DisSLUCC-Continuous`, `disslucc-discrete`, and `brmangue-dissmodel` — demonstrate
+that the `ModelExecutor` contract generalizes across modeling paradigms without
+core modifications. Studies such as @Bezerra2022, developed using LuccME,
+represent the class of models the DisSLUCC packages are designed to reproduce. A
+roadmap toward DisSModel 1.0 (May 2027) anchors a community outreach effort
+including an open textbook, *Geospatial Modeling with Python*
+(https://lambdageo.github.io/geospatial-modeling-python/), already in progress.
+This positions DisSModel as the simulation layer in the Brazilian Earth
+Observation stack, complementary to SITS [@Simoes2021] and the Brazil Data Cube
+[@Ferreira2020].
+
+## Author Contributions
+
+CRediT roles: **S.S.C.** — Conceptualization, Software (Core, Geo, Executor, IO,
+Visualization), Methodology, Validation, Writing, Supervision, Project
+administration. **N.J.S.J.** — Conceptualization, Software (initial design),
+Validation, Writing (undergraduate thesis [@SantosJunior2025]). **D.S.B.** —
+Conceptualization (domain science), Validation, Resources
+[@Bezerra2013; @Bezerra2025BM]. **F.M.S.** — Software (`brmangue-dissmodel`), Data
+curation, Validation [@Bezerra2025BM]. **J.M.P.A.** — Software
+(`disslucc-continuous`), Validation. All authors reviewed and approved the final
+manuscript.
 
 ## AI Usage Disclosure
 
-This submission used generative AI tools (Claude Sonnet 4.6, NotebookLM, and Google
-Jules) to assist with structuring documentation, synthesising prior work, and
-generating submission checklists. All outputs were reviewed and validated by the
-human authors.
+Development followed several phases. The initial prototype (May–June 2025),
+corresponding to the second author's undergraduate thesis [@SantosJunior2025], did
+not involve generative AI. Development resumed in February–March 2026 with Claude
+(chat) used mainly for documentation; from April 2026, Gemini CLI accelerated code
+generation and refactoring; from June 2026, Claude Code (CLI) was used on newer
+satellite repositories such as `disslucc-discrete`. AI tools also assisted with
+writing in English, which is not the submitting author's native language. The
+scientific design — the TerraME compatibility contract, executor pattern,
+dual-substrate architecture, and validation methodology — predates and is
+independent of this AI-assisted phase, tracing to the submitting author's
+doctoral research at INPE and the undergraduate thesis cited above. AI tools
+assisted with implementation velocity and language clarity, not scientific or
+architectural decisions. All outputs were reviewed and validated by the human
+authors.
 
 ## References

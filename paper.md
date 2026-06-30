@@ -150,12 +150,13 @@ was established by Bezerra et al. [@Bezerra2013] and extended in @Bezerra2025BM,
 co-authored by the submitting author and Felipe Martins Sousa, who now ports
 BR-MANGUE to DisSModel. The `brmangue-dissmodel` package [@BRMangue] validates the
 raster implementation against TerraME over the Maranhão Island dataset (50,496
-cells, 20 steps): land use matches on 99.90% of cells, soil on 99.85%, and
-elevation (1 mm tolerance) on 90.67% (MAE 0.0033 m); match percentage is the
+cells, 20 steps): land use matches on 99.9% of cells, soil on 99.8%, and
+elevation (1 mm tolerance) on 90.7% (MAE 0.0033 m); match percentage is the
 appropriate metric for these categorical outputs [@Pontius2008]. Reproducible via
-`brmangue-dissmodel/src/brmangue/executors/benchmark_executor.py` against
-committed golden references, with `tests/test_model_invariants.py` and
-`tests/test_transition_rules.py` covering structural correctness.
+`brmangue-dissmodel/src/brmangue/executors/validation_executor.py` against the
+committed TerraME golden CSV references in `tests/fixtures/golden/`, with
+`tests/test_model_invariants.py` and `tests/test_transition_rules.py` covering
+structural correctness.
 
 Cross-substrate equivalence (60×60 synthetic grid, 3,600 cells, 10 steps) shows
 100% match for land use and soil and 100% match for elevation under tolerance

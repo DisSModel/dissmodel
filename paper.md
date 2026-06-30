@@ -284,7 +284,40 @@ DisSModel as the simulation layer in the Brazilian Earth Observation stack —
 complementary to SITS [@Simoes2021] for present-state land classification and the
 Brazil Data Cube [@Ferreira2020] for satellite data access. 
 
+## Author Contributions
 
+Following the CRediT (Contributor Roles Taxonomy) framework:
+
+**Sérgio Souza Costa**: Conceptualization, Software (Core, Geo, Executor, IO,
+Visualization modules), Methodology, Validation, Writing – original draft, Writing
+– review & editing, Supervision, Project administration. Conducted the doctoral
+research at INPE that established the architectural foundation this framework
+builds upon, and supervises all satellite package development.
+
+**Nerval de Jesus Santos Junior**: Conceptualization, Software (initial framework
+design and implementation), Validation, Writing – original draft (undergraduate
+thesis [@SantosJunior2025]). Designed and implemented the four-module architecture
+(Core, Geo, Models, Visualization) and validated it through representative case
+studies (Game of Life, FireModelProb, SIR, PredatorPrey) as part of his
+undergraduate research, supervised by S.S.C.
+
+**Denilson da Silva Bezerra**: Conceptualization (domain science), Validation,
+Resources. Established the scientific foundation of the BR-MANGUE coastal model
+through his doctoral research at INPE [@Bezerra2013] and subsequent work
+[@Bezerra2025BM]. Currently applies the DisSModel reimplementation of BR-MANGUE in
+his own research program on coastal dynamics in Maranhão.
+
+**Felipe Martins Sousa**: Software (`brmangue-dissmodel`), Data curation,
+Validation. Responsible for porting the BR-MANGUE model to DisSModel, including
+spatial data preparation (MapBiomas, DEM, soil map) and validation against TerraME
+golden reference outputs. Co-author of the foundational coastal modeling research
+this package implements [@Bezerra2025BM].
+
+**José Magno Pinheiro Alves**: Software (`disslucc-continuous`), Validation. Leads
+development of the continuous LUCC allocation package, including model derivation
+and validation against TerraME/LuccME reference outputs.
+
+All authors reviewed and approved the final manuscript.
 
 ## AI Usage Disclosure
 

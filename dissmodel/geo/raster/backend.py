@@ -607,8 +607,8 @@ class RasterBackend:
         -------
         np.ndarray  int
         """
-        result = np.zeros(self.shape, dtype=int)
-        m = mask.astype(np.int8)
+        result: np.ndarray = np.zeros(self.shape, dtype=int)
+        m: np.ndarray = mask.astype(np.int8)
         for dr, dc in neighborhood:
             result += self.shift2d(m, dr, dc)
         return result

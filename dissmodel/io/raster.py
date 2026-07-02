@@ -203,7 +203,7 @@ def _write_geotiff(
     rows, cols = backend.shape
 
     if band_spec:
-        arrays = []
+        arrays: list[np.ndarray] = []
         for name, dtype, nodata in band_spec:
             arr = backend.arrays.get(
                 name,

@@ -147,8 +147,9 @@ different throughput:
 
 **BR-MANGUE coastal dynamics.** The foundation for coupled mangrove-flood modeling
 was established by Bezerra et al. [@Bezerra2013] and extended in @Bezerra2025BM,
-co-authored by the submitting author and Felipe Martins Sousa, who now ports
-BR-MANGUE to DisSModel. The `brmangue-dissmodel` package [@BRMangue] validates the
+co-authored by Denilson da Silva Bezerra, the submitting author, and Felipe Martins
+Sousa — the same three researchers now responsible for the DisSModel
+reimplementation of BR-MANGUE. The `brmangue-dissmodel` package [@BRMangue] validates the
 raster implementation against TerraME over the Maranhão Island dataset (50,496
 cells, 20 steps): land use matches on 99.9% of cells, soil on 99.8%, and
 elevation (1 mm tolerance) on 90.7% (MAE 0.0033 m); match percentage is the
@@ -183,7 +184,7 @@ provenance from raw inputs to final metrics is addressed by the
 DisSModel's scientific lineage is rooted in the TerraME/LuccME research program at
 INPE. The submitting author conducted doctoral research at INPE under Prof.
 Gilberto Câmara and Dr. Ana Paula Dutra Aguiar — principal architects of
-TerraME/LuccME — and has co-authored LuccME since 2009. On 7 May 2026, DisSModel
+TerraME/LuccME — and has co-authored the LuccME modeling framework since 2009 [@Costa2009]. On 7 May 2026, DisSModel
 was presented at INPE's Graduate Program in Applied Computing seminar series
 (recording: https://youtu.be/o7pMJt0CvXU), connecting the framework to the
 institutional community that maintains TerraME and LuccME.
@@ -202,7 +203,9 @@ research fellows (CNPq), under approved institutional project PVCET5136-2026 at
 UFMA. The concentrated 2026 development effort was deliberately oriented toward
 this milestone: stabilizing the `ModelExecutor` contract so each fellow can own an
 independent repository — `disslucc-continuous`, `disslucc-discrete`,
-`brmangue-dissmodel`, or `disscube` — without core changes.
+`brmangue-dissmodel`, or `disscube` (a data-cube access and spatial-derivation
+layer, the Python successor to TerraME's `fillCellularSpace`) — without core
+changes.
 
 Since the original submission, development has continued with `disslucc-discrete`
 [@DisSLUCCDiscrete], a CLUE-S-like discrete allocation package using logistic

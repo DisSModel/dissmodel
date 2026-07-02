@@ -121,7 +121,7 @@ exclude = ["docs", "site", "build"]
 pythonpath = ["."]
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.12"
 ignore_missing_imports = true
 exclude = ["tests/", "docs/", "examples/"]
 

@@ -6,6 +6,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.3] — 2026-07-16
+
+### Fixed
+- `mypy` config: bumped `python_version` to `3.12` so NumPy 2.x stubs parse
+  correctly, and added the missing type annotations in `RasterBackend` and
+  `dissmodel.io.raster` that the stricter parse surfaced.
+
+### Changed
+- README badges: refreshed the coverage badge (55% → 79%, stale since 0.6.1)
+  and renamed the `LambdaGeo` badge label to `DisSModel`.
+
+### Internal
+- JOSS paper (`paper.md` / `paper.bib`) revised in response to reviewer
+  feedback (openjournals/joss-reviews#10827): added a CRediT-style
+  contribution statement for all five authors, expanded the Research Impact
+  Statement and AI Usage Disclosure, corrected reproducibility pointers and
+  several bibliography entries, and trimmed the body text to fit the JOSS
+  1,750-word limit.
+
+---
+
 ## [0.6.2] — 2026-06-15
 
 ### Fixed

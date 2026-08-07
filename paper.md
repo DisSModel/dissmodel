@@ -204,7 +204,7 @@ https://sigaa.ufma.br/sigaa/public/docente/pesquisa.jsf?siape=3104707), a
 collaboration predating DisSModel itself [@Bezerra2025BM].
 
 Starting August 2026, the project receives its first PIBIC-funded undergraduate
-research fellows (CNPq), under approved institutional project PVCET5136-2026 at
+research fellows, under approved institutional project PVCET5136-2026 at
 UFMA. The concentrated 2026 development effort was oriented toward this milestone:
 stabilizing the `ModelExecutor` contract so each fellow can own an independent
 repository — `disslucc-continuous`, `disslucc-discrete`, `brmangue-dissmodel`, or

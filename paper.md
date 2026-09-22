@@ -116,11 +116,11 @@ and `RasterMap`.
 
 This extensibility has already produced independent domain packages:
 `dissmodel-ca` [@DisSModelCA] (Cellular Automata patterns), `dissmodel-sysdyn`
-[@DisSModelSysDyn] (System Dynamics), and `DisSLUCC-Continuous`
-[@DisSLUCCContinuous], which implements LUCCME's continuous components — Demand,
-Potential, and Allocation [@Veldkamp1996; @Verburg2004] — on both substrates and
+[@DisSModelSysDyn] (System Dynamics), and `disslucc` [@DisSLUCC], which
+implements LUCCME's continuous and discrete components — Demand, Potential,
+and Allocation [@Veldkamp1996; @Verburg2004] — on the raster substrate and
 the same `ModelExecutor` contract, an explicit Python counterpart to
-TerraME/LUCCME.
+TerraME/LuccME.
 
 ## Performance
 
@@ -167,21 +167,20 @@ speedup); the residual elevation divergence is floating-point rounding, not
 algorithmic disagreement. Each run automatically produces an `ExperimentRecord`
 with timings, checksums, and artifact paths.
 
-**DisSLUCC-Continuous** implements the continuous CLUE-like allocation algorithm
+**disslucc** [@DisSLUCC] implements the continuous CLUE-like allocation algorithm
 [@Veldkamp1996]; MAE is the appropriate metric for its fractional outputs
 [@PontiusEtAl2011; @Willmott2005]. Over the Lab1 study area (6,574 cells, 6 steps),
-both substrates reproduce the TerraME/LUCCME reference at MAE = 0.0036 (RMSE
-0.0062, max error 0.027) in [0,1] scale. The residual is accounted for by the
-original model's own convergence tolerance: the LuccME script declares
-`maxDifference = 1643` area units against a 2014 demand of 21,607 — a 7.6% band,
-within which the reference itself stops short of its declared demand. Consistently,
-the Pontius decomposition attributes 90% of the residual to quantity and 10% to
-allocation [@PontiusMillones2011]. The raster substrate is 3.9× faster (44.0 ms/step vs
-172.8 ms/step). Reproducible via
-`disslucc-continuous/tests/test_benchmark_validation.py`, with
-`tests/test_benchmark_discriminance.py` confirming that perturbing the regression
-coefficients breaks the tolerance criterion. End-to-end provenance from raw inputs
-to final metrics is addressed by the `dissmodel-platform` package.
+the raster implementation reproduces the TerraME/LUCCME reference at MAE = 0.0036
+(RMSE 0.0062, max error 0.027) in [0,1] scale, at 44.0 ms/step. The residual is
+accounted for by the original model's own convergence tolerance: the LuccME script
+declares `maxDifference = 1643` area units against a 2014 demand of 21,607 — a
+7.6% band, within which the reference itself stops short of its declared demand.
+Consistently, the Pontius decomposition attributes 90% of the residual to quantity
+and 10% to allocation [@PontiusMillones2011]. Reproducible via
+`disslucc/tests/test_validation_lab1.py`, with
+`disslucc/tests/test_benchmark_discriminance_lab1.py` confirming that perturbing
+the regression coefficients breaks the tolerance criterion. End-to-end provenance
+from raw inputs to final metrics is addressed by the `dissmodel-platform` package.
 
 ## Research Impact Statement
 
@@ -189,14 +188,14 @@ DisSModel's scientific lineage is rooted in the TerraME/LuccME research program 
 INPE. The submitting author conducted doctoral research at INPE under Prof.
 Gilberto Câmara and Dr. Ana Paula Dutra Aguiar — principal architects of
 TerraME/LuccME — and has co-authored the modeling program since 2009
-[@Moreira2009; @Costa2009]; the DisSLUCC packages reimplement in Python the
+[@Moreira2009; @Costa2009]; `disslucc` reimplements in Python the
 continuous and discrete allocation components of that lineage [@LuccME]. On
 7 May 2026, DisSModel was presented at INPE's Graduate Program in Applied
 Computing seminar series (recording: https://youtu.be/o7pMJt0CvXU), connecting
 the framework to the institutional community that maintains TerraME and LuccME.
 
 The framework is in active use across two UFMA research groups. Within LambdaGeo,
-graduate students develop `disslucc-continuous` and `brmangue-dissmodel` in their
+graduate students develop `disslucc` and `brmangue-dissmodel` in their
 Master's research. Independently, Prof. Denilson da Silva Bezerra (UFMA, former
 INPE), whose doctoral work established BR-MANGUE's scientific foundation
 [@Bezerra2013], uses the DisSModel reimplementation in his own coastal dynamics
@@ -208,25 +207,26 @@ Starting August 2026, the project receives its first undergraduate research
 fellows, funded by UFMA and by CNPq, one of them supervised by a collaborating
 faculty member. The 2026 development effort was oriented toward this milestone:
 stabilizing the `ModelExecutor` contract so each fellow can own an independent
-repository — `disslucc-continuous`, `disslucc-discrete`, `brmangue-dissmodel`, or
+repository — `disslucc`, `brmangue-dissmodel`, or
 `disscube` (a data-cube layer, the Python successor to TerraME's
 `fillCellularSpace`) — without core changes.
 
-Since the original submission, development has continued with `disslucc-discrete`
-[@DisSLUCCDiscrete], a CLUE-S-like discrete allocation package using logistic
-regression — the discrete counterpart to `DisSLUCC-Continuous`. An initial version
-has been validated against the Lab15 case study (Moju municipality, 5,914 cells,
-6 steps) from the reference LuccME implementation [@LuccME], reaching cell-for-cell
-agreement — zero quantity and zero allocation disagreement [@PontiusMillones2011] — at
-56.8 ms/step. A shipped discriminance test shows this scenario is also reproduced by a trivial
-static ranking, so it validates coefficient transcription rather than the
-allocation algorithm; a dynamic-covariate scenario is planned.
+Since the original submission, development has continued with a discrete
+allocation component within `disslucc` [@DisSLUCC], a CLUE-S-like package using
+logistic regression — the discrete counterpart to its continuous algorithm. An
+initial version has been validated against the Lab15 case study (Moju
+municipality, 5,914 cells, 6 steps) from the reference LuccME implementation
+[@LuccME], reaching cell-for-cell agreement — zero quantity and zero allocation
+disagreement [@PontiusMillones2011] — at 10.3 ms/step. A shipped discriminance
+test shows this scenario is also reproduced by a trivial static ranking, so it
+validates coefficient transcription rather than the allocation algorithm; a
+dynamic-covariate scenario is planned.
 
-These packages — `dissmodel-ca`, `dissmodel-sysdyn`, `DisSLUCC-Continuous`,
-`disslucc-discrete`, and `brmangue-dissmodel` — demonstrate that the
+These packages — `dissmodel-ca`, `dissmodel-sysdyn`, `disslucc`,
+and `brmangue-dissmodel` — demonstrate that the
 `ModelExecutor` contract generalizes across modeling paradigms without core
 modifications. Studies such as @Bezerra2022, developed using LuccME, are the class
-of models the DisSLUCC packages aim to reproduce. A roadmap toward
+of models `disslucc` aims to reproduce. A roadmap toward
 DisSModel 1.0 (May 2027) anchors community outreach including an open textbook,
 *Geospatial Modeling with Python*
 (https://lambdageo.github.io/geospatial-modeling-python/), already in progress.
@@ -243,7 +243,7 @@ Validation, Writing (undergraduate thesis [@SantosJunior2025]). **D.S.B.** —
 Conceptualization (domain science), Validation, Resources
 [@Bezerra2013; @Bezerra2025BM]. **F.M.S.** — Software (`brmangue-dissmodel`), Data
 curation, Validation [@Bezerra2025BM]. **J.M.P.A.** — Software
-(`disslucc-continuous`), Validation. All authors reviewed and approved the final
+(`disslucc`), Validation. All authors reviewed and approved the final
 manuscript.
 
 ## AI Usage Disclosure
@@ -253,7 +253,7 @@ corresponding to the second author's undergraduate thesis [@SantosJunior2025], d
 not involve generative AI. Development resumed in February–March 2026 with Claude
 (chat) used mainly for documentation; from April 2026, Gemini CLI accelerated code
 generation and refactoring; from June 2026, Claude Code (CLI) was used on newer
-satellite repositories such as `disslucc-discrete`, including the audit of the
+satellite repositories such as `disslucc`, including the audit of the
 validation routines against the original TerraME scripts. AI tools also assisted
 with writing in English, not the submitting author's native language. The
 scientific design — the TerraME compatibility contract, executor pattern,

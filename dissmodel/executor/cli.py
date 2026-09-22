@@ -12,6 +12,16 @@ else:
 
 # ── Parameter helpers ─────────────────────────────────────────────────────────
 
+# [model] keys that are registration metadata for dissmodel-configs, not
+# simulation input -- never merged into record.parameters. Matches the
+# convention documented in docs/api/executor/cli.md ("class", "package")
+# and used by dissmodel-configs entries in the wild (executor_module, name,
+# description, the dissmodel version constraint).
+_SPEC_METADATA_KEYS = frozenset({
+    "executor_module", "name", "class", "description", "package", "dissmodel",
+})
+
+
 def _parse_params(param_list: list[str] | None) -> dict:
     """Parse KEY=VALUE strings into a typed dict."""
     params: dict[str, int | float | bool | str] = {}
@@ -32,11 +42,41 @@ def _parse_params(param_list: list[str] | None) -> dict:
 
 
 def _load_toml(path: str) -> tuple[dict, dict]:
-    """Load parameters and full spec from a TOML file."""
+    """
+    Load parameters and full spec from a TOML file.
+
+    `params` merges two layers of the [model] table, in increasing
+    precedence: (1) every key that isn't registration metadata
+    (_SPEC_METADATA_KEYS) or [model.parameters] itself -- e.g.
+    land_use_types, [[model.potential]], [model.static] -- the same
+    values the platform stores in ExperimentRecord.resolved_spec and
+    merges into ExperimentRecord.parameters before calling run() (see
+    ModelExecutor.run()'s docstring: "Receives record with
+    resolved_spec and parameters already merged"); then (2)
+    [model.parameters] itself, which wins on overlap. Before this,
+    local --toml runs skipped layer (1) entirely, so a model.toml
+    following the dissmodel-configs registration convention (spec
+    fields at the [model] level, only truly run-specific values under
+    [model.parameters] -- see any models/*.toml in dissmodel-configs)
+    silently produced an incomplete record.parameters and any executor
+    reading those keys from record.parameters would fail validate()
+    even though the values were right there in the file. --param CLI
+    overrides are applied by the caller on top of this, unchanged.
+    """
     with open(path, "rb") as f:
         config = tomllib.load(f)
-    model  = config.get("model", {})
-    params = model.get("parameters", {})
+    model = config.get("model", {})
+
+    # land_use_types may be declared as a dict-table
+    # ([model.land_use_types] types = [...]) instead of a plain list --
+    # normalize before merging into params, same as _build_record did
+    # for `spec` alone before this function grew that merge.
+    land_use_types = model.get("land_use_types")
+    if isinstance(land_use_types, dict):
+        model["land_use_types"] = land_use_types.get("types", [])
+
+    spec_extra = {k: v for k, v in model.items() if k not in _SPEC_METADATA_KEYS and k != "parameters"}
+    params = {**spec_extra, **model.get("parameters", {})}
     return params, model
 
 
@@ -64,14 +104,8 @@ def _build_record(args):
     from dissmodel.executor.schemas import DataSource, ExperimentRecord
 
     toml_path    = getattr(args, "toml", None)
-    params, spec = _load_local_params(toml_path)
-    params       = {**params, **_parse_params(args.param)}   # CLI overrides TOML
-
-    # land_use_types lives under spec, not parameters
-    if "land_use_types" in spec:
-        lu = spec["land_use_types"]
-        if isinstance(lu, dict):
-            spec["land_use_types"] = lu.get("types", [])
+    params, spec = _load_local_params(toml_path)  # params already carries the merged [model] spec (see _load_toml)
+    params       = {**params, **_parse_params(args.param)}   # CLI overrides TOML+spec
 
     record = ExperimentRecord(
         model_name    = "local",

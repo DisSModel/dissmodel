@@ -5,7 +5,7 @@ from types  import SimpleNamespace
 
 import pytest
 
-from dissmodel.executor.cli import _parse_params, _apply_output_path_intelligence
+from dissmodel.executor.cli import _build_record, _load_toml, _parse_params, _apply_output_path_intelligence
 
 
 # ── _parse_params ─────────────────────────────────────────────────────────────
@@ -55,6 +55,172 @@ class TestParseParams:
     def test_duplicate_keys_last_wins(self):
         result = _parse_params(["rate=0.1", "rate=0.9"])
         assert result["rate"] == 0.9
+
+
+# ── _load_toml ───────────────────────────────────────────────────────────────
+#
+# Regression coverage for the gap where a model.toml following the
+# dissmodel-configs registration convention (spec fields declared at the
+# [model] level, not nested under [model.parameters]) silently produced an
+# incomplete record.parameters: [model] keys other than [model.parameters]
+# were stored in `spec`/resolved_spec only and never reached `params`, even
+# though ModelExecutor.run() documents that executors "receive record with
+# resolved_spec and parameters already merged". Any executor reading a
+# model-level key (land_use_types, a [[model.potential]] list, ...) directly
+# from record.parameters -- the natural place for simulation input -- would
+# then fail validate() with a "missing parameter" error the file appeared to
+# already answer. See disslucc's LuccContinuousExecutor/LuccDiscreteExecutor
+# (github.com/DisSModel/disslucc) for a real-world executor with exactly
+# that shape, and disslucc's docs/decisions.md for how this was found.
+
+class TestLoadToml:
+
+    def _write(self, tmp_path: Path, content: str) -> str:
+        path = tmp_path / "model.toml"
+        path.write_text(content)
+        return str(path)
+
+    def test_model_level_keys_merge_into_params(self, tmp_path):
+        """A [model]-level key outside [model.parameters] (the
+        dissmodel-configs registration convention) must reach `params`,
+        not just `spec` -- this is the core bug being fixed."""
+        toml_path = self._write(tmp_path, """
+[model]
+name = "my_model"
+land_use_types = ["f", "d"]
+
+[model.parameters]
+n_steps = 7
+""")
+        params, spec = _load_toml(toml_path)
+        assert params["land_use_types"] == ["f", "d"]
+        assert params["n_steps"] == 7
+        # spec (-> resolved_spec) keeps carrying the full [model] table too
+        assert spec["land_use_types"] == ["f", "d"]
+
+    def test_list_of_tables_merges_into_params(self, tmp_path):
+        """[[model.potential]] etc. -- list-of-tables sections used by
+        real executors for regression coefficients -- must reach
+        params just like scalar/list keys do."""
+        toml_path = self._write(tmp_path, """
+[model]
+name = "my_model"
+
+[[model.potential]]
+const = 0.74
+
+[[model.potential]]
+const = 0.27
+""")
+        params, _ = _load_toml(toml_path)
+        assert params["potential"] == [{"const": 0.74}, {"const": 0.27}]
+
+    def test_registration_metadata_is_excluded_from_params(self, tmp_path):
+        """executor_module/name/class/description/package/dissmodel are
+        registration metadata for dissmodel-configs, not simulation
+        input -- must stay out of record.parameters."""
+        toml_path = self._write(tmp_path, """
+[model]
+executor_module = "my_package.executors"
+name            = "my_model"
+class           = "my_model"
+description     = "a test model"
+package         = "git+https://example.com/my_package@main"
+dissmodel       = ">=0.6.0,<0.7.0"
+
+[model.parameters]
+n_steps = 7
+""")
+        params, spec = _load_toml(toml_path)
+        assert set(params) == {"n_steps"}
+        # still recorded in spec/resolved_spec for provenance
+        assert spec["package"] == "git+https://example.com/my_package@main"
+
+    def test_model_parameters_wins_on_overlap(self, tmp_path):
+        """[model.parameters] is the run-specific layer and must win
+        over a same-named [model]-level default."""
+        toml_path = self._write(tmp_path, """
+[model]
+name = "my_model"
+n_steps = 3
+
+[model.parameters]
+n_steps = 7
+""")
+        params, _ = _load_toml(toml_path)
+        assert params["n_steps"] == 7
+
+    def test_land_use_types_dict_table_is_normalized(self, tmp_path):
+        """land_use_types declared as a dict-table
+        ([model.land_use_types] types = [...]) instead of a plain list
+        must normalize to a list in params too, not just in spec."""
+        toml_path = self._write(tmp_path, """
+[model]
+name = "my_model"
+
+[model.land_use_types]
+types = ["f", "d", "outros"]
+""")
+        params, spec = _load_toml(toml_path)
+        assert params["land_use_types"] == ["f", "d", "outros"]
+        assert spec["land_use_types"] == ["f", "d", "outros"]
+
+    def test_no_model_parameters_table_still_merges_model_level_keys(self, tmp_path):
+        """A model.toml with no [model.parameters] at all (everything
+        declared at the [model] level) must still populate params --
+        not every registration TOML has run-specific overrides."""
+        toml_path = self._write(tmp_path, """
+[model]
+name = "my_model"
+land_use_types = ["f", "d"]
+""")
+        params, _ = _load_toml(toml_path)
+        assert params["land_use_types"] == ["f", "d"]
+
+
+# ── _build_record ────────────────────────────────────────────────────────────
+
+class TestBuildRecordTomlMerge:
+    """End-to-end: --toml through to the ExperimentRecord actually
+    passed to an executor's validate()/load()/run()."""
+
+    def test_model_level_keys_reach_record_parameters(self, tmp_path):
+        path = tmp_path / "model.toml"
+        path.write_text("""
+[model]
+name = "my_model"
+land_use_types = ["f", "d", "outros"]
+static = { f = -1, d = -1, outros = 1 }
+
+[model.parameters]
+n_steps = 7
+""")
+        args = SimpleNamespace(
+            toml=str(path), param=None, input="data.zip", output=None,
+            format="auto", column_map=None, band_map=None,
+        )
+        record = _build_record(args)
+        assert record.parameters["land_use_types"] == ["f", "d", "outros"]
+        assert record.parameters["static"] == {"f": -1, "d": -1, "outros": 1}
+        assert record.parameters["n_steps"] == 7
+        # resolved_spec keeps the full [model] table for provenance
+        assert record.resolved_spec["model"]["name"] == "my_model"
+
+    def test_cli_param_still_overrides_toml(self, tmp_path):
+        path = tmp_path / "model.toml"
+        path.write_text("""
+[model]
+name = "my_model"
+
+[model.parameters]
+n_steps = 7
+""")
+        args = SimpleNamespace(
+            toml=str(path), param=["n_steps=3"], input="data.zip", output=None,
+            format="auto", column_map=None, band_map=None,
+        )
+        record = _build_record(args)
+        assert record.parameters["n_steps"] == 3
 
 
 # ── _apply_output_path_intelligence ──────────────────────────────────────────

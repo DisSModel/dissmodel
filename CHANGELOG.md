@@ -6,6 +6,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.4] — 2026-09-22
+
+### Fixed
+- `dissmodel.executor.cli`: local `--toml` runs now merge `[model]`-level
+  spec keys (e.g. `land_use_types`, `[[model.potential_data]]`) into
+  `record.parameters`, not just `[model.parameters]`. Previously, any
+  model registered the same way as `dissmodel-configs`/
+  `dissmodel-platform` (registration metadata and spec at the `[model]`
+  level, `[model.parameters]` reserved for run-specific overrides) ran
+  locally via `--toml` with most of its required parameters silently
+  missing (#176, #177).
+
+### Internal
+- `paper.md` / `paper.bib`: consolidated citations of `disslucc-continuous`
+  and `disslucc-discrete` into a single `disslucc` citation, reflecting
+  their merge into one repository. `README.md`'s specialized model
+  libraries table follows the same consolidation.
+
+---
+
 ## [0.6.3] — 2026-07-16
 
 ### Fixed

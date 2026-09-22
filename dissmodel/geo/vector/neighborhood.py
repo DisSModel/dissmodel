@@ -2,11 +2,10 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Optional, Protocol, Union
+from typing import Any, Protocol
 
 import geopandas as gpd
 from libpysal.weights import W
-
 
 # ---------------------------------------------------------------------------
 # Protocol
@@ -31,7 +30,7 @@ class WeightStrategy(Protocol):
 
 
 # Reusable type alias — import this in other modules instead of redefining it
-StrategyType = Optional[WeightStrategy]
+StrategyType = WeightStrategy | None
 
 
 # ---------------------------------------------------------------------------
@@ -39,8 +38,8 @@ StrategyType = Optional[WeightStrategy]
 # ---------------------------------------------------------------------------
 
 def _resolve_neighbors_dict(
-    neighbors_dict: Optional[Union[dict[Any, list[Any]], str]],
-) -> Optional[dict[Any, list[Any]]]:
+    neighbors_dict: dict[Any, list[Any]] | str | None,
+) -> dict[Any, list[Any]] | None:
     """
     Resolve ``neighbors_dict`` to a plain dict, loading from JSON if needed.
 
@@ -85,7 +84,7 @@ def _resolve_neighbors_dict(
 def attach_neighbors(
     gdf: gpd.GeoDataFrame,
     strategy: StrategyType = None,
-    neighbors_dict: Optional[dict[Any, list[Any]] | str] = None,
+    neighbors_dict: dict[Any, list[Any]] | str | None = None,
     **kwargs: Any,
 ) -> gpd.GeoDataFrame:
     """
@@ -269,10 +268,10 @@ def export_neighbors(gdf: gpd.GeoDataFrame, path: str) -> None:
 
 
 __all__ = [
-    "WeightStrategy",
     "StrategyType",
+    "WeightStrategy",
     "attach_neighbors",
-    "get_neighbors",
-    "get_neighbor_values",
     "export_neighbors",
+    "get_neighbor_values",
+    "get_neighbors",
 ]

@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import math
 from abc import ABC, abstractmethod
-from typing import Any, Optional
+from typing import Any
 
 import geopandas as gpd
 
@@ -63,7 +63,7 @@ class CellularAutomaton(SpatialModel, ABC):
         start_time: float = 0,
         end_time: float = math.inf,
         name: str = "",
-        dim: Optional[int] = None,
+        dim: int | None = None,
         **kwargs: Any,
     ) -> None:
         self.state_attr = state_attr
@@ -84,7 +84,6 @@ class CellularAutomaton(SpatialModel, ABC):
 
         Override in subclasses to define the starting conditions.
         """
-        pass
 
     @abstractmethod
     def rule(self, idx: Any) -> Any:

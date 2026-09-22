@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dissmodel"
-version = "0.6.4"
+version = "0.6.5"
 description = "Discrete Spatial Modeling framework for raster and vector simulations"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
@@ -50,6 +50,8 @@ dependencies = [
     "matplotlib>=3.7.0",
     "rasterstats>=0.19.0",
     "affine>=2.4.0",
+    "scipy>=1.12.0",        # RasterBackend.neighbor_contact's binary_dilation; was
+                             # only a transitive pull via libpysal, now declared directly
     "tomli>=2.0; python_version < '3.11'",   # tomllib backport for Python 3.10
 ]
 
@@ -57,6 +59,12 @@ dependencies = [
 
 viz = [
     "ipywidgets>=8.0.0",   # Colab/Jupyter visualization — anchored Output widget
+]
+
+s3 = [
+    "minio>=7.0",   # dissmodel.io._storage's client for s3:// URIs — talks to
+                     # any S3-compatible endpoint (standalone MinIO, AWS S3,
+                     # etc.), no dependency on the rest of dissmodel-platform
 ]
 
 xarray = [
@@ -71,7 +79,7 @@ dev = [
     "mypy",
     "pytest",
     "pytest-cov",
-    "ruff",
+    "ruff>=0.16,<0.17",     # pinned minor: ruff's *default* rule set has grown across versions
     "mkdocs",
     "mkdocstrings[python]",
     "mkdocs-jupyter",
@@ -82,6 +90,10 @@ dev = [
     "zarr>=2.16.0",
     "pyproj>=3.4.0",
     "rasterio>=1.3.0",
+    # s3 extra, plus a real (in-process, no Docker) S3-protocol server for
+    # tests/io/test_s3_real.py — see the [s3] extra for the runtime piece
+    "minio>=7.0",
+    "moto[s3,server]>=5.0",
 ]
 
 docs = [
@@ -108,7 +120,13 @@ include = ["dissmodel*"]
 "dissmodel" = ["*.json", "*.csv", "*.shp", "*.geojson", "*.tif"]
 
 [tool.ruff]
-# Permissive baseline: default rule set (pyflakes + pycodestyle errors).
+# No explicit `select`: we lint with ruff's own default rule set, which is
+# wider than "pyflakes + pycodestyle errors" as of the 0.16.x line pinned
+# above (isort, pyupgrade, ruff-specific, flake8-bandit/pie/simplify/pyi
+# checks are on by default too). If bumping the pinned ruff minor version
+# changes CI results, that's this rule set growing again — reconcile by
+# either fixing the code or, if a rule is a bad fit for this project,
+# adding it to an explicit `ignore` here (not by re-pinning silently).
 # line-length is informational for now — E501 is not in the default rules,
 # so existing long lines do not fail the lint step.
 line-length = 120
@@ -122,10 +140,15 @@ pythonpath = ["."]
 
 [tool.mypy]
 python_version = "3.12"
-ignore_missing_imports = true
 exclude = ["tests/", "docs/", "examples/"]
 
 [[tool.mypy.overrides]]
+# Third-party (or optional-extra) dependencies with no bundled type stubs.
+# This is deliberately per-module, not a blanket `ignore_missing_imports`
+# at the top level: a global setting also silences typos in *our own*
+# first-party import paths (see CHANGELOG 0.6.5 — that's exactly how the
+# dissmodel.core.base / dissmodel.executor.model_executor mismatch went
+# unnoticed). Add a module here only when it genuinely has no stubs.
 module = [
     "geopandas.*",
     "shapely.*",
@@ -140,6 +163,10 @@ module = [
     "zarr.*",
     "pyproj.*",
     "rasterio.*",
+    "scipy.*",
+    "minio",               # optional [s3] extra
+    "google.colab",        # only ever present inside Colab itself
+    "ipywidgets",           # optional [viz] extra
 ]
 ignore_missing_imports = true
 

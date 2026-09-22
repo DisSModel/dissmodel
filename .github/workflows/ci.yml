@@ -19,7 +19,9 @@ jobs:
           python-version: "3.12"
 
       - name: Install Ruff
-        run: pip install ruff
+        # keep in sync with the `ruff` pin in pyproject.toml's `dev` extra —
+        # see [tool.ruff]'s comment for why the version is pinned at all
+        run: pip install "ruff>=0.16,<0.17"
 
       - name: Run Ruff
         run: ruff check dissmodel/
@@ -61,5 +63,9 @@ jobs:
       - name: Run doctests
         run: pytest --doctest-modules dissmodel
 
+      # No --ignore-missing-imports here: [tool.mypy] in pyproject.toml
+      # already lists every stub-less dependency by module name. A blanket
+      # flag here would silently re-mask first-party import typos again
+      # (see CHANGELOG 0.6.5) regardless of what pyproject.toml says.
       - name: Run mypy
-        run: mypy dissmodel --ignore-missing-imports
+        run: mypy dissmodel

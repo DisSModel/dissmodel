@@ -10,8 +10,8 @@ import zipfile
 
 import numpy as np
 
-from dissmodel.io._utils import resolve_uri, sha256_bytes
 from dissmodel.geo.raster.backend import RasterBackend
+from dissmodel.io._utils import resolve_uri, sha256_bytes
 
 try:
     import rasterio

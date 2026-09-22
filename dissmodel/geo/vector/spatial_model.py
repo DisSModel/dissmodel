@@ -45,13 +45,14 @@ Uso
 from __future__ import annotations
 
 import math
-from typing import Any, Optional
+from typing import Any
 
-import numpy as np
 import geopandas as gpd
+import numpy as np
 from libpysal.weights import Queen
 
 from dissmodel.core import Model
+
 # import from the defining module (not the dissmodel.geo package) to avoid
 # a circular import while dissmodel.geo.__init__ is still initializing
 from dissmodel.geo.vector.neighborhood import StrategyType, attach_neighbors
@@ -107,7 +108,7 @@ class SpatialModel(Model):
     def create_neighborhood(
         self,
         strategy: StrategyType = Queen,
-        neighbors_dict: Optional[dict | str] = None,
+        neighbors_dict: dict | str | None = None,
         **kwargs: Any,
     ) -> None:
         """

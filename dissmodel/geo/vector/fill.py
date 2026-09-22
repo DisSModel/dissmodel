@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import random
+from collections.abc import Callable
 from enum import Enum
-from typing import Any, Callable, Optional, Union
+from typing import Any
 
 import geopandas as gpd
 import numpy as np
 from affine import Affine
 from rasterstats import zonal_stats
-
 
 # ---------------------------------------------------------------------------
 # Strategy enum
@@ -76,7 +76,7 @@ def register_strategy(
 # Private helpers
 # ---------------------------------------------------------------------------
 
-_SampleData = Union[list[Any], dict[str, Any]]
+_SampleData = list[Any] | dict[str, Any]
 
 
 def _generate_sample(data: _SampleData, size: int = 1) -> list[Any]:
@@ -174,7 +174,7 @@ def _fill_random_sample(
     gdf: gpd.GeoDataFrame,
     attr: str,
     data: _SampleData,
-    seed: Optional[int] = None,
+    seed: int | None = None,
 ) -> None:
     """
     Fill a GeoDataFrame attribute with random samples drawn from ``data``.
@@ -302,4 +302,4 @@ def fill(strategy: FillStrategy | str, **kwargs: Any) -> Any:
     return _fill_strategies[key](**kwargs)
 
 
-__all__ = ["fill", "FillStrategy", "register_strategy"]
+__all__ = ["FillStrategy", "fill", "register_strategy"]

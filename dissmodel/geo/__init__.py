@@ -1,25 +1,24 @@
 # dissmodel/geo/__init__.py
 
 # vector substrate
-from .vector.neighborhood import attach_neighbors
-from .vector.vector_grid import vector_grid, parse_idx
-from .vector.fill import fill, FillStrategy
-from .vector.cellular_automaton import CellularAutomaton
-from .vector.spatial_model import SpatialModel
-from .vector.sync_model import SyncSpatialModel
-
 # raster substrate
-from .raster.backend import RasterBackend, DIRS_MOORE, DIRS_VON_NEUMANN
-from .raster.raster_model import RasterModel
+from .raster.backend import DIRS_MOORE, DIRS_VON_NEUMANN, RasterBackend
+from .raster.band_spec import BandSpec
 from .raster.cellular_automaton import RasterCellularAutomaton
 from .raster.raster_grid import raster_grid
-from .raster.band_spec import BandSpec
+from .raster.raster_model import RasterModel
 from .raster.sync_model import SyncRasterModel
+from .vector.cellular_automaton import CellularAutomaton
+from .vector.fill import FillStrategy, fill
+from .vector.neighborhood import attach_neighbors
+from .vector.spatial_model import SpatialModel
+from .vector.sync_model import SyncSpatialModel
+from .vector.vector_grid import parse_idx, vector_grid
 
 # raster io — opcional, não importa por padrão (requer rasterio)
 # from .raster.io import load_geotiff, save_geotiff
 
-__all__ = [
+__all__ = [  # noqa: RUF022 — grouped by substrate (vector, then raster), not alphabetized
     # vector
     "attach_neighbors",
     "vector_grid",

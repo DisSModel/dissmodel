@@ -1,14 +1,8 @@
 from __future__ import annotations
 
 import hashlib
-import pathlib
-
- 
-
 import io
-
- 
-
+import pathlib
 
 VECTOR_EXTENSIONS  = {".shp", ".gpkg", ".geojson", ".json", ".zip"}
 RASTER_EXTENSIONS  = {".tif", ".tiff"}
@@ -72,7 +66,7 @@ def resolve_uri(uri: str, minio_client=None) -> tuple[bytes, str]:
         content     = obj.read()
         return content, sha256_bytes(content)
 
-    if uri.startswith("http://") or uri.startswith("https://"):
+    if uri.startswith(("http://", "https://")):
         import urllib.request
         with urllib.request.urlopen(uri) as r:
             content = r.read()

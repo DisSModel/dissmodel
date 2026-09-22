@@ -29,7 +29,7 @@ Usage
 from __future__ import annotations
 
 from dissmodel.core import Model
-from dissmodel.geo.raster.backend import RasterBackend, DIRS_MOORE
+from dissmodel.geo.raster.backend import DIRS_MOORE, RasterBackend
 
 
 class RasterModel(Model):

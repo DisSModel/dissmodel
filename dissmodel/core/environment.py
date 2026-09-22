@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, ClassVar, Optional
+from typing import Any, ClassVar
 
 
 class Environment:
@@ -36,12 +36,12 @@ class Environment:
     10
     """
 
-    _current: ClassVar[Optional[Environment]] = None
+    _current: ClassVar[Environment | None] = None
 
     def __init__(
         self,
         start_time: float = 0,
-        end_time: Optional[float] = None,
+        end_time: float | None = None,
     ) -> None:
         self.start_time = start_time
         self.end_time = end_time
@@ -92,7 +92,7 @@ class Environment:
     # Lifecycle
     # ------------------------------------------------------------------
 
-    def run(self, till: Optional[float] = None) -> None:
+    def run(self, till: float | None = None) -> None:
         """
         Run the simulation over the configured time window.
 

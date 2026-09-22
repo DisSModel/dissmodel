@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from collections import namedtuple
-import numpy as np
+from typing import Any
+
 import geopandas as gpd
+import numpy as np
 from shapely.geometry import box
-from typing import Any, Optional
 
 # Reusable type aliases
 Bounds = tuple[float, float, float, float]  # (xmin, ymin, xmax, ymax)
@@ -42,12 +43,12 @@ def parse_idx(idx: str) -> GridPos:
 
 
 def vector_grid(
-    gdf: Optional[gpd.GeoDataFrame] = None,
-    bounds: Optional[Bounds] = None,
-    resolution: Optional[float] = None,
-    dimension: Optional[Dimension] = None,
-    attrs: Optional[dict[str, Any]] = None,
-    crs: Optional[str | int] = None,
+    gdf: gpd.GeoDataFrame | None = None,
+    bounds: Bounds | None = None,
+    resolution: float | None = None,
+    dimension: Dimension | None = None,
+    attrs: dict[str, Any] | None = None,
+    crs: str | int | None = None,
 ) -> gpd.GeoDataFrame:
     """
     Create a regular grid of fixed-size cells.

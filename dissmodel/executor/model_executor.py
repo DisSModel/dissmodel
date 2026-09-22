@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, ClassVar, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, ClassVar
 
 if TYPE_CHECKING:
     from dissmodel.executor.schemas import ExperimentRecord
@@ -131,7 +131,7 @@ class ModelExecutor(ABC):
             minio.fget_object(bucket, key, local_path)
             return local_path
 
-        if uri.startswith("http://") or uri.startswith("https://"):
+        if uri.startswith(("http://", "https://")):
             filename   = uri.split("/")[-1].split("?")[0]
             local_path = f"/tmp/{filename}"
             urllib.request.urlretrieve(uri, local_path)

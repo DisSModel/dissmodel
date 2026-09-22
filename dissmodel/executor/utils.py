@@ -26,5 +26,5 @@ def default_output_uri(experiment_id: str, ext: str) -> str:
     try:
         get_default_client()
         return f"s3://dissmodel-outputs/experiments/{experiment_id}/output.{ext}"
-    except Exception:
+    except Exception:  # noqa: BLE001 — MinIO client can fail for many reasons (unset config, unreachable host); any failure means "fall back to local storage"
         return f"./outputs/{experiment_id}/output.{ext}"

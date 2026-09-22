@@ -17,10 +17,10 @@ from .sync_model import SyncRasterModel
 __all__ = [
     "DIRS_MOORE",
     "DIRS_VON_NEUMANN",
-    "RasterBackend",
     "BandSpec",
+    "RasterBackend",
     "RasterCellularAutomaton",
-    "raster_grid",
     "RasterModel",
     "SyncRasterModel",
+    "raster_grid",
 ]

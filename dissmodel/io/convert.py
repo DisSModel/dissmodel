@@ -16,8 +16,8 @@ def vector_to_raster_backend(
     attrs: list[str] | dict[str, Any],
     crs: str | int | None = None,
     all_touched: bool = False,
-    nodata: int | float = 0,
-    nodata_value: int | float | None = None,
+    nodata: float = 0,
+    nodata_value: float | None = None,
     add_mask: bool = True,
 ) -> RasterBackend:
     """

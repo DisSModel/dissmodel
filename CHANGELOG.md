@@ -6,6 +6,114 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.5] — 2026-09-22
+
+### Fixed
+- `CONTRIBUTING.md`: two `git clone` commands under "External Contributors"
+  and "Development Setup" had unrendered Markdown link syntax pasted
+  directly inside their `bash` code fences (`git clone [url](url)`),
+  breaking the command if copy-pasted as written. Replaced with plain
+  URLs.
+- `CONTRIBUTING.md`: the License section linked to a Google search result
+  (`https://www.google.com/search?q=LICENSE&utm_source=gemini`) instead of
+  the repository's own `LICENSE` file. Replaced with a relative link.
+- `README.md`: the `disslucc` row in the "Specialized Model Libraries"
+  table still pointed to `LambdaGeo/disslucc`, while the other three rows
+  and `paper.bib`'s `@DisSLUCC` entry already point to
+  `DisSModel/disslucc` (the two currently resolve to the same commit via
+  GitHub's repository-transfer redirect, but the README was left
+  inconsistent by the 0.6.4 consolidation). Now points to
+  `DisSModel/disslucc` consistently.
+- `pyproject.toml`: `scipy` is now a declared direct dependency
+  (`scipy>=1.12.0`). `dissmodel/geo/raster/backend.py`'s
+  `neighbor_contact` has imported `scipy.ndimage.binary_dilation`
+  unconditionally since it was written, but `scipy` only ever reached an
+  environment as a transitive pull through `libpysal`; a `libpysal`
+  release that drops or relaxes that pin could have broken `import
+  dissmodel` with no dependency of ours saying why.
+- `pyproject.toml`: added the `s3` extra (`minio>=7.0`).
+  `dissmodel/io/_storage.py` has told users to run
+  `pip install dissmodel[platform]` since it was written, in both its
+  module docstring and its `ImportError` message, but that extra never
+  existed — `pip install -e ".[platform]"` silently no-ops with a
+  `does not provide the extra 'platform'` warning instead of installing
+  `minio`, so following the tool's own instructions left S3/MinIO
+  support still missing. Named `s3` rather than `platform`: this extra
+  only pulls in the `minio` client used by the `s3://` URI helpers in
+  `io/raster.py`, `io/vector.py`, `io/_utils.py`, and
+  `executor/model_executor.py`/`executor/utils.py` — it talks to any
+  S3-compatible endpoint via `MINIO_ENDPOINT`/`MINIO_ACCESS_KEY`/etc. and
+  has no dependency on the rest of the `dissmodel-platform` stack
+  (FastAPI, Jupyter, Redis), so naming it after that package was
+  misleading. `_storage.py`'s docstring and `ImportError` message now
+  say `pip install dissmodel[s3]`.
+- `README.md`: added a "Cloud storage (s3://)" section under Quick Start.
+  The `s3://` URI mechanism was already visible in the `ExperimentRecord`
+  JSON example (`"source": {"uri": "s3://...", ...}`) but never explained
+  — there was no installation, configuration, or usage guidance anywhere
+  in the README for a feature that works standalone, from the CLI, with
+  no dependency on the rest of `dissmodel-platform`.
+
+### Added
+- `tests/io/test_s3_real.py`: integration tests running a real `minio`
+  client against a real (in-process, Docker-free) S3-protocol server —
+  moto's `ThreadedMotoServer`. Every existing `s3://` test used
+  `FakeMinioClient`, an in-memory stand-in that only implements
+  `get_object`/`put_object`; it never exercised
+  `ModelExecutor._resolve_uri` (the CLI's `--input s3://...` /
+  `--output s3://...` path), which calls `minio.fget_object` — a method
+  the fake doesn't have. That path had zero test coverage until now.
+  New `dev`-extra dependencies: `minio>=7.0`, `moto[s3,server]>=5.0`.
+
+### Internal
+- Fixed all 81 lint findings surfaced by ruff 0.16.8's default rule set
+  (unsorted imports, `Optional`/`Union` → `X | None`/`X | Y`, unsorted
+  `__all__`, redundant `int | float` → `float`, merged `startswith` calls,
+  a collapsible `if`, a mutable class-attribute default → `ClassVar`).
+  Eight blind `except Exception` sites are intentional best-effort
+  fallbacks (optional CRS/transform recovery, Colab widget setup, a
+  test harness that must report rather than crash) and are now annotated
+  with `# noqa` and a one-line rationale instead of silently tripping the
+  linter.
+- `pyproject.toml`: pinned `ruff>=0.16,<0.17` in `dev` extras and rewrote
+  the `[tool.ruff]` comment, which claimed the project lints against a
+  narrow "pyflakes + pycodestyle" baseline — that was already stale
+  against ruff 0.16.8's actual (wider) default rule set, which is what
+  produced the 81 findings above with no code changes on our side. The
+  comment now describes the real default and the pin keeps it from
+  drifting again on a routine `ruff` upgrade.
+- `dissmodel/executor/registry.py` and `dissmodel/executor/testing.py`:
+  their `TYPE_CHECKING`-only import of `ModelExecutor` pointed at
+  `dissmodel.core.base`, a module that doesn't exist — silently masked by
+  `ignore_missing_imports = true` in `[tool.mypy]`, which also covers
+  first-party unresolvable imports, not just third-party ones. Both now
+  import from `dissmodel.executor.model_executor`, the actual location;
+  `ModelExecutor` in these two files' type hints stops resolving to `Any`.
+  No runtime effect (both imports were `TYPE_CHECKING`-guarded), and mypy
+  still reports no issues now that the type is real.
+- `pyproject.toml`: removed the top-level `ignore_missing_imports = true`
+  from `[tool.mypy]` — it's exactly what let the `dissmodel.core.base`
+  mismatch above go unnoticed, since it silences unresolvable first-party
+  imports the same as untyped third-party ones. The per-module override
+  list (already there for `geopandas`, `shapely`, etc.) now also covers
+  `scipy`, `minio`, `google.colab`, and `ipywidgets` — all genuinely
+  stub-less — so mypy stays clean on the same grounds as before, but a
+  future typo in one of *our* import paths won't have anywhere left to
+  hide.
+- `.github/workflows/ci.yml`: two independent config drifts that
+  bypassed the fixes above at CI time, found while adding
+  `test_s3_real.py`. The `lint` job installed `ruff` with no version
+  constraint, defeating the `pyproject.toml` pin's whole purpose of
+  keeping the default rule set from silently growing again — now
+  installs the same pinned `ruff>=0.16,<0.17`. The `test` job ran
+  `mypy dissmodel --ignore-missing-imports`, a CLI flag that overrides
+  `[tool.mypy]` entirely regardless of its per-module override list —
+  reintroducing, at the CI level, the exact blanket-ignore risk just
+  removed from `pyproject.toml` above. The flag is now gone; CI runs
+  plain `mypy dissmodel`.
+
+---
+
 ## [0.6.4] — 2026-09-22
 
 ### Fixed

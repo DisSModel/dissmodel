@@ -69,8 +69,8 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from dissmodel.geo.raster.raster_model import RasterModel
 from dissmodel.geo.raster.backend import RasterBackend
+from dissmodel.geo.raster.raster_model import RasterModel
 
 
 class RasterCellularAutomaton(RasterModel, ABC):

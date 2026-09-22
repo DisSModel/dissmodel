@@ -32,7 +32,7 @@ Before writing code or opening a pull request, make sure an issue tracks the tas
 1. Fork the repository to your personal GitHub account.
 2. Clone your fork locally:
 ```bash
-git clone [https://github.com/](https://github.com/)<your-username>/dissmodel.git
+git clone https://github.com/<your-username>/dissmodel.git
 cd dissmodel
 
 ```
@@ -74,7 +74,7 @@ pytest tests/
 ### 1. Clone Repository
 
 ```bash
-git clone [https://github.com/DisSModel/dissmodel.git](https://github.com/DisSModel/dissmodel.git)
+git clone https://github.com/DisSModel/dissmodel.git
 cd dissmodel
 
 ```
@@ -143,6 +143,6 @@ git push -u origin feat/<issue-id>-my-task
 
 ## License
 
-By contributing to DisSModel, you agree that your contributions will be licensed under the project's [MIT License](https://www.google.com/search?q=LICENSE&utm_source=gemini).
+By contributing to DisSModel, you agree that your contributions will be licensed under the project's [MIT License](LICENSE).
 
 

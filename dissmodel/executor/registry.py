@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 if TYPE_CHECKING:
-    from dissmodel.core.base import ModelExecutor
+    from dissmodel.executor.model_executor import ModelExecutor
 
 
 class ExecutorRegistry:
@@ -14,7 +14,7 @@ class ExecutorRegistry:
     themselves via __init_subclass__ without any boilerplate.
     """
 
-    _executors: dict[str, type[ModelExecutor]] = {}
+    _executors: ClassVar[dict[str, type[ModelExecutor]]] = {}
 
     @classmethod
     def register(cls, executor_cls: type[ModelExecutor]) -> None:

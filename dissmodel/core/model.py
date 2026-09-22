@@ -101,7 +101,6 @@ class Model:
         Override in subclasses to perform one-time setup such as building
         neighborhoods or initializing visualization state.
         """
-        pass
 
     def pre_execute(self) -> None:
         """
@@ -110,7 +109,6 @@ class Model:
         Override in subclasses to perform per-step setup, such as
         snapshotting state arrays before the transition rule runs.
         """
-        pass
 
     def execute(self) -> None:
         """
@@ -118,7 +116,6 @@ class Model:
 
         Override in subclasses to define model behaviour.
         """
-        pass
 
     def post_execute(self) -> None:
         """
@@ -127,7 +124,6 @@ class Model:
         Override in subclasses to perform per-step cleanup or snapshotting
         after the transition rule runs.
         """
-        pass
 
     # ------------------------------------------------------------------
     # Plot tracking

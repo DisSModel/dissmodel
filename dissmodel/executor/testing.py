@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from .schemas import DataSource, ExperimentRecord
 
 if TYPE_CHECKING:
-    from dissmodel.core.base import ModelExecutor
+    from dissmodel.executor.model_executor import ModelExecutor
 
 
 class ExecutorTestHarness:
@@ -94,7 +94,7 @@ class ExecutorTestHarness:
             print("  ⚠ Some methods are not yet implemented")
             return False
 
-        except Exception:
+        except Exception:  # noqa: BLE001 — test harness: any model failure must be reported, not crash the run; traceback is printed above
             print(f"  ❌ Error during execution:\n{traceback.format_exc()}")
             return False
 
@@ -147,7 +147,7 @@ class ExecutorTestHarness:
             self._passed.append(label)
         except AssertionError as exc:
             self._failed.append(f"{label}: {exc}")
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 — test harness: any check failure must be recorded, not crash the run; message is captured above
             self._failed.append(f"{label}: unexpected error — {exc}")
 
     def _print_report(self) -> None:

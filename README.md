@@ -170,6 +170,39 @@ python my_executor.py validate --input data/forest.gpkg
 python my_executor.py show --toml model.toml
 ```
 
+### 5. Cloud storage (s3://)
+
+Any `s3://bucket/key` URI works transparently anywhere dissmodel accepts a
+path — the CLI's `--input`/`--output`, `load_dataset`/`save_dataset`,
+`load_geotiff`/`save_geotiff` — so a model can read or write straight from
+object storage with no code changes:
+
+```bash
+python my_executor.py run \
+  --input s3://forest-data/scenes/forest.gpkg \
+  --output s3://forest-data/results/result.gpkg \
+  --toml model.toml
+```
+
+This is a standalone data-access feature, not tied to the rest of the
+`dissmodel-platform` stack — it works against any S3-compatible endpoint:
+a bare MinIO server you run yourself, AWS S3, or anything else that speaks
+the S3 protocol.
+
+Install the extra and configure the endpoint through environment variables:
+
+```bash
+pip install dissmodel[s3]
+
+export MINIO_ENDPOINT=localhost:9000      # host:port, no scheme
+export MINIO_ACCESS_KEY=your-access-key
+export MINIO_SECRET_KEY=your-secret-key
+export MINIO_SECURE=1                     # unset/empty for plain HTTP (e.g. local dev)
+```
+
+No further setup is required — `s3://` URIs are resolved lazily, so nothing
+above is needed for runs that only use local paths.
+
 ---
 
 ## 📦 ExperimentRecord: Reproducibility by Design
@@ -221,7 +254,7 @@ DisSModel is a core framework. To maintain a clean and specialized environment, 
 | [`dissmodel-ca`](https://github.com/DisSModel/dissmodel-ca) | Classic Cellular Automata (Game of Life, Forest Fire, Growth) | `pip install "git+https://github.com/DisSModel/dissmodel-ca.git"` |
 | [`dissmodel-sysdyn`](https://github.com/DisSModel/dissmodel-sysdyn) | System Dynamics (SIR, Predator-Prey, Lorenz) | `pip install "git+https://github.com/DisSModel/dissmodel-sysdyn.git"` |
 | [`brmangue-dissmodel`](https://github.com/DisSModel/brmangue-dissmodel) | BR-MANGUE coastal flooding and mangrove succession model (raster + vector, validated against TerraME) | `pip install "git+https://github.com/DisSModel/brmangue-dissmodel.git"` |
-| [`disslucc`](https://github.com/LambdaGeo/disslucc) | Land Use and Cover Change models, continuous and discrete allocation (CLUE-inspired), raster-only | `pip install "git+https://github.com/LambdaGeo/disslucc.git"` |
+| [`disslucc`](https://github.com/DisSModel/disslucc) | Land Use and Cover Change models, continuous and discrete allocation (CLUE-inspired), raster-only | `pip install "git+https://github.com/DisSModel/disslucc.git"` |
 
 ### 🛠 Implementation Templates
 

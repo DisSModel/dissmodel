@@ -52,7 +52,6 @@ from typing import Any
 import numpy as np
 from scipy.ndimage import binary_dilation
 
-
 # Moore neighbourhood (8 directions) — framework constant, not domain-specific.
 DIRS_MOORE: list[tuple[int, int]] = [
     (-1, -1), (-1, 0), (-1, 1),
@@ -125,7 +124,7 @@ class RasterBackend:
     def __init__(
         self,
         shape: tuple[int, int],
-        nodata_value: float | int | None = None,
+        nodata_value: float | None = None,
         transform: Any = None,
         crs: Any = None,
     ) -> None:
@@ -334,8 +333,8 @@ class RasterBackend:
         # CRS as spatial_ref coordinate (CF / rioxarray convention)
         if self.crs is not None:
             try:
-                from pyproj import CRS as ProjCRS
                 import xarray as xr
+                from pyproj import CRS as ProjCRS
                 crs_obj = ProjCRS.from_user_input(self.crs)
                 base_coords["spatial_ref"] = xr.DataArray(
                     0,
@@ -344,7 +343,7 @@ class RasterBackend:
                         "grid_mapping": "spatial_ref",
                     },
                 )
-            except Exception:
+            except Exception:  # noqa: BLE001, S110 — optional CF metadata; array export still succeeds without it
                 pass
 
         data_vars = {}
@@ -385,7 +384,7 @@ class RasterBackend:
         return ds
 
     @classmethod
-    def from_xarray(cls, ds, nodata_value: float | int | None = None) -> "RasterBackend":
+    def from_xarray(cls, ds, nodata_value: float | None = None) -> RasterBackend:
         """
         Build a ``RasterBackend`` from an ``xr.Dataset`` or ``xr.DataArray``.
 
@@ -462,7 +461,7 @@ class RasterBackend:
                 ) if res_y < 0 else rasterio.transform.Affine(
                     res_x, 0, origin_x, 0, res_y, origin_y
                 )
-        except Exception:
+        except Exception:  # noqa: BLE001, S110 — best-effort transform recovery from xarray coords; falls back to `transform=None`
             pass
 
         # recover CRS
@@ -473,7 +472,7 @@ class RasterBackend:
                 wkt = ds.coords["spatial_ref"].attrs.get("crs_wkt", "")
                 if wkt:
                     crs = ProjCRS.from_wkt(wkt)
-            except Exception:
+            except Exception:  # noqa: BLE001, S110 — best-effort CRS recovery from xarray coords; falls back to `crs=None`
                 pass
 
         backend = cls(

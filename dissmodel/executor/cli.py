@@ -163,7 +163,7 @@ def _apply_output_path_intelligence(record, args) -> None:
 
 def _cmd_run(executor_cls, args) -> None:
     from dissmodel.executor.runner import execute_lifecycle
-    from dissmodel.io._utils       import write_text
+    from dissmodel.io._utils import write_text
 
     record   = _build_record(args)
     executor = executor_cls()
@@ -212,7 +212,7 @@ def _cmd_run(executor_cls, args) -> None:
         chk = write_text(md_report, profiling_uri, content_type="text/markdown")
         record.add_artifact("profiling", chk)
         record.add_log(f"Saved profiling artifact → {profiling_uri}")
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001 — profiling artifact is a nice-to-have; a save failure must not fail the run, and it's already logged above
         record.add_log(f"Warning: Could not save profiling artifact: {e}")
 
     # ── Final JSON record and summary prints ──────────────────────────────────

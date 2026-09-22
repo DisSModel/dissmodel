@@ -1,4 +1,4 @@
-from .model import Model
 from .environment import Environment
+from .model import Model
 
-__all__ = ["Model", "Environment"]
+__all__ = ["Environment", "Model"]

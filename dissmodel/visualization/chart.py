@@ -2,15 +2,14 @@ from __future__ import annotations
 
 import io
 import pathlib
-from typing import Any, Optional
+from typing import Any
 
-import matplotlib.pyplot as plt
-import matplotlib.figure
 import matplotlib.axes
+import matplotlib.figure
+import matplotlib.pyplot as plt
 
 from dissmodel.core import Model
 from dissmodel.visualization._utils import is_interactive_backend, is_notebook
-
 
 # ---------------------------------------------------------------------------
 # Decorator
@@ -88,7 +87,7 @@ class Chart(Model):
 
     fig: matplotlib.figure.Figure
     ax: matplotlib.axes.Axes
-    select: Optional[list[str]]
+    select: list[str] | None
     interval: int
     time_points: list[float]
     pause: bool
@@ -103,7 +102,7 @@ class Chart(Model):
     # declares the keywords it accepts.
     def setup(  # type: ignore[override]
         self,
-        select: Optional[list[str]] = None,
+        select: list[str] | None = None,
         pause: bool = True,
         plot_area: Any = None,
         show_legend: bool = True,
@@ -240,9 +239,8 @@ class Chart(Model):
 
         else:
             # interactive window
-            if self.pause:
-                if is_interactive_backend():
-                    plt.pause(0.1)
-                    end_time = getattr(self.env, "end_time", step)
-                    if step == end_time:
-                        plt.show()
+            if self.pause and is_interactive_backend():
+                plt.pause(0.1)
+                end_time = getattr(self.env, "end_time", step)
+                if step == end_time:
+                    plt.show()

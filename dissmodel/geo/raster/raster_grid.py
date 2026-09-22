@@ -21,14 +21,12 @@ Uso
 """
 from __future__ import annotations
 
-from typing import Union
-
 import numpy as np
 
 from dissmodel.geo.raster.backend import RasterBackend
 
 # Valor escalar ou array pré-computado
-AttrValue = Union[int, float, np.ndarray]
+AttrValue = int | float | np.ndarray
 
 
 def raster_grid(

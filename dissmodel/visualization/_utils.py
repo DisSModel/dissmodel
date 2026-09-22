@@ -41,7 +41,7 @@ if _ENV == "colab":
     try:
         from google.colab import output as _colab_output
         _colab_output.enable_custom_widget_manager()
-    except Exception:
+    except Exception:  # noqa: BLE001, S110 — Colab-only setup; no-op everywhere else
         pass
 
 

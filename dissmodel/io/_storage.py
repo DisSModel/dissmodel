@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import os
 
-# MinIO client is an optional dependency.
-# Install with: pip install dissmodel[platform]
+# MinIO client is an optional dependency, for s3:// URI support.
+# Install with: pip install dissmodel[s3]
 
 _default_client = None
 
@@ -23,7 +23,7 @@ def get_default_client():
     except ImportError:
         raise ImportError(
             "s3:// URIs require the 'minio' package.\n"
-            "Install with: pip install minio"
+            "Install with: pip install dissmodel[s3]"
         )
 
     _default_client = Minio(

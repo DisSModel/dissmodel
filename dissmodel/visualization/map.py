@@ -17,11 +17,11 @@ from __future__ import annotations
 import pathlib
 from typing import Any
 
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.figure
-import matplotlib.axes
 import geopandas as gpd
+import matplotlib
+import matplotlib.axes
+import matplotlib.figure
+import matplotlib.pyplot as plt
 
 from dissmodel.core import Model
 from dissmodel.visualization._utils import is_interactive_backend, is_notebook

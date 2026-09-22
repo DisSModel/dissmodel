@@ -53,13 +53,13 @@ import pathlib
 from typing import Any
 
 import matplotlib
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.patches
+import matplotlib.pyplot as plt
+import numpy as np
 
 from dissmodel.core import Model
-from dissmodel.visualization._utils import is_notebook, is_interactive_backend
+from dissmodel.visualization._utils import is_interactive_backend, is_notebook
 
 
 def _get_nodata_mask(backend) -> np.ndarray | None:
@@ -159,7 +159,7 @@ class RasterMap(Model):
         legend:          bool             = True,
         colorbar_label:  str | None       = None,
         mask_band:       str | None       = None,
-        mask_value:      int | float | None = None,
+        mask_value:      float | None = None,
     ) -> None:
         """
         Configure the raster map component.

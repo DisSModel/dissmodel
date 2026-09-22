@@ -9,9 +9,9 @@ if TYPE_CHECKING:
 
 
 def execute_lifecycle(
-    executor: "ModelExecutor",
-    record: "ExperimentRecord",
-) -> tuple["ExperimentRecord", dict[str, float]]:
+    executor: ModelExecutor,
+    record: ExperimentRecord,
+) -> tuple[ExperimentRecord, dict[str, float]]:
     """
     Canonical lifecycle orchestration for DisSModel executors.
 

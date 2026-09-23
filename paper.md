@@ -171,16 +171,17 @@ with timings, checksums, and artifact paths.
 [@Veldkamp1996]; MAE is the appropriate metric for its fractional outputs
 [@PontiusEtAl2011; @Willmott2005]. Over the Lab1 study area (6,574 cells, 6 steps),
 the raster implementation reproduces the TerraME/LUCCME reference at MAE = 0.0036
-(RMSE 0.0062, max error 0.027) in [0,1] scale, at 44.0 ms/step. The residual is
-accounted for by the original model's own convergence tolerance: the LuccME script
-declares `maxDifference = 1643` area units against a 2014 demand of 21,607 — a
-7.6% band, within which the reference itself stops short of its declared demand.
-Consistently, the Pontius decomposition attributes 90% of the residual to quantity
-and 10% to allocation [@PontiusMillones2011]. Reproducible via
-`disslucc/tests/test_validation_lab1.py`, with
-`disslucc/tests/test_benchmark_discriminance_lab1.py` confirming that perturbing
-the regression coefficients breaks the tolerance criterion. End-to-end provenance
-from raw inputs to final metrics is addressed by the `dissmodel-platform` package.
+(RMSE 0.0062, max error 0.027) in [0,1] scale, at 44.0 ms/step. The residual is a
+single, deliberate deviation: LuccME's per-cell consistency correction
+(`correctCellChange`) never executes, because its guard tests a misspelled
+attribute, while `disslucc` runs it by default. With that step disabled
+(`cell_correction=False`), `disslucc` matches TerraME in every simulated year,
+including the number of convergence iterations per year (MAE < 1e-7). Reproducible via
+`disslucc/tests/test_validation_lab1.py` and `test_goldens_per_year.py`, against
+year-by-year reference outputs generated in a containerised TerraME
+[@TerraMEDocker]; `disslucc/tests/test_benchmark_discriminance_lab1.py` confirms
+that perturbing the regression coefficients breaks the tolerance criterion.
+End-to-end provenance from raw inputs to final metrics is addressed by the `dissmodel-platform` package.
 
 ## Research Impact Statement
 
@@ -218,9 +219,10 @@ initial version has been validated against the Lab15 case study (Moju
 municipality, 5,914 cells, 6 steps) from the reference LuccME implementation
 [@LuccME], reaching cell-for-cell agreement — zero quantity and zero allocation
 disagreement [@PontiusMillones2011] — at 10.3 ms/step. A shipped discriminance
-test shows this scenario is also reproduced by a trivial static ranking, so it
-validates coefficient transcription rather than the allocation algorithm; a
-dynamic-covariate scenario is planned.
+test shows the final map is also reproduced by a trivial static ranking, so the
+map alone validates only coefficient transcription; the convergence loop is
+validated separately, as the number of CLUE-S iterations matches TerraME in every
+simulated year (0, 67, 56, 56, 61, 61).
 
 These packages — `dissmodel-ca`, `dissmodel-sysdyn`, `disslucc`,
 and `brmangue-dissmodel` — demonstrate that the

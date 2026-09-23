@@ -247,6 +247,12 @@ Every run via the executor lifecycle generates a `profiling_{id}.md` alongside t
 
 DisSModel is a core framework. To maintain a clean and specialized environment, all simulation models and implementation examples are hosted in separate repositories within the DisSModel ecosystem.
 
+The map below shows how the pieces fit together, and how each one relates to its counterpart in INPE's TerraME ecosystem, which DisSModel takes as its conceptual basis. It is an early snapshot: the `dissmodel` core is the most mature piece, and the other packages are still taking shape.
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/DisSModel/dissmodel/main/docs/assets/images/dissmodel_ecosystem.svg" alt="DisSModel ecosystem map: TerraME is the conceptual basis for the dissmodel core; TerraME's CA, system dynamics and agent-based packages correspond to dissmodel-ca, dissmodel-sysdyn and dissmodel-abm; LuccME corresponds to disslucc; fillCell corresponds to disscube; haloexec and dissmodel-platform are new infrastructure with no TerraME counterpart" width="100%">
+</p>
+
 ### 🔬 Specialized Model Libraries
 
 | Repository | Description | Install |

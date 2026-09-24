@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Changed
+- `load_geotiff` sets `RasterBackend.transform` and `RasterBackend.crs` from
+  the file (they were only in the returned `meta` dict), and `save_geotiff`
+  falls back to them: `save_geotiff(backend, uri)` writes a georeferenced
+  GeoTIFF without a `meta` dict. Explicit `crs`/`transform` arguments still
+  override `meta`, and `meta` overrides the backend.
+
 ## [0.6.5] — 2026-09-22
 
 ### Fixed

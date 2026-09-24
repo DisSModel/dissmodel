@@ -120,6 +120,22 @@ class TestSaveGeotiff:
         assert len(payload) > 0
         assert isinstance(checksum, str) and len(checksum) == 64
 
+    def test_backend_georeference_is_the_fallback(self, backend, tmp_path):
+        path = tmp_path / "own.tif"
+        backend.transform = rasterio.transform.from_bounds(10, 20, 510, 420, 5, 4)
+        backend.crs = "EPSG:31984"
+        save_geotiff(backend, str(path))  # the backend alone, no meta
+        with rasterio.open(str(path)) as ds:
+            assert "31984" in ds.crs.to_string()
+            assert ds.transform == backend.transform
+
+    def test_meta_overrides_the_backend_georeference(self, backend, tmp_path):
+        path = tmp_path / "meta_wins.tif"
+        backend.crs = "EPSG:31984"
+        save_geotiff((backend, {"crs": "EPSG:4326"}), str(path))
+        with rasterio.open(str(path)) as ds:
+            assert ds.crs.to_string() == "EPSG:4326"
+
     def test_mixed_dtype_bands_are_not_truncated(self, backend, tmp_path):
         """Regression: int32 + float32 bands must promote to a common
         dtype instead of truncating floats to the first band's dtype."""
@@ -152,6 +168,20 @@ class TestLoadGeotiff:
         (_, meta), _ = load_geotiff(str(path), band_spec=band_spec)
         assert "31984" in meta["crs"].to_string()
         assert meta["transform"] is not None
+
+    def test_backend_carries_crs_and_transform(self, saved_tif):
+        path, band_spec, _ = saved_tif
+        (loaded, meta), _ = load_geotiff(str(path), band_spec=band_spec)
+        assert loaded.crs == meta["crs"]
+        assert loaded.transform == meta["transform"]
+
+    def test_load_then_save_the_backend_keeps_the_georeference(self, saved_tif, tmp_path):
+        path, _, _ = saved_tif
+        (loaded, _), _ = load_geotiff(str(path))
+        copy = tmp_path / "copy.tif"
+        save_geotiff(loaded, str(copy))
+        with rasterio.open(str(path)) as a, rasterio.open(str(copy)) as b:
+            assert a.crs == b.crs and a.transform == b.transform
 
     def test_without_band_spec_recovers_tag_names(self, saved_tif):
         path, _, _ = saved_tif

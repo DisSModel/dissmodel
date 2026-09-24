@@ -306,12 +306,12 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
 
 ```bibtex
 @software{dissmodel2026,
-  author = {Costa, Sérgio Souza and Santos Junior, Nerval de Jesus and Sousa, Felipe Martins and Alves, José Magno Pinheiro and Bezerra, Denilson da Silva},
+  author = {Costa, Sérgio Souza and Santos Junior, Nerval de Jesus and Sousa, Felipe Martins and Bezerra, Denilson da Silva},
   title = {DisSModel: A Python Framework for Spatially Explicit Dynamic Modeling},
   year = {2026},
-  publisher = {LambdaGeo, Federal University of Maranhão (UFMA)},
+  publisher = {GitHub},
   url = {https://github.com/DisSModel/dissmodel},
-  version = {0.6.0}
+  version = {0.6.5}
 }
 ```
 

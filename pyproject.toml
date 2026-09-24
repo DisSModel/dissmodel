@@ -10,12 +10,14 @@ readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
 
 authors = [
-    { name = "Sérgio Costa" },
-    { name = "Nerval Santos Junior" }
+    { name = "Sérgio Souza Costa" },
+    { name = "Nerval de Jesus Santos Junior" },
+    { name = "Felipe Martins Sousa" },
+    { name = "Denilson da Silva Bezerra" },
 ]
 
 maintainers = [
-    { name = "Sérgio Costa" }
+    { name = "Sérgio Souza Costa" }
 ]
 
 license = { text = "MIT" }

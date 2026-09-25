@@ -498,6 +498,40 @@ class RasterBackend:
 
     # ── spatial operations ────────────────────────────────────────────────────
 
+    def cell_area(self) -> np.ndarray:
+        """
+        Area of each cell, shape ``(rows, cols)``, from ``transform`` and ``crs``.
+
+        On a geographic CRS the result is in **square metres** on the CRS's
+        ellipsoid (``pyproj.Geod``): a 1/12° cell is ~86 km² at the equator and
+        ~72 km² at 34° S, so a fraction map's areas are fraction × cell area,
+        not fraction × a nominal size. On a projected CRS it is the planar
+        pixel area, in the CRS's units squared.
+
+        Requires a north-up ``transform`` (no rotation) and, for a geographic
+        CRS, ``pyproj``.
+        """
+        if self.transform is None or self.crs is None:
+            raise ValueError("cell_area needs the backend's transform and crs")
+        t = self.transform
+        if t.b != 0 or t.d != 0:
+            raise ValueError("cell_area supports north-up transforms only (no rotation)")
+        rows, cols = self.shape
+        from pyproj import CRS, Geod
+
+        crs = CRS.from_user_input(self.crs)
+        if not crs.is_geographic:
+            return np.full((rows, cols), abs(t.a * t.e))
+        geod = crs.get_geod() or Geod(ellps="WGS84")
+        west, east = t.c, t.c + t.a
+        area = np.empty(rows)
+        for r in range(rows):
+            north, south = t.f + r * t.e, t.f + (r + 1) * t.e
+            a, _ = geod.polygon_area_perimeter([west, east, east, west], [north, north, south, south])
+            area[r] = abs(a)
+        return np.repeat(area[:, None], cols, axis=1)
+
+
     @staticmethod
     def shift2d(arr: np.ndarray, dr: int, dc: int) -> np.ndarray:
         """

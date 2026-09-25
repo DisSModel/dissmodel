@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   GeoTIFF without a `meta` dict. Explicit `crs`/`transform` arguments still
   override `meta`, and `meta` overrides the backend.
 
+### Added
+- `RasterBackend.cell_area()`: the area of each cell from `transform` and
+  `crs` — square metres on the ellipsoid for a geographic CRS (a 1/12° cell
+  is ~86 km² at the equator and ~72 km² at 33° S), the pixel area for a
+  projected one.
+
 ## [0.6.5] — 2026-09-22
 
 ### Fixed

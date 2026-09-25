@@ -230,3 +230,38 @@ class TestDirs:
     def test_von_neumann_no_diagonals(self):
         diagonals = [(dr, dc) for dr, dc in DIRS_VON_NEUMANN if dr != 0 and dc != 0]
         assert diagonals == []
+
+
+class TestCellArea:
+    """cell_area(): true areas on a geographic grid, pixel area on a projected one."""
+
+    def _geographic(self, res: float, top: float, rows: int = 3, cols: int = 2) -> RasterBackend:
+        pytest.importorskip("pyproj")
+        from affine import Affine
+
+        return RasterBackend(shape=(rows, cols), transform=Affine(res, 0, -50.0, 0, -res, top), crs="EPSG:4326")
+
+    def test_one_degree_at_the_equator(self):
+        b = self._geographic(1.0, 0.5, rows=1, cols=1)
+        # 1° × 1° centred on the equator, WGS 84: 110.57 km × 111.32 km
+        assert b.cell_area()[0, 0] == pytest.approx(12_309e6, rel=1e-3)
+
+    def test_cells_shrink_away_from_the_equator_and_rows_repeat(self):
+        b = self._geographic(1 / 12, 0.0, rows=400)
+        area = b.cell_area()
+        assert area.shape == (400, 2)
+        assert (np.diff(area[:, 0]) < 0).all()
+        assert (area[:, 0] == area[:, 1]).all()
+        assert area[0, 0] / 1e6 == pytest.approx(85.5, abs=0.1)     # 1/12° at the equator
+        assert area[-1, 0] / 1e6 == pytest.approx(71.7, abs=0.1)    # 1/12° at 33.3° S
+
+    def test_projected_grid_is_the_pixel_area(self):
+        pytest.importorskip("pyproj")
+        from affine import Affine
+
+        b = RasterBackend(shape=(2, 3), transform=Affine(30.0, 0, 0, 0, -30.0, 0), crs="EPSG:31983")
+        np.testing.assert_array_equal(b.cell_area(), np.full((2, 3), 900.0))
+
+    def test_needs_the_georeference(self):
+        with pytest.raises(ValueError, match="transform and crs"):
+            RasterBackend(shape=(2, 2)).cell_area()

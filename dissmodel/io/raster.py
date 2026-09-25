@@ -80,7 +80,7 @@ def _read_geotiff(
 
     with rasterio.open(path_str) as ds:
         rows, cols = ds.height, ds.width
-        backend    = RasterBackend(shape=(rows, cols))
+        backend    = RasterBackend(shape=(rows, cols), transform=ds.transform, crs=ds.crs)
 
         if band_spec:
             for i, (name, dtype, nodata) in enumerate(band_spec, start=1):
@@ -126,17 +126,20 @@ def save_geotiff(
 
     Parameters
     ----------
-    data : (RasterBackend, dict)
-        Backend and metadata dict (as returned by load_geotiff).
+    data : (RasterBackend, dict) or RasterBackend
+        Backend and metadata dict (as returned by load_geotiff), or the
+        backend alone.
     uri : str
         Destination URI. Local path or s3://bucket/key.
     band_spec : list of (name, dtype, nodata) or None
         Bands to write in order. Missing bands are filled with nodata.
         If None, all arrays in the backend are written.
     crs : str or None
-        CRS string (e.g. "EPSG:31984"). Overrides meta["crs"].
+        CRS string (e.g. "EPSG:31984"). Overrides meta["crs"], which
+        overrides ``backend.crs``.
     transform : Affine or None
-        Affine geotransform. Overrides meta["transform"].
+        Affine geotransform. Overrides meta["transform"], which overrides
+        ``backend.transform``.
     compress : str
         Compression algorithm. Default: "deflate".
 
@@ -150,9 +153,9 @@ def save_geotiff(
     if not HAS_RASTERIO:
         raise ImportError("rasterio is required — pip install rasterio")
 
-    backend, meta = data
-    resolved_crs       = crs       or (meta.get("crs") if meta else None)
-    resolved_transform = transform or (meta.get("transform") if meta else None)
+    backend, meta = data if isinstance(data, tuple) else (data, None)
+    resolved_crs       = crs       or (meta.get("crs") if meta else None) or backend.crs
+    resolved_transform = transform or (meta.get("transform") if meta else None) or backend.transform
 
     with tempfile.NamedTemporaryFile(suffix=".tif", delete=False) as f:
         tmp = f.name

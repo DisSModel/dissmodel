@@ -179,7 +179,7 @@ year-by-year reference outputs generated in a containerised TerraME
 that perturbing the regression coefficients breaks the tolerance criterion.
 
 The discrete CLUE-S-like allocation in `disslucc`, with a logistic-regression
-potential, reproduces the Lab15 case study (Moju municipality, 5,914 cells, 6 steps)
+potential, reproduces the Lab15 case study (Mojui, Pará 5,914 cells, 6 steps)
 from the reference LuccME implementation [@LuccME] cell for cell — zero quantity and
 zero allocation disagreement [@PontiusMillones2011] — at 10.3 ms/step. A shipped
 discriminance test shows the final map is also reproduced by a trivial static ranking,

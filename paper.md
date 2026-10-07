@@ -150,11 +150,11 @@ submitting author — the same researchers responsible for the DisSModel reimple
 validates the raster implementation against TerraME over the Maranhão Island
 dataset (50,496 cells, 19 steps): land use and soil match exactly at every
 checkpoint (MAE 0, max error 0), and elevation on 97.3% of cells within 1 mm
-(MAE 0.00068 m) — match percentage being the appropriate metric for categorical
+(MAE 0.00068 m; maximum absolute error 0.24 m against elevations of 1–58 m) — match percentage being the appropriate metric for categorical
 outputs [@PontiusEtAl2011]. In this scenario the flood component triggers no
 land-use transition and the golden files confirm TerraME does the same, so the
-agreement above exercises mangrove migration; flooding is covered separately under
-the laboratory parameters. Reproducible via the package's validation executor
+agreement above exercises mangrove migration; flooding is only checked separately: a test confirms that it occurs under the
+laboratory parameters (2,470 cells by step 11), but a step-by-step comparison with TerraME for that case is still pending. Reproducible via the package's validation executor
 against its committed golden files.
 
 Cross-substrate equivalence (60×60 synthetic grid, 3,600 cells, 10 steps) shows
@@ -163,29 +163,29 @@ error 0.024 m), with raster at 2.1 ms/step against 84.2 ms/step for vector (40.1
 speedup; the vector port follows TerraME's per-cell loops); the residual elevation divergence is floating-point rounding, not
 algorithmic disagreement.
 
-**disslucc** [@DisSLUCC] implements the continuous CLUE-like allocation algorithm
-[@Veldkamp1996]; MAE is the appropriate metric for its fractional outputs
-[@PontiusEtAl2011; @Willmott2005]. Over the Lab1 study area (6,574 cells, 6 steps),
-the raster implementation reproduces the TerraME/LUCCME reference at MAE = 0.0036
-(RMSE 0.0062, max error 0.027) in [0,1] scale, at 44.0 ms/step. The residual is a
-single, deliberate deviation: LuccME's per-cell consistency correction
-(`correctCellChange`) never executes, because its guard tests a misspelled
-attribute, while `disslucc` runs it by default. With that step disabled
-(`cell_correction=False`), `disslucc` matches TerraME in every simulated year,
-including the number of convergence iterations per year (MAE < 1e-7). Reproducible via
-`disslucc/tests/test_validation_lab1.py` and `test_goldens_per_year.py`, against
-year-by-year reference outputs generated in a containerised TerraME
-[@TerraMEDocker]; `disslucc/tests/test_benchmark_discriminance_lab1.py` confirms
-that perturbing the regression coefficients breaks the tolerance criterion.
+**disslucc as a second case.** `disslucc` [@DisSLUCC], a package built on DisSModel,
+reimplements the LuccME demand, potential and allocation components (continuous CLUE-like
+[@Veldkamp1996] and discrete CLUE-S-like). It is used here to test the `ModelExecutor` contract
+and the raster substrate against a second TerraME application, not as a result of its own. Its
+checks live in a separate, versioned benchmark [@DisSLUCCBenchmark] that compares every simulated
+year, iteration counts included, with per-year outputs generated in a containerised TerraME
+[@TerraMEDocker] and checked by SHA-256. Scenarios follow the LuccME test labs (`labNN`); the
+`labNN_mdX` variants exercise the convergence loop. MAE suits fractional outputs
+[@PontiusEtAl2011; @Willmott2005].
 
-The discrete CLUE-S-like allocation in `disslucc`, with a logistic-regression
-potential, reproduces the Lab15 case study (Mojui, Pará 5,914 cells, 6 steps)
-from the reference LuccME implementation [@LuccME] cell for cell — zero quantity and
-zero allocation disagreement [@PontiusMillones2011] — at 10.3 ms/step. A shipped
-discriminance test shows the final map is also reproduced by a trivial static ranking,
-so the map alone validates only coefficient transcription; the convergence loop is
-validated separately, as the number of CLUE-S iterations matches TerraME in every
-simulated year (0, 67, 56, 56, 61, 61).
+`lab01_md1643` (continuous, 6,574 cells, 6 steps) matches the reference with MAE = 0.0036 in the
+final year (mean over years 0.0026, [0,1] scale). The residual is one deliberate deviation:
+LuccME's per-cell correction (`correctCellChange`) never executes, because its guard reads a
+field name that does not match the one defined, while `disslucc` runs it by default. Without it
+(`cell_correction=False`) the match holds in every year, with identical iteration counts
+(0, 0, 8, 26, 18, 17, 17; MAE < 1e-7). `lab15_md10` (discrete, 5,914 cells) reproduces the
+reference cell for cell, with zero quantity and allocation disagreement [@PontiusMillones2011]
+and identical iteration counts (0, 67, 56, 56, 61, 61); the final map alone only checks
+coefficient transcription, and the iterations check the convergence loop. Overall, ten of the 21
+LuccME test labs and the two variants match with identical iteration counts and differences up to
+3e-6 (single-precision paths). A validated lab runs in 0.1 to 0.5 s on the hardware above (median
+of five; `make timing`), against 2 to 9 s for one uncontrolled TerraME run: informative, not a
+speed ratio.
 
 ## Research Impact Statement
 
@@ -205,12 +205,11 @@ INPE), whose doctoral work established BR-MANGUE's scientific foundation
 program (UFMA projects PVCBS4959-2025 and PVCBS4960-2025), a
 collaboration predating DisSModel itself [@Bezerra2025BM].
 
-Starting August 2026, the project receives its first undergraduate research
-fellows, funded by UFMA and by CNPq. The 2026 development effort was oriented toward this milestone:
-stabilizing the `ModelExecutor` contract so each fellow can own an independent
-repository — `disslucc`, `brmangue-dissmodel`, or
-`disscube` (a data-cube layer, a Python alternative to TerraME's
-`fillCellularSpace`) — without core changes.
+Since September 2026, four undergraduate research fellows, funded by UFMA and by CNPq,
+are being trained on the project. The 2026 development effort prepared for this by stabilizing
+the `ModelExecutor` contract, so that each fellow can own an independent repository —
+`disslucc`, `brmangue-dissmodel`, or `disscube` [@DisSCube] (a data-cube layer, a Python alternative to
+TerraME's `fillCellularSpace`) — without core changes.
 
 Studies such as @Bezerra2022, developed using LuccME, are the class
 of models `disslucc` aims to reproduce. A roadmap toward
@@ -244,7 +243,13 @@ not involve generative AI. Development resumed in February–March 2026 with Cla
 (chat) used mainly for documentation; from April 2026, Gemini CLI accelerated code
 generation and refactoring; from June 2026, Claude Code (CLI) was used on newer
 satellite repositories such as `disslucc`, including the audit of the
-validation routines against the original TerraME scripts. AI tools also assisted
+validation routines against the original TerraME scripts. In September–October 2026,
+in response to the review, Claude (Claude Code and chat) was also used to build the
+separate `disslucc-benchmark` repository (scenario definitions, the comparison and
+timing scripts, and a differential test against the original Lua code), to reorganize
+`disslucc`, and to revise the validation text of this paper so that it matches the
+benchmark; the reference results themselves come from the original TerraME/LuccME
+code, run unmodified in a container. AI tools also assisted
 with writing in English, not the submitting author's native language. The
 scientific design — the TerraME compatibility contract, executor pattern,
 dual-substrate architecture, and validation methodology — predates and is

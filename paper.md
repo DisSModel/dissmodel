@@ -148,20 +148,21 @@ whose co-authors include Denilson da Silva Bezerra, Felipe Martins Sousa and the
 submitting author — the same researchers responsible for the DisSModel reimplementation. The
 `brmangue-dissmodel` package [@BRMangue]
 validates the raster implementation against TerraME over the Maranhão Island
-dataset (50,496 cells, 19 steps): land use and soil match exactly at every
-checkpoint (MAE 0, max error 0), and elevation on 97.3% of cells within 1 mm
-(MAE 0.00068 m; maximum absolute error 0.24 m against elevations of 1–58 m) — match percentage being the appropriate metric for categorical
-outputs [@PontiusEtAl2011]. In this scenario the flood component triggers no
-land-use transition and the golden files confirm TerraME does the same, so the
-agreement above exercises mangrove migration; flooding is only checked separately: a test confirms that it occurs under the
-laboratory parameters (2,470 cells by step 11), but a step-by-step comparison with TerraME for that case is still pending. Reproducible via the package's validation executor
-against its committed golden files.
+dataset (50,496 cells). In the baseline scenario (19 steps) land use and soil match
+exactly at every checkpoint, and elevation matches on 97.4% of cells within 1 mm
+(MAE 0.00038 m; maximum absolute error 0.10 m against elevations of 1–58 m); match
+percentage is the appropriate metric for categorical outputs [@PontiusEtAl2011]. In the
+flooding scenario (the laboratory parameters, 2,469 cells flooded by step 11) soil
+matches exactly and land use differs in fewer than 0.05% of cells, with elevation within
+1 mm on 94.9% of cells after 10 steps. The residual elevation differences are
+floating-point rounding in the order of summation, not a difference in the rules. Both
+scenarios are reproducible via the package's validation executor.
 
 Cross-substrate equivalence (60×60 synthetic grid, 3,600 cells, 10 steps) shows
-100% match for land use, soil, and elevation under tolerance (MAE 0.000959 m, max
-error 0.024 m), with raster at 2.1 ms/step against 84.2 ms/step for vector (40.1×
-speedup; the vector port follows TerraME's per-cell loops); the residual elevation divergence is floating-point rounding, not
-algorithmic disagreement.
+100% match for land use, soil, and elevation under tolerance (MAE 0.0011 m, max
+error 0.024 m), with raster at 2.0 ms/step against 76.4 ms/step for vector (37.4×
+speedup; the vector port follows TerraME's per-cell loops); the residual elevation
+divergence is floating-point rounding, not algorithmic disagreement.
 
 **disslucc as a second case.** `disslucc` [@DisSLUCC], a package built on DisSModel,
 reimplements the LuccME demand, potential and allocation components (continuous CLUE-like

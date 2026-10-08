@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![PyPI version](https://badge.fury.io/py/dissmodel.svg)](https://pypi.org/project/dissmodel/)
-[![Coverage](https://img.shields.io/badge/coverage-79%25-orange.svg)](https://github.com/DisSModel/dissmodel/actions)
+[![Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen.svg)](https://github.com/DisSModel/dissmodel/actions)
 [![DisSModel](https://img.shields.io/badge/LambdaGeo-Research-green.svg)](https://github.com/DisSModel)
 [![JOSS Status](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec/status.svg)](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec)
 
@@ -320,7 +320,7 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
   year = {2026},
   publisher = {GitHub},
   url = {https://github.com/DisSModel/dissmodel},
-  version = {0.6.5}
+  version = {0.6.6}
 }
 ```
 

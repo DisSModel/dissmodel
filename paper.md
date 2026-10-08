@@ -141,7 +141,7 @@ demand, potential and allocation components (continuous CLUE-like [@Veldkamp1996
 CLUE-S-like). It tests the `ModelExecutor` contract and the raster substrate against a second
 TerraME application, not as a result in itself. Its checks live in a separate, versioned benchmark
 [@DisSLUCCBenchmark] that compares every simulated year, iteration counts included, with per-year
-outputs generated in a containerized TerraME [@TerraMEDocker] and checked by SHA-256. Scenarios
+reference outputs [@LuccMEGoldens] generated in a containerized TerraME [@TerraMEDocker] and checked by SHA-256. Scenarios
 follow the LuccME test labs (`labNN`); the `labNN_mdX` variants exercise the convergence loop. MAE
 suits fractional outputs [@PontiusEtAl2011; @Willmott2005].
 
@@ -201,12 +201,15 @@ We thank José Magno Pinheiro Alves for early validation testing.
 
 The initial prototype (May–June 2025), the second author's undergraduate thesis
 [@SantosJunior2025], did not involve generative AI. From February 2026, Claude and Gemini CLI
-supported documentation, tests and refactoring of code that already existed. Since mid-2026,
-Claude Code has been used across the whole ecosystem (the core framework, its satellite packages
-and their benchmarks) for implementation, validation scripts, documentation and this paper's text
-and English. This is what has made it feasible to build the ecosystem envisioned by the
-submitting author. The reference outputs used in validation come from the unmodified TerraME/LuccME model files run in a container; for BR-MANGUE, only the headless driver that runs them is AI-written. The scientific design — TerraME compatibility contract, executor pattern,
-dual-substrate architecture, validation methodology — is the authors', and traces to the
-submitting author's doctoral research at INPE. The authors reviewed, tested and ran all AI-generated code and text.
+supported documentation, tests and refactoring of existing code. Since mid-2026, Claude Code has
+been used across the whole ecosystem (the core framework, its satellite packages and their
+benchmarks) for coding, bug fixing, refactoring, code translation, tests, validation scripts,
+documentation, and this paper's text and English. This is what has made it feasible to build the
+ecosystem envisioned by the submitting author. The reference outputs used in validation are
+produced by TerraME itself, running the model files in a container; AI-assisted changes to those
+files were checked to leave the outputs unchanged. The scientific design — TerraME compatibility
+contract, executor pattern, dual-substrate architecture, validation methodology — is the
+authors', and traces to the submitting author's doctoral research at INPE. The authors reviewed,
+tested and ran all AI-generated code and text.
 
 ## References

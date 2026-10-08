@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `dissmodel.io.convert.vector_to_raster_backend`, moved to
   `docs/examples/vector_to_raster.md` and added to the site navigation.
   README step 3 now imports `ForestFireModel`.
+- CLI: `run` creates the parent directory of a local `--output` path; with
+  `--output results/` and no `results/` it failed with `FileNotFoundError`.
+- `save_dataset` raises a `TypeError` that names the fix when the data cannot
+  be written to the format of the URI (a GeoDataFrame to `.tif`, a
+  `RasterBackend` to `.gpkg`), instead of an `AttributeError` from deep inside
+  the writer. The README executor declares `output_suffix = ".gpkg"`.
 
 ### Performance
 - `fill(FillStrategy.MIN_DISTANCE, ...)` uses the target's spatial index

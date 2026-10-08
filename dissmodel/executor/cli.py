@@ -231,6 +231,13 @@ def _apply_output_path_intelligence(record, args, executor_cls=None) -> None:
     args.output = record.output_path
 
 
+def _ensure_local_output_dir(output_path: str | None) -> None:
+    """Create the parent directory of a local output path (s3:// is left alone)."""
+    if not output_path or "://" in output_path:
+        return
+    Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+
+
 # ── Commands ──────────────────────────────────────────────────────────────────
 
 def _cmd_run(executor_cls, args) -> None:
@@ -242,6 +249,7 @@ def _cmd_run(executor_cls, args) -> None:
 
     # Output path intelligence runs before save() inside execute_lifecycle
     _apply_output_path_intelligence(record, args, executor_cls)
+    _ensure_local_output_dir(record.output_path)
 
     print("▶ Validating...")
     print("▶ Loading...")

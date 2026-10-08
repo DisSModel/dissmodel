@@ -130,6 +130,7 @@ from forest_fire_model import ForestFireModel   # the model from step 1
 
 class ForestFireExecutor(ModelExecutor):
     name = "forest_fire"
+    output_suffix = ".gpkg"   # file type used when --output is a directory
 
     def load(self, record: ExperimentRecord):
         gdf, checksum = load_dataset(record.source.uri)

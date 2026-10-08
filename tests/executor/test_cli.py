@@ -399,3 +399,21 @@ class TestRecordProvenance:
         module = self._main_module_from(script, monkeypatch)
         record = _build_record(self._args(), module.ModelExecutor)
         assert record.model_commit == f"dissmodel=={version('dissmodel')}"
+
+
+# ── Output directory creation ────────────────────────────────────────────────
+
+class TestEnsureLocalOutputDir:
+
+    def test_creates_missing_parent(self, tmp_path):
+        from dissmodel.executor.cli import _ensure_local_output_dir
+        target = tmp_path / "a" / "b" / "out.gpkg"
+        _ensure_local_output_dir(str(target))
+        assert target.parent.is_dir()
+
+    def test_s3_and_none_are_ignored(self, tmp_path, monkeypatch):
+        from dissmodel.executor.cli import _ensure_local_output_dir
+        monkeypatch.chdir(tmp_path)
+        _ensure_local_output_dir("s3://bucket/key/out.tif")
+        _ensure_local_output_dir(None)
+        assert list(tmp_path.iterdir()) == []

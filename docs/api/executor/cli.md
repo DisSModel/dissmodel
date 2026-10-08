@@ -146,7 +146,20 @@ accidental overwrites:
 
 # File already has ID → unchanged
 --output results/run_ec17096d.tif  →  unchanged
+
+# Exact name requested → unchanged
+--output results/run.tif --preserve-output-name  →  results/run.tif
 ```
+
+When `--output` is a directory, the extension of the generated file comes
+from the executor's optional `output_suffix` class attribute (default
+`.tif`), so a vector executor can declare `output_suffix = ".gpkg"`.
+
+The record written next to the output (`<name>.record.json`) fills its
+provenance fields from the environment: `model_name` is the executor's
+`name`, `code_version` the installed dissmodel version, and `model_commit`
+the package that defines the executor (e.g. `disslucc==0.5.0`), or
+`local-cli` for an executor defined in a loose script.
 
 ---
 

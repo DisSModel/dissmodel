@@ -288,3 +288,114 @@ class TestOutputPathIntelligence:
         _apply_output_path_intelligence(record, args)
         assert record.output_path is None
         assert args.output is None
+
+# ── --preserve-output-name and executor-specific suffix ──────────────────────
+
+class TestPreserveOutputName:
+
+    def test_flag_keeps_exact_file_name(self, make_record):
+        record = make_record()
+        record.output_path = "outputs/result.gpkg"
+        args = SimpleNamespace(output="outputs/result.gpkg", preserve_output_name=True)
+        _apply_output_path_intelligence(record, args)
+        assert record.output_path == "outputs/result.gpkg"
+        assert args.output == "outputs/result.gpkg"
+
+    def test_flag_absent_keeps_previous_behaviour(self, make_record):
+        record = make_record()
+        record.output_path = "outputs/result.gpkg"
+        args = SimpleNamespace(output="outputs/result.gpkg")
+        _apply_output_path_intelligence(record, args)
+        assert record.output_path == f"outputs/result_{record.experiment_id[:8]}.gpkg"
+
+    def test_flag_still_generates_name_for_directory(self, make_record):
+        record = make_record()
+        record.output_path = "outputs/"
+        args = SimpleNamespace(output="outputs/", preserve_output_name=True)
+        _apply_output_path_intelligence(record, args)
+        assert record.output_path == f"outputs/simulacao_{record.experiment_id[:8]}.tif"
+
+    def test_directory_uses_executor_output_suffix(self, make_record):
+        class VectorExec:
+            output_suffix = ".gpkg"
+        record = make_record()
+        record.output_path = "outputs/"
+        args = SimpleNamespace(output="outputs/")
+        _apply_output_path_intelligence(record, args, VectorExec)
+        assert record.output_path == f"outputs/simulacao_{record.experiment_id[:8]}.gpkg"
+
+    def test_parser_accepts_flag(self):
+        from dissmodel.executor.cli import _build_parser
+        ns = _build_parser().parse_args(
+            ["run", "--input", "in.gpkg", "--output", "out.gpkg", "--preserve-output-name"]
+        )
+        assert ns.preserve_output_name is True
+
+
+# ── Provenance fields filled from the environment ────────────────────────────
+
+class TestRecordProvenance:
+
+    def _args(self):
+        return SimpleNamespace(
+            toml=None, param=None, input="data.zip", output=None,
+            format="auto", column_map=None, band_map=None,
+        )
+
+    def test_code_version_is_installed_dissmodel(self, tmp_path, monkeypatch):
+        from importlib.metadata import version
+        monkeypatch.chdir(tmp_path)          # no stray model.toml
+        record = _build_record(self._args())
+        assert record.code_version == version("dissmodel")
+        assert record.code_version != "dev"
+
+    def test_model_name_comes_from_executor(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        class Exec:
+            name = "forest_fire"
+        assert _build_record(self._args(), Exec).model_name == "forest_fire"
+
+    def test_model_name_falls_back_to_class_name(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        class MyExecutor:
+            pass
+        assert _build_record(self._args(), MyExecutor).model_name == "MyExecutor"
+
+    def test_model_commit_records_executor_package(self, tmp_path, monkeypatch):
+        from importlib.metadata import version
+
+        from dissmodel.executor.model_executor import ModelExecutor
+        monkeypatch.chdir(tmp_path)
+        # ModelExecutor lives in the installed dissmodel distribution
+        record = _build_record(self._args(), ModelExecutor)
+        assert record.model_commit == f"dissmodel=={version('dissmodel')}"
+
+    def _main_module_from(self, path, monkeypatch):
+        """Load ``path`` and install it as ``__main__``, as ``python path`` would."""
+        import importlib.util
+        import sys
+
+        spec = importlib.util.spec_from_file_location("__main__", path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        monkeypatch.setitem(sys.modules, "__main__", module)
+        return module
+
+    def test_loose_script_executor_is_local_cli(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        script = tmp_path / "my_executor.py"
+        script.write_text("class Exec:\n    name = 'loose'\n")
+        module = self._main_module_from(script, monkeypatch)
+        assert _build_record(self._args(), module.Exec).model_commit == "local-cli"
+
+    def test_script_inside_installed_package_records_package(self, tmp_path, monkeypatch):
+        # python path/to/dissmodel/executor/some_script.py → dissmodel==<version>
+        from importlib.metadata import version
+        from pathlib import Path as _P
+
+        import dissmodel.executor as pkg
+        monkeypatch.chdir(tmp_path)
+        script = _P(pkg.__file__).parent / "model_executor.py"
+        module = self._main_module_from(script, monkeypatch)
+        record = _build_record(self._args(), module.ModelExecutor)
+        assert record.model_commit == f"dissmodel=={version('dissmodel')}"

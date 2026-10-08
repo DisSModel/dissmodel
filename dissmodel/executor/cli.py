@@ -98,9 +98,73 @@ def _load_local_params(toml_path: str | None = None) -> tuple[dict, dict]:
     return _load_toml(str(path))
 
 
+# ── Provenance helpers ────────────────────────────────────────────────────────
+
+def _dissmodel_version() -> str:
+    """Installed dissmodel version, or "unknown" when not installed as a package."""
+    from importlib.metadata import PackageNotFoundError, version
+    try:
+        return version("dissmodel")
+    except PackageNotFoundError:
+        return "unknown"
+
+
+def _executor_package_version(executor_cls) -> str:
+    """
+    "<distribution>==<version>" of the package that defines the executor
+    (e.g. "disslucc==0.5.0"), or "local-cli" when the executor is a loose
+    script or its package is not installed.
+    """
+    from importlib.metadata import PackageNotFoundError, packages_distributions, version
+
+    pkg_dists = packages_distributions()
+    top_level = (getattr(executor_cls, "__module__", "") or "").split(".")[0]
+    if top_level == "__main__":
+        # Executor file run as a script (python path/to/pkg/executor.py):
+        # recover the package from the file location, but only if that
+        # directory really is the installed package of that name.
+        top_level = _installed_package_containing(executor_cls, pkg_dists)
+    if not top_level:
+        return "local-cli"
+    for dist in pkg_dists.get(top_level, []):
+        try:
+            return f"{dist}=={version(dist)}"
+        except PackageNotFoundError:
+            continue
+    return "local-cli"
+
+
+def _installed_package_containing(executor_cls, pkg_dists) -> str:
+    """Name of the installed top-level package whose directory holds the executor's file."""
+    import importlib.util
+    import inspect
+
+    try:
+        path = Path(inspect.getfile(executor_cls)).resolve()
+    except (TypeError, OSError):
+        return ""
+    for parent in path.parents:
+        if parent.name not in pkg_dists:
+            continue
+        try:
+            spec = importlib.util.find_spec(parent.name)
+        except (ImportError, ValueError):
+            continue
+        locations = list(getattr(spec, "submodule_search_locations", None) or [])
+        if any(Path(loc).resolve() == parent for loc in locations):
+            return parent.name
+    return ""
+
+
+def _model_name(executor_cls) -> str:
+    if executor_cls is None:
+        return "local"
+    return getattr(executor_cls, "name", None) or executor_cls.__name__
+
+
 # ── Record factory ────────────────────────────────────────────────────────────
 
-def _build_record(args):
+def _build_record(args, executor_cls=None):
     from dissmodel.executor.schemas import DataSource, ExperimentRecord
 
     toml_path    = getattr(args, "toml", None)
@@ -108,9 +172,9 @@ def _build_record(args):
     params       = {**params, **_parse_params(args.param)}   # CLI overrides TOML+spec
 
     record = ExperimentRecord(
-        model_name    = "local",
-        model_commit  = "local-cli",
-        code_version  = "dev",
+        model_name    = _model_name(executor_cls),
+        model_commit  = _executor_package_version(executor_cls) if executor_cls else "local-cli",
+        code_version  = _dissmodel_version(),
         resolved_spec = {"model": spec} if spec else {},
         source        = DataSource(
             type = "s3" if args.input.startswith("s3://") else "local",
@@ -130,15 +194,19 @@ def _build_record(args):
 
 # ── Output path intelligence (CLI-only) ───────────────────────────────────────
 
-def _apply_output_path_intelligence(record, args) -> None:
+def _apply_output_path_intelligence(record, args, executor_cls=None) -> None:
     """
     Inject experiment_id into the output path for traceability.
 
     Must run before execute_lifecycle so that save() receives the
     already-corrected path.
 
-    Scenario A: user passed a directory → generate a safe filename.
-    Scenario B: user passed a file without the experiment ID → inject it.
+    Scenario A: user passed a directory → generate a safe filename. The
+                extension comes from the executor's ``output_suffix`` class
+                attribute (default ``".tif"``).
+    Scenario B: user passed a file without the experiment ID → inject it,
+                unless ``--preserve-output-name`` was given, in which case
+                the file name is used exactly as passed.
     """
     if not record.output_path:
         return
@@ -148,8 +216,12 @@ def _apply_output_path_intelligence(record, args) -> None:
 
     if str(record.output_path).endswith(("/", "\\")) or p.is_dir():
         # Scenario A — directory only, generate filename
-        safe_name          = f"simulacao_{exp_id_short}.tif"
+        suffix             = getattr(executor_cls, "output_suffix", None) or ".tif"
+        safe_name          = f"simulacao_{exp_id_short}{suffix}"
         record.output_path = str(p / safe_name)
+    elif getattr(args, "preserve_output_name", False):
+        # Explicit opt-out: keep the exact name the user asked for
+        pass
     elif exp_id_short not in p.name:
         # Scenario B — file path without the experiment ID
         safe_name          = f"{p.stem}_{exp_id_short}{p.suffix}"
@@ -165,11 +237,11 @@ def _cmd_run(executor_cls, args) -> None:
     from dissmodel.executor.runner import execute_lifecycle
     from dissmodel.io._utils import write_text
 
-    record   = _build_record(args)
+    record   = _build_record(args, executor_cls)
     executor = executor_cls()
 
     # Output path intelligence runs before save() inside execute_lifecycle
-    _apply_output_path_intelligence(record, args)
+    _apply_output_path_intelligence(record, args, executor_cls)
 
     print("▶ Validating...")
     print("▶ Loading...")
@@ -244,7 +316,7 @@ def _cmd_validate(executor_cls, args) -> None:
     ok      = harness.run_contract_tests()
 
     if getattr(args, "input", None):
-        record = _build_record(args)
+        record = _build_record(args, executor_cls)
         harness.run_with_sample_data(record)
 
     sys.exit(0 if ok else 1)
@@ -299,6 +371,9 @@ def _build_parser():
                        help="Input URI: local path or s3://bucket/key")
     run_p.add_argument("--output", "-o", default=None,
                        help="Output path: local file or s3://bucket/key")
+    run_p.add_argument("--preserve-output-name", action="store_true",
+                       help="Write to --output exactly as given, without "
+                            "injecting the short experiment ID into the file name")
     run_p.add_argument("--column-map", action="append", metavar="CANONICAL=REAL",
                        help="Column mapping for vector input (repeatable)")
     run_p.add_argument("--band-map",   action="append", metavar="CANONICAL=REAL",

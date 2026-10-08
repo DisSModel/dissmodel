@@ -178,3 +178,39 @@ class TestParseIdx:
         for idx in gdf.index:
             pos = parse_idx(idx)
             assert f"{pos.row}-{pos.col}" == idx
+
+
+# ── Vectorized construction must reproduce the original loop exactly ─────────
+
+def _loop_reference(x_edges, y_edges, rx, ry):
+    """The pre-vectorization implementation, kept as the reference."""
+    from shapely.geometry import box
+
+    cells, ids = [], []
+    for i, x0 in enumerate(x_edges):
+        for j, y0 in enumerate(y_edges):
+            cells.append(box(x0, y0, x0 + rx, y0 + ry))
+            ids.append(f"{j}-{i}")
+    return cells, ids
+
+
+@pytest.mark.parametrize(
+    "kwargs, x_edges, y_edges, rx, ry",
+    [
+        (dict(dimension=(4, 3), resolution=1.0),
+         np.arange(0, 4, 1.0), np.arange(0, 3, 1.0), 1.0, 1.0),
+        (dict(bounds=(10.0, -5.0, 13.5, -1.0), resolution=0.5),
+         np.arange(10.0, 13.5, 0.5), np.arange(-5.0, -1.0, 0.5), 0.5, 0.5),
+        (dict(bounds=(0.0, 0.0, 10.0, 6.0), dimension=(5, 3)),
+         np.arange(0.0, 10.0, 2.0), np.arange(0.0, 6.0, 2.0), 2.0, 2.0),
+    ],
+)
+def test_vectorized_grid_identical_to_loop(kwargs, x_edges, y_edges, rx, ry):
+    gdf = vector_grid(**kwargs)
+    cells, ids = _loop_reference(x_edges, y_edges, rx, ry)
+
+    assert list(gdf.index) == ids
+    assert gdf.index.name == "id"
+    for got, ref in zip(gdf.geometry, cells, strict=True):
+        assert got.equals_exact(ref, 0.0)
+        assert list(got.exterior.coords) == list(ref.exterior.coords)

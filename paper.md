@@ -118,7 +118,7 @@ scales to 10⁶ cells at 30.6 ms/step.
 Bezerra et al. [@Bezerra2013] and extended in @Bezerra2025BM, co-authored by D.S.B., F.M.S. and the
 submitting author, who are also responsible for the DisSModel reimplementation.
 `brmangue-dissmodel` [@BRMangue] validates the raster implementation against TerraME over the
-Maranhão Island dataset (50,496 cells); figures are for v0.3.0, after fixing border neighbor counting and the shared flood/mangrove snapshot. In the baseline scenario (19 steps) land use and soil match
+Maranhão Island dataset (50,496 cells); figures are for v0.3.0, after fixing, in `brmangue-dissmodel`, border neighbor counting and the shared flood/mangrove snapshot. In the baseline scenario (19 steps) land use and soil match
 exactly at every checkpoint and elevation matches on 97.4% of cells within 1 mm (MAE 0.00038 m;
 maximum error 0.10 m); match percentage suits categorical outputs
 [@PontiusEtAl2011]. In the flooding scenario (laboratory parameters) TerraME floods 2,469 non-sea
@@ -160,7 +160,8 @@ DisSModel's scientific lineage is rooted in the TerraME/LuccME research program 
 submitting author conducted doctoral research there under Prof. Gilberto Câmara and Dr. Ana Paula
 Dutra Aguiar — principal architects of TerraME/LuccME — and has co-authored the modeling program
 since 2009 [@Moreira2009; @Costa2009]; `disslucc` reimplements in Python the continuous and
-discrete allocation components of that lineage [@LuccME].
+discrete allocation components of that lineage [@LuccME]. DisSModel was presented at a seminar of INPE's Applied Computing graduate program (CAP) on 7 May
+2026 [@Costa2026INPE].
 
 The framework is in use across two UFMA research groups. Within LambdaGeo, `brmangue-dissmodel`
 builds on the reference implementation by co-author F.M.S. Independently, Prof. Denilson da Silva
@@ -195,22 +196,14 @@ We thank José Magno Pinheiro Alves for early validation testing.
 
 ## AI Usage Disclosure
 
-Development followed several phases. The initial prototype (May–June 2025), the second author's
-undergraduate thesis [@SantosJunior2025], did not involve generative AI. From February 2026 Claude
-(chat) was used for documentation, from April Gemini CLI for code generation and refactoring, and
-from June Claude Code (CLI) on satellite repositories such as `disslucc`, including auditing its
-validation routines against the original TerraME scripts. In
-September–October 2026, in response to the review, Claude (Claude Code and chat) wrote and modified
-code and text: the `disslucc-benchmark` repository (scenarios, comparison and timing scripts, a
-differential test against the original Lua code); the reorganization of `disslucc`; in
-`brmangue-dissmodel`, the diagnosis and correction of two discrepancies with TerraME (neighbor
-counting at borders; the snapshot shared by the flood and mangrove models) with tests, a headless
-driver for regenerating TerraME outputs, and documentation; and this paper's validation text. The reference results come from the original TerraME/LuccME code run unmodified in
-a container; the reference model files are unmodified and, for BR-MANGUE, only the headless
-driver that runs them is AI-written. AI also assisted with English writing. The scientific design — TerraME
-compatibility contract, executor pattern, dual-substrate architecture, validation methodology —
-predates this phase and traces to the submitting author's doctoral research at INPE. The authors
-made the design decisions and chose the validation criteria, and reviewed, tested and ran all
-AI-generated code and text.
+The initial prototype (May–June 2025), the second author's undergraduate thesis
+[@SantosJunior2025], did not involve generative AI. From February 2026, Claude and Gemini CLI
+supported documentation, tests and refactoring of code that already existed. Since mid-2026,
+Claude Code has been used across the whole ecosystem (the core framework, its satellite packages
+and their benchmarks) for implementation, validation scripts, documentation and this paper's text
+and English. This is what has made it feasible to build the ecosystem envisioned by the
+submitting author. The reference outputs used in validation come from the unmodified TerraME/LuccME model files run in a container; for BR-MANGUE, only the headless driver that runs them is AI-written. The scientific design — TerraME compatibility contract, executor pattern,
+dual-substrate architecture, validation methodology — is the authors', and traces to the
+submitting author's doctoral research at INPE. The authors reviewed, tested and ran all AI-generated code and text.
 
 ## References

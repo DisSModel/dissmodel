@@ -43,6 +43,7 @@ nav:
     - Overview: examples.md
     - CLI Examples: examples/cli.md
     - Streamlit Examples: examples/streamlit.md
+    - Vector to Raster: examples/vector_to_raster.md
     - Notebooks:
       - Game of Life: examples/notebooks/ca_game_of_life.ipynb
       - SIR Model: examples/notebooks/sysdyn_sir.ipynb

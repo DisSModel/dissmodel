@@ -126,6 +126,8 @@ from dissmodel.executor import ExperimentRecord, ModelExecutor
 from dissmodel.executor.cli import run_cli
 from dissmodel.io import load_dataset, save_dataset
 
+from forest_fire_model import ForestFireModel   # the model from step 1
+
 class ForestFireExecutor(ModelExecutor):
     name = "forest_fire"
 

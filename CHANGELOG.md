@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.6.6] — 2026-10-08
 
 ### Fixed
+- `display_inputs` read `obj.__annotations__`, which for a model with no
+  annotation of its own resolves to the annotations of `Model` itself: the
+  Streamlit sidebar showed `env`, `start_time`, `end_time`, `_step`… and the
+  `env` text box replaced the model's environment with a string (models that
+  call `self.env.now()`, such as `Wolfram` in dissmodel-ca, then failed).
+  It now renders only the annotations of the user's classes, base classes
+  included, and skips private names.
 - CLI: when `--output` is a directory, the generated file name used a
   hard-coded `.tif` even for vector executors. The extension now comes from
   the executor's optional `output_suffix` class attribute (default `.tif`).

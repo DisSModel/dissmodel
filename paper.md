@@ -33,11 +33,7 @@ bibliography: paper.bib
 
 ## Summary
 
-DisSModel (Discrete Spatial Modeling) is a modular Python framework for spatially explicit dynamic
-modeling, targeting Land Use and Land Cover Change (LUCC). It translates the modeling paradigms of
-TerraME [@Carneiro2013] into the Python ecosystem, enabling researchers to simulate socio-environmental
-systems — forest fires, epidemics, coastal dynamics — by coupling a time-stepped clock with the
-spatial data structures of GeoPandas [@Jordahl2021].
+ DisSModel (Discrete Spatial Modeling) is a modular Python framework for spatially explicit dynamic modeling, targeting Land Use and Land Cover Change (LUCC). It adapts the modeling paradigm of TerraME [@Carneiro2013] to the Python ecosystem, enabling researchers to simulate socio-environmental systems — forest fires, epidemics, coastal dynamics — by coupling a time-stepped clock with the spatial data structures of GeoPandas [@Jordahl2021].
 
 Its **dual-substrate architecture** pairs a vector substrate (GeoDataFrame) for spatial expressiveness
 with a raster substrate (NumPy 2D arrays) for high-performance vectorized computation. DisSModel is
@@ -90,15 +86,16 @@ reproducible executor lifecycle. DisSModel builds on GeoPandas, following the di
 DisSModel is organized into five modules with strict separation of concerns, extensible through
 class inheritance. **Core** manages the simulation clock: the `Environment` orchestrates time, and
 models auto-register at instantiation, run `setup` once, and receive each tick through
-`pre_execute / execute / post_execute` hooks. **Geo** provides the dual-substrate design: a vector substrate
-(`SpatialModel`, `CellularAutomaton`) on GeoDataFrame with libpysal neighborhoods [@Rey2021], and a
-raster substrate (`RasterModel`, `RasterCellularAutomaton`) on NumPy arrays with vectorized
-operations (`shift2d`, `focal_sum`, `neighbor_contact`) replacing cell-by-cell loops. **Executor**
-defines the `ModelExecutor` four-phase lifecycle (`validate`, `load`, `run`, `save`); subclasses
-self-register, and every run produces an `ExperimentRecord` with input checksum, parameters, timing,
-and output paths. **IO** provides a unified dataset abstraction across GeoDataFrame, GeoTIFF, and
-Xarray/Zarr, with transparent `s3://` resolution. **Visualization** integrates Matplotlib,
-Streamlit-compatible widgets, and `RasterMap`.
+`pre_execute / execute / post_execute` hooks. **Geo** provides the dual-substrate design: a vector
+substrate (`SpatialModel`, `CellularAutomaton`) on GeoDataFrame with libpysal neighborhoods
+[@Rey2021], and a raster substrate (`RasterModel`, `RasterCellularAutomaton`) on NumPy arrays with
+vectorized operations (`shift2d`, `focal_sum`, `neighbor_contact`) replacing cell-by-cell loops.
+`SyncSpatialModel` and `SyncRasterModel` mirror TerraME's `synchronize()`, so coupled models sharing
+one grid read the same start-of-step state. **Executor** defines the `ModelExecutor` four-phase
+lifecycle (`validate`, `load`, `run`, `save`); subclasses self-register, and every run produces an
+`ExperimentRecord` with input checksum, parameters, timing, and output paths. **IO** provides a
+unified dataset abstraction across GeoDataFrame, GeoTIFF, and Xarray/Zarr, with transparent `s3://`
+resolution. **Visualization** integrates Matplotlib, Streamlit-compatible widgets, and `RasterMap`.
 
 This extensibility has produced independent domain packages: `dissmodel-ca` [@DisSModelCA]
 (Cellular Automata), `dissmodel-sysdyn` [@DisSModelSysDyn] (System Dynamics), and `disslucc`
@@ -108,14 +105,14 @@ contract, an explicit Python counterpart to TerraME/LuccME.
 
 ## Validation and Performance
 
-All benchmarks ran on an Intel Core i7-7700T @ 2.90GHz, 15 GB RAM (Ubuntu, Python 3.12.3,
-NumPy 2.4.6, GeoPandas 1.1.3); absolute timings vary by hardware.
+All benchmarks ran on an Intel Core i7-7700T @ 2.90GHz, 15 GB RAM (Linux Mint 22.2, Python 3.12.3,
+NumPy 2.5.3, GeoPandas 1.2.0); absolute timings vary by hardware.
 
 **Conway's Game of Life** compares the two substrates with the same rule and initial state. The
 vector rule is a per-cell Python method querying libpysal Queen neighbors; the raster rule is one
 whole-grid focal sum; final states are compared cell by cell. At 100×100 cells the raster takes
-0.41 ms/step against 7,069 ms/step for the vector (a gap that reflects the per-cell style of the
-vector API) and scales to 10⁶ cells at 30.6 ms/step.
+0.34 ms/step against 3,783 ms/step for the vector (a gap that reflects the per-cell style of the
+vector API) and scales to 10⁶ cells at 26.6 ms/step.
 
 **BR-MANGUE coastal dynamics.** The coupled mangrove–flood model was established by
 Bezerra et al. [@Bezerra2013] and extended in @Bezerra2025BM, co-authored by D.S.B., F.M.S. and the
@@ -134,8 +131,9 @@ difference in the rules. Both scenarios are reproducible with the validation exe
 files shipped with the package, which the adaptation's headless driver regenerates [@BRMangueTerraME].
 
 Cross-substrate equivalence (60×60 synthetic grid, 10 steps) gives 100% match for land use, soil
-and elevation within a 5 cm tolerance (MAE 0.0011 m, max 0.024 m; floating-point rounding), with raster at 2.0 ms/step against 76.4 ms/step for vector (37.4×; the vector port
-follows TerraME's per-cell loops).
+and elevation within a 5 cm tolerance (MAE 0.0011 m, max 0.024 m; floating-point rounding), with
+raster at 2.5 ms/step against 69.1 ms/step for vector (28.1×; the vector port follows TerraME's
+per-cell loops).
 
 **disslucc as a second case.** `disslucc` [@DisSLUCC], built on DisSModel, reimplements the LuccME
 demand, potential and allocation components (continuous CLUE-like [@Veldkamp1996] and discrete
@@ -153,7 +151,7 @@ reads a mismatched field name), while `disslucc` runs it by default. With `cell_
 counts (MAE < 1e-7).
 `lab15_md10` (discrete, 5,914 cells) reproduces the reference cell for cell, with zero quantity and
 allocation disagreement [@PontiusMillones2011] and identical iteration counts. Overall, ten of 21 LuccME test labs and both variants match with identical iteration
-counts and differences up to 3e-6 (single precision); a validated lab runs in 0.1 to 0.5 s on
+counts and differences up to 3e-6 (single precision); a validated lab runs in 0.11 to 0.55 s on
 the hardware above (median of five; `make timing`). The other eleven labs need potential and
 allocation components not yet implemented; student fellows are developing them, and each lab joins
 the benchmark as its components land.

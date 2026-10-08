@@ -263,7 +263,8 @@ The map below shows how the pieces fit together, and how each one relates to its
 | [`dissmodel-ca`](https://github.com/DisSModel/dissmodel-ca) | Classic Cellular Automata (Game of Life, Forest Fire, Growth) | `pip install "git+https://github.com/DisSModel/dissmodel-ca.git"` |
 | [`dissmodel-sysdyn`](https://github.com/DisSModel/dissmodel-sysdyn) | System Dynamics (SIR, Predator-Prey, Lorenz) | `pip install "git+https://github.com/DisSModel/dissmodel-sysdyn.git"` |
 | [`brmangue-dissmodel`](https://github.com/DisSModel/brmangue-dissmodel) | BR-MANGUE coastal flooding and mangrove succession model (raster + vector, validated against TerraME) | `pip install "git+https://github.com/DisSModel/brmangue-dissmodel.git"` |
-| [`disslucc`](https://github.com/DisSModel/disslucc) | Land Use and Cover Change models, continuous and discrete allocation (CLUE-inspired), raster-only | `pip install "git+https://github.com/DisSModel/disslucc.git"` |
+| [`disslucc`](https://github.com/DisSModel/disslucc) | Land Use and Cover Change models, continuous and discrete allocation (CLUE-inspired), raster-only | `pip install disslucc` |
+| [`disscube`](https://github.com/DisSModel/disscube) | Declarative spatial data cubes (a Python alternative to TerraME's fillCell): sources, grid and derived variables in TOML; hands the cube to DisSModel models | `pip install "disscube[dissmodel]"` |
 
 ### 🛠 Implementation Templates
 

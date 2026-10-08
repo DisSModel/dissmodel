@@ -83,8 +83,8 @@ from dissmodel.executor.schemas import JobRequest
 
 job = JobRequest(
     model = {
-        "class":   "coastal_raster",
-        "package": "git+https://github.com/DisSModel/coastal-dynamics@main",
+        "class":   "brmangue_raster",
+        "package": "git+https://github.com/DisSModel/brmangue-dissmodel@v0.5.0",
         "parameters": {"end_time": 88},
     },
     source = {"type": "s3", "uri": "s3://dissmodel-inputs/grid.zip"},

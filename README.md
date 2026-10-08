@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![PyPI version](https://badge.fury.io/py/dissmodel.svg)](https://pypi.org/project/dissmodel/)
-[![Coverage](https://img.shields.io/badge/coverage-79%25-orange.svg)](https://github.com/DisSModel/dissmodel/actions)
+[![Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen.svg)](https://github.com/DisSModel/dissmodel/actions)
 [![DisSModel](https://img.shields.io/badge/LambdaGeo-Research-green.svg)](https://github.com/DisSModel)
 [![JOSS Status](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec/status.svg)](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec)
 
@@ -52,7 +52,7 @@ DisSModel is the synthesis: a Python-native, FAIR-aligned, cloud-ready simulatio
 ## 🌟 Key Features
 
 - **Dual substrate** — same model logic runs on vector (`GeoDataFrame`) and raster (`RasterBackend`/NumPy).
-- **Lightweight scheduler** — pure-Python time-stepped engine; models auto-register at instantiation and receive clock ticks via `setup / pre_execute / execute / post_execute` lifecycle hooks.
+- **Lightweight scheduler** — pure-Python time-stepped engine; models auto-register at instantiation, run `setup` once and receive each clock tick via `pre_execute / execute / post_execute` lifecycle hooks.
 - **Executor pattern** — strict separation between science (models) and infrastructure (I/O, CLI, reproducible execution).
 - **Experiment tracking** — every run generates an immutable `ExperimentRecord` with SHA-256 checksums, TOML snapshot, and full provenance.
 - **Storage-agnostic I/O** — `dissmodel.io` handles local paths and `s3://` URIs transparently.
@@ -62,23 +62,28 @@ DisSModel is the synthesis: a Python-native, FAIR-aligned, cloud-ready simulatio
 
 ## 🏗 Architecture
 
-```
-┌──────────────────────────────────────────────────────────┐
-│  Science Layer  (Model)                                  │
-│  FloodModel, AllocationClueLike, MangroveModel, ...      │
-│  → only knows math, geometry and time                    │
-├──────────────────────────────────────────────────────────┤
-│  Infrastructure Layer  (ModelExecutor)                   │
-│  CoastalRasterExecutor, LUCCVectorExecutor, ...          │
-│  → only knows URIs, local/S3, column_map, parameters     │
-├──────────────────────────────────────────────────────────┤
-│  Core modules                                            │
-│  dissmodel.core      — Environment, Model, SpatialModel  │
-│  dissmodel.geo       — RasterBackend, neighborhoods      │
-│  dissmodel.executor  — ModelExecutor ABC, ExperimentRecord│
-│  dissmodel.io        — load_dataset / save_dataset       │
-│  dissmodel.visualization — Map, RasterMap, Chart         │
-└──────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph science["Science layer: Model"]
+        M["FloodModel, MangroveModel, AllocationClueLike, ...<br/><i>only math, geometry and time</i>"]
+    end
+    subgraph infra["Infrastructure layer: ModelExecutor"]
+        E["BrmangueRasterExecutor, LuccContinuousExecutor, ...<br/><i>only URIs (local or s3://), column_map, parameters</i>"]
+    end
+    subgraph core_modules["Core modules"]
+        direction LR
+        core["dissmodel.core<br/>Environment, Model, SpatialModel"]
+        geo["dissmodel.geo<br/>RasterBackend, neighborhoods"]
+        exe["dissmodel.executor<br/>ModelExecutor, ExperimentRecord"]
+        io["dissmodel.io<br/>load_dataset, save_dataset"]
+        viz["dissmodel.visualization<br/>Map, RasterMap, Chart"]
+    end
+    E -- "loads data, builds and runs" --> M
+    M --> core
+    M --> geo
+    E --> exe
+    E --> io
+    M -. "optional" .-> viz
 ```
 
 ---
@@ -126,8 +131,11 @@ from dissmodel.executor import ExperimentRecord, ModelExecutor
 from dissmodel.executor.cli import run_cli
 from dissmodel.io import load_dataset, save_dataset
 
+from forest_fire_model import ForestFireModel   # the model from step 1
+
 class ForestFireExecutor(ModelExecutor):
     name = "forest_fire"
+    output_suffix = ".gpkg"   # file type used when --output is a directory
 
     def load(self, record: ExperimentRecord):
         gdf, checksum = load_dataset(record.source.uri)
@@ -260,7 +268,8 @@ The map below shows how the pieces fit together, and how each one relates to its
 | [`dissmodel-ca`](https://github.com/DisSModel/dissmodel-ca) | Classic Cellular Automata (Game of Life, Forest Fire, Growth) | `pip install "git+https://github.com/DisSModel/dissmodel-ca.git"` |
 | [`dissmodel-sysdyn`](https://github.com/DisSModel/dissmodel-sysdyn) | System Dynamics (SIR, Predator-Prey, Lorenz) | `pip install "git+https://github.com/DisSModel/dissmodel-sysdyn.git"` |
 | [`brmangue-dissmodel`](https://github.com/DisSModel/brmangue-dissmodel) | BR-MANGUE coastal flooding and mangrove succession model (raster + vector, validated against TerraME) | `pip install "git+https://github.com/DisSModel/brmangue-dissmodel.git"` |
-| [`disslucc`](https://github.com/DisSModel/disslucc) | Land Use and Cover Change models, continuous and discrete allocation (CLUE-inspired), raster-only | `pip install "git+https://github.com/DisSModel/disslucc.git"` |
+| [`disslucc`](https://github.com/DisSModel/disslucc) | Land Use and Cover Change models, continuous and discrete allocation (CLUE-inspired), raster-only | `pip install disslucc` |
+| [`disscube`](https://github.com/DisSModel/disscube) | Declarative spatial data cubes (a Python alternative to TerraME's fillCell): sources, grid and derived variables in TOML; hands the cube to DisSModel models | `pip install "disscube[dissmodel]"` |
 
 ### 🛠 Implementation Templates
 
@@ -311,7 +320,7 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
   year = {2026},
   publisher = {GitHub},
   url = {https://github.com/DisSModel/dissmodel},
-  version = {0.6.5}
+  version = {0.6.6}
 }
 ```
 

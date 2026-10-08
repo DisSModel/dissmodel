@@ -8,6 +8,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.6] — 2026-10-08
+
+### Fixed
+- `display_inputs` read `obj.__annotations__`, which for a model with no
+  annotation of its own resolves to the annotations of `Model` itself: the
+  Streamlit sidebar showed `env`, `start_time`, `end_time`, `_step`… and the
+  `env` text box replaced the model's environment with a string (models that
+  call `self.env.now()`, such as `Wolfram` in dissmodel-ca, then failed).
+  It now renders only the annotations of the user's classes, base classes
+  included, and skips private names.
+- CLI: when `--output` is a directory, the generated file name used a
+  hard-coded `.tif` even for vector executors. The extension now comes from
+  the executor's optional `output_suffix` class attribute (default `.tif`).
+- CLI: the `ExperimentRecord` written by `run` had fixed placeholders
+  (`model_name="local"`, `model_commit="local-cli"`, `code_version="dev"`).
+  It now records the executor's `name`, the installed dissmodel version and
+  the package that defines the executor (e.g. `disslucc==0.5.0`); loose
+  scripts keep `local-cli`.
+- Docs: the vector-to-raster guide documented the removed
+  `dissmodel.geo.raster.io` module; rewritten for
+  `dissmodel.io.convert.vector_to_raster_backend`, moved to
+  `docs/examples/vector_to_raster.md` and added to the site navigation.
+  README step 3 now imports `ForestFireModel`.
+- CLI: `run` creates the parent directory of a local `--output` path; with
+  `--output results/` and no `results/` it failed with `FileNotFoundError`.
+- `save_dataset` raises a `TypeError` that names the fix when the data cannot
+  be written to the format of the URI (a GeoDataFrame to `.tif`, a
+  `RasterBackend` to `.gpkg`), instead of an `AttributeError` from deep inside
+  the writer. The README executor declares `output_suffix = ".gpkg"`.
+
+### Performance
+- `fill(FillStrategy.MIN_DISTANCE, ...)` uses the target's spatial index
+  (`sindex.nearest`) instead of measuring every cell against every target;
+  same values, ~10× faster on 40,000 cells × 2,000 lines.
+- `vector_grid` builds all cells with one vectorized `shapely.box` call;
+  same geometries, ids and row order, ~5× faster on a 1000×1000 grid.
+
 ### Changed
 - `load_geotiff` sets `RasterBackend.transform` and `RasterBackend.crs` from
   the file (they were only in the returned `meta` dict), and `save_geotiff`
@@ -20,6 +57,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `crs` — square metres on the ellipsoid for a geographic CRS (a 1/12° cell
   is ~86 km² at the equator and ~72 km² at 33° S), the pixel area for a
   projected one.
+- CLI: `run --preserve-output-name` writes to `--output` exactly as given,
+  without injecting the short experiment ID.
 
 ## [0.6.5] — 2026-09-22
 

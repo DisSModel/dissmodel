@@ -22,6 +22,13 @@ from dissmodel.core import Environment, Model
 from dissmodel.visualization.chart import Chart, track_plot
 
 
+@pytest.fixture(autouse=True)
+def _run_in_tmp_path(tmp_path, monkeypatch):
+    """Headless Chart/RasterMap write PNG frames to the working directory;
+    run every test in a temporary one so the repository stays clean."""
+    monkeypatch.chdir(tmp_path)
+
+
 # ── helper model with tracked attributes ──────────────────────────────────────
 
 @track_plot(label="Infected", color="red")

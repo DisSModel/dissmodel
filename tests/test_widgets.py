@@ -72,3 +72,48 @@ class TestDisplayInputs:
         st = StubStreamlit()
         display_inputs(object(), st)
         assert st.calls == []
+
+
+class TestFrameworkAttributes:
+    """Models with no annotation of their own must not expose framework state."""
+
+    def _models(self):
+        from dissmodel.core import Environment, Model
+
+        class NoParams(Model):
+            def execute(self):
+                pass
+
+        class Base(Model):
+            rate: float
+
+            def setup(self, rate: float = 0.5):
+                self.rate = rate
+
+            def execute(self):
+                pass
+
+        class Child(Base):
+            steps: int
+
+            def setup(self, rate: float = 0.5, steps: int = 3):
+                super().setup(rate)
+                self.steps = steps
+
+        return Environment, NoParams, Child
+
+    def test_model_without_annotations_renders_nothing(self):
+        Environment, NoParams, _ = self._models()
+        env = Environment(start_time=0, end_time=3)
+        model = NoParams()
+        st = StubStreamlit()
+        display_inputs(model, st)
+        assert st.calls == []
+        assert model.env is env          # was overwritten by a text_input string
+
+    def test_inherited_user_parameters_are_rendered(self):
+        Environment, _, Child = self._models()
+        Environment(start_time=0, end_time=3)
+        st = StubStreamlit()
+        display_inputs(Child(), st)
+        assert st.calls == [("slider", "rate"), ("slider", "steps")]

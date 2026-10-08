@@ -38,28 +38,12 @@
 
 @software{Jordahl2021,
   author    = {Kelsey Jordahl and Joris Van den Bossche and Martin Fleischmann and James McBride and Jacob Wasserman and others},
-  title     = {{geopandas/geopandas}: {v0.10.2}},
-  month     = oct,
-  year      = {2021},
+  title     = {{geopandas/geopandas}},
+  year      = {2026},
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.5573592}
+  doi       = {10.5281/zenodo.2585848}
 }
 
-
-@article{Bezerra2022,
-  title   = {New land-use change scenarios for Brazil: Refining global SSPs with a regional spatially-explicit allocation model},
-  author  = {Bezerra, Francisco Gilney Silva and Von Randow, Celso and
-             Assis, Talita Oliveira and Bezerra, Karine Rocha Aguiar and
-             Tejada, Graciela and Castro, Aline Anderson and
-             Gomes, Diego Melo de Paula and Avancini, Rodrigo and
-             Aguiar, Ana Paula},
-  journal = {PLOS ONE},
-  volume  = {17},
-  number  = {4},
-  pages   = {e0256052},
-  year    = {2022},
-  doi     = {10.1371/journal.pone.0256052}
-}
 
 @mastersthesis{SantosJunior2025,
   title  = {Discrete Spatial Modeling: Uma proposta de arcabouço para construção de modelos dinâmicos espacialmente explícitos baseado no ecossistema Python},
@@ -104,45 +88,93 @@
 }
 
 @software{BRMangue,
-  author    = {Costa, Sérgio Souza and Bezerra, Denilson da Silva and Sousa, Felipe Martins},
+  author    = {Bezerra, Denilson da Silva and Sousa, Felipe Martins and Costa, Sérgio Souza},
   title     = {{brmangue-dissmodel}: The BR-MANGUE coupled flood and mangrove succession model for DisSModel},
+  version   = {0.5.0},
   year      = {2026},
-  publisher = {GitHub},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23240385},
   url       = {https://github.com/DisSModel/brmangue-dissmodel}
 }
 
 @software{DisSModelCA,
-  author    = {Costa, Sérgio Souza and Santos Junior, Nerval de Jesus},
+  author    = {Costa, Sérgio Souza and Santos Junior, Nerval de Jesus and Zhao, Samylli Kalei Silva},
   title     = {{dissmodel-ca}: Cellular Automata extension for DisSModel},
-  year      = {2025},
-  publisher = {GitHub},
+  version   = {0.1.0},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23241654},
   url       = {https://github.com/DisSModel/dissmodel-ca}
 }
 
 @software{DisSModelSysDyn,
-  author    = {Costa, Sérgio Souza and Santos Junior, Nerval de Jesus},
+  author    = {Costa, Sérgio Souza and Santos Junior, Nerval de Jesus and Vale, Mateus Dutra},
   title     = {{dissmodel-sysdyn}: System Dynamics extension for DisSModel},
-  year      = {2025},
-  publisher = {GitHub},
+  version   = {0.1.1},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23242935},
   url       = {https://github.com/DisSModel/dissmodel-sysdyn}
 }
 
 @software{DisSLUCC,
   author    = {Costa, Sérgio Souza},
   title     = {{disslucc}: Raster-only continuous and discrete LUCC allocation models for DisSModel},
-  version   = {0.4.0},
+  version   = {0.5.0},
   year      = {2026},
-  publisher = {GitHub},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23219338},
   url       = {https://github.com/DisSModel/disslucc}
+}
+
+@software{DisSCube,
+  author    = {Costa, Sérgio Souza},
+  title     = {{DisSCube}: Declarative spatial data cubes},
+  version   = {0.5.0},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23172450},
+  url       = {https://github.com/DisSModel/disscube}
+}
+
+@software{DisSLUCCBenchmark,
+  author    = {Costa, Sérgio Souza},
+  title     = {{disslucc-benchmark}: Reproducible validation of {disslucc} against the {LuccME} 3.1 labs},
+  version   = {0.2.2},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23224097},
+  url       = {https://github.com/LambdaGeo/disslucc-benchmark}
+}
+
+@software{BRMangueTerraME,
+  author    = {Bezerra, Denilson da Silva and Costa, Sérgio Souza},
+  title     = {{brmangue-terrame}: {BR-MANGUE} adapted to {TerraME} 2.0, with a
+               headless driver for reference outputs},
+  version   = {0.1.0},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23240318},
+  url       = {https://github.com/LambdaGeo/brmangue-terrame}
+}
+
+@dataset{LuccMEGoldens,
+  author    = {Costa, Sérgio Souza},
+  title     = {{luccme-goldens}: Canonical Reference Execution Outputs for {TerraME} 2.0.1 and {LuccME} 3.1},
+  version   = {1.1.0},
+  year      = {2026},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23161342},
+  url       = {https://github.com/LambdaGeo/luccme-goldens}
 }
 
 @software{TerraMEDocker,
   author    = {Costa, Sérgio Souza},
-  title     = {{terrame-docker}: {TerraME} 2.0.1 and {LuccME} in a container, with
-               year-by-year reference outputs of the {LuccME} labs},
-  version   = {0.1.1},
+  title     = {{terrame-docker}: {TerraME} and {LuccME} in a {Docker} image},
+  version   = {0.4.2},
   year      = {2026},
-  publisher = {GitHub},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.23160784},
   url       = {https://github.com/LambdaGeo/terrame-docker}
 }
 
@@ -221,7 +253,8 @@
   author    = {Costa, Sérgio Souza and Aguiar, Ana Paula Dutra and Câmara, Gilberto and Moreira, Evaldinolia},
   booktitle = {Simpósio Brasileiro de Sensoriamento Remoto (SBSR)},
   address   = {Natal, RN, Brazil},
-  year      = {2009}
+  year      = {2009},
+  url       = {https://www.researchgate.net/publication/228981638_Common_Concepts_to_Development_of_the_Top-Down_Models_of_Land_Changes}
 }
 
 @article{Verburg2002,
@@ -246,6 +279,16 @@
   number  = {3},
   pages   = {217--235},
   doi     = {10.1016/S0304-3800(02)00059-5}
+}
+
+@inproceedings{Wang2022,
+  title     = {{Mesa-Geo}: A {GIS} Extension for the {Mesa} Agent-Based Modeling Framework in {Python}},
+  author    = {Wang, Boyu and Hess, Vincent and Crooks, Andrew},
+  booktitle = {Proceedings of the 5th ACM SIGSPATIAL International Workshop on GeoSpatial Simulation (GeoSim 2022)},
+  publisher = {ACM},
+  pages     = {1--10},
+  year      = {2022},
+  doi       = {10.1145/3557989.3566157}
 }
 
 @inproceedings{Kazil2020,
@@ -277,4 +320,14 @@
   volume  = {43},
   pages   = {80--87},
   doi     = {10.1016/j.envsoft.2013.01.010}
+}
+
+@misc{Costa2026INPE,
+  author       = {Costa, Sérgio Souza},
+  title        = {Building Open and Reproducible Geospatial Simulations with {Python}},
+  howpublished = {Seminar at INPE (remote), recorded on the INPE program's YouTube channel},
+  year         = {2026},
+  month        = may,
+  url          = {https://lambdageo.github.io/presentations/2026-05-07-inpe-seminar/},
+  note         = {Video: \url{https://www.youtube.com/watch?v=o7pMJt0CvXU}}
 }

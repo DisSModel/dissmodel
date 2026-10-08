@@ -164,3 +164,33 @@ class TestStorage:
         monkeypatch.setitem(sys.modules, "minio", None)
         with pytest.raises(ImportError, match="minio"):
             _storage.get_default_client()
+
+
+# ---------------------------------------------------------------------------
+# save_dataset — data type must match the format of the URI
+# ---------------------------------------------------------------------------
+
+class TestSaveDatasetTypeMismatch:
+
+    def test_geodataframe_to_tif_raises_clear_error(self, tmp_path):
+        from dissmodel.geo import vector_grid
+
+        gdf = vector_grid(dimension=(2, 2), resolution=1.0, crs="EPSG:31984")
+        with pytest.raises(TypeError, match="GeoDataFrame to raster path"):
+            save_dataset(gdf, str(tmp_path / "out.tif"))
+        assert not (tmp_path / "out.tif").exists()
+
+    def test_raster_backend_to_gpkg_raises_clear_error(self, tmp_path):
+        from dissmodel.geo import raster_grid
+
+        backend = raster_grid(rows=2, cols=2)
+        with pytest.raises(TypeError, match="RasterBackend to vector path"):
+            save_dataset(backend, str(tmp_path / "out.gpkg"))
+        with pytest.raises(TypeError, match="RasterBackend to vector path"):
+            save_dataset((backend, {}), str(tmp_path / "out.gpkg"))
+
+    def test_matching_types_still_save(self, tmp_path):
+        from dissmodel.geo import vector_grid
+
+        gdf = vector_grid(dimension=(2, 2), resolution=1.0, crs="EPSG:31984")
+        assert len(save_dataset(gdf, str(tmp_path / "out.gpkg"))) == 64

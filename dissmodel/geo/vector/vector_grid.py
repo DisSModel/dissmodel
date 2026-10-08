@@ -5,7 +5,7 @@ from typing import Any
 
 import geopandas as gpd
 import numpy as np
-from shapely.geometry import box
+import shapely
 
 # Reusable type aliases
 Bounds = tuple[float, float, float, float]  # (xmin, ymin, xmax, ymax)
@@ -144,12 +144,12 @@ def vector_grid(
     x_edges: np.ndarray = np.arange(xmin, xmax, resolution_x)
     y_edges: np.ndarray = np.arange(ymin, ymax, resolution_y)
 
-    grid_cells = []
-    ids = []
-    for i, x0 in enumerate(x_edges):
-        for j, y0 in enumerate(y_edges):
-            grid_cells.append(box(x0, y0, x0 + resolution_x, y0 + resolution_y))
-            ids.append(f"{j}-{i}")
+    # Column-major order (x outer, y inner) and "row-col" ids, as before:
+    # neighbourhoods and raster conversions rely on this row order.
+    x0, y0 = np.meshgrid(x_edges, y_edges, indexing="ij")
+    x0, y0 = x0.ravel(), y0.ravel()
+    grid_cells = shapely.box(x0, y0, x0 + resolution_x, y0 + resolution_y)
+    ids = [f"{j}-{i}" for i in range(len(x_edges)) for j in range(len(y_edges))]
 
     data: dict[str, Any] = {"geometry": grid_cells, "id": ids}
     for key, value in attrs.items():

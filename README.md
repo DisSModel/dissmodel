@@ -62,23 +62,28 @@ DisSModel is the synthesis: a Python-native, FAIR-aligned, cloud-ready simulatio
 
 ## 🏗 Architecture
 
-```
-┌──────────────────────────────────────────────────────────┐
-│  Science Layer  (Model)                                  │
-│  FloodModel, AllocationClueLike, MangroveModel, ...      │
-│  → only knows math, geometry and time                    │
-├──────────────────────────────────────────────────────────┤
-│  Infrastructure Layer  (ModelExecutor)                   │
-│  CoastalRasterExecutor, LUCCVectorExecutor, ...          │
-│  → only knows URIs, local/S3, column_map, parameters     │
-├──────────────────────────────────────────────────────────┤
-│  Core modules                                            │
-│  dissmodel.core      — Environment, Model, SpatialModel  │
-│  dissmodel.geo       — RasterBackend, neighborhoods      │
-│  dissmodel.executor  — ModelExecutor ABC, ExperimentRecord│
-│  dissmodel.io        — load_dataset / save_dataset       │
-│  dissmodel.visualization — Map, RasterMap, Chart         │
-└──────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph science["Science layer: Model"]
+        M["FloodModel, MangroveModel, AllocationClueLike, ...<br/><i>only math, geometry and time</i>"]
+    end
+    subgraph infra["Infrastructure layer: ModelExecutor"]
+        E["BrmangueRasterExecutor, LuccContinuousExecutor, ...<br/><i>only URIs (local or s3://), column_map, parameters</i>"]
+    end
+    subgraph core_modules["Core modules"]
+        direction LR
+        core["dissmodel.core<br/>Environment, Model, SpatialModel"]
+        geo["dissmodel.geo<br/>RasterBackend, neighborhoods"]
+        exe["dissmodel.executor<br/>ModelExecutor, ExperimentRecord"]
+        io["dissmodel.io<br/>load_dataset, save_dataset"]
+        viz["dissmodel.visualization<br/>Map, RasterMap, Chart"]
+    end
+    E -- "loads data, builds and runs" --> M
+    M --> core
+    M --> geo
+    E --> exe
+    E --> io
+    M -. "optional" .-> viz
 ```
 
 ---

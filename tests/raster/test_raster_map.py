@@ -19,6 +19,13 @@ from dissmodel.geo import raster_grid
 from dissmodel.visualization.raster_map import RasterMap
 
 
+@pytest.fixture(autouse=True)
+def _run_in_tmp_path(tmp_path, monkeypatch):
+    """Headless Chart/RasterMap write PNG frames to the working directory;
+    run every test in a temporary one so the repository stays clean."""
+    monkeypatch.chdir(tmp_path)
+
+
 # ── force headless for all tests ──────────────────────────────────────────────
 
 @pytest.fixture(autouse=True)

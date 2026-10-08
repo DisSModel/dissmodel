@@ -110,18 +110,19 @@ contract, an explicit Python counterpart to TerraME/LuccME.
 All benchmarks ran on an Intel Core i7-7700T @ 2.90GHz, 15 GB RAM (Ubuntu, Python 3.12.3,
 NumPy 2.4.6, GeoPandas 1.1.3); absolute timings vary by hardware.
 
-**Conway's Game of Life** compares the two substrates: at 100×100 cells the vectorized
-raster rule takes 0.41 ms/step against 7,069 ms/step for a per-cell vector rule, and the raster
-scales to 10⁶ cells at 30.6 ms/step.
+**Conway's Game of Life** compares the two substrates with the same rule and initial state. The
+vector rule is a per-cell Python method querying libpysal Queen neighbors; the raster rule is one
+whole-grid focal sum; final states are compared cell by cell. At 100×100 cells the raster takes
+0.41 ms/step against 7,069 ms/step for the vector (a gap that reflects the per-cell style of the
+vector API) and scales to 10⁶ cells at 30.6 ms/step.
 
 **BR-MANGUE coastal dynamics.** The coupled mangrove–flood model was established by
 Bezerra et al. [@Bezerra2013] and extended in @Bezerra2025BM, co-authored by D.S.B., F.M.S. and the
 submitting author, who are also responsible for the DisSModel reimplementation.
 `brmangue-dissmodel` [@BRMangue] validates the raster implementation against TerraME over the
-Maranhão Island dataset (50,496 cells); figures are for v0.3.0, after fixing, in `brmangue-dissmodel`, border neighbor counting and the shared flood/mangrove snapshot. In the baseline scenario (19 steps) land use and soil match
+Maranhão Island dataset (50,496 cells); figures refer to `brmangue-dissmodel` v0.3.0, which fixed border neighbor counting and the shared flood/mangrove snapshot. Match percentage suits categorical outputs [@PontiusEtAl2011]. In the baseline scenario (19 steps) land use and soil match
 exactly at every checkpoint and elevation matches on 97.4% of cells within 1 mm (MAE 0.00038 m;
-maximum error 0.10 m); match percentage suits categorical outputs
-[@PontiusEtAl2011]. In the flooding scenario (laboratory parameters) TerraME floods 2,469 non-sea
+maximum error 0.10 m). In the flooding scenario (laboratory parameters) TerraME floods 2,469 non-sea
 cells by step 11 and the Python model 2,467; soil matches exactly, land use differs in 4 cells
 (0.008%), and at step 11 elevation matches on 94.4% of cells (MAE 0.008 m, maximum error 1.0 m). The residuals
 come from exact ties in elevation: the flux rule compares accumulated elevations with `<=`, so a
@@ -164,10 +165,10 @@ discrete allocation components of that lineage [@LuccME]. DisSModel was presente
 2026 [@Costa2026INPE].
 
 The framework is in use across two UFMA research groups. Within LambdaGeo, `brmangue-dissmodel`
-builds on the reference implementation by co-author F.M.S. Independently, Prof. Denilson da Silva
-Bezerra (UFMA, former INPE), whose doctoral work founded BR-MANGUE [@Bezerra2013], uses the DisSModel reimplementation in his own coastal dynamics program (UFMA
-projects PVCBS4959-2025 and PVCBS4960-2025), a collaboration predating DisSModel itself
-[@Bezerra2025BM].
+builds on the reference implementation by co-author F.M.S. Co-author D.S.B. (UFMA, former INPE),
+whose doctoral work founded BR-MANGUE [@Bezerra2013], also adopts the DisSModel reimplementation in
+his coastal dynamics projects (UFMA PVCBS4959-2025 and PVCBS4960-2025), a collaboration predating
+DisSModel itself [@Bezerra2025BM].
 
 Since September 2026, four undergraduate research fellows (UFMA, CNPq) are being trained on the
 project; the stabilized `ModelExecutor` contract lets each own an independent repository —

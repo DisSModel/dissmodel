@@ -202,10 +202,8 @@ We thank José Magno Pinheiro Alves for early validation testing.
 The initial prototype (May–June 2025), the second author's undergraduate thesis
 [@SantosJunior2025], did not involve generative AI. From February 2026, Claude and Gemini CLI
 supported documentation, tests and refactoring of existing code. Since mid-2026, Claude Code has
-been used across the whole ecosystem (the core framework, its satellite packages and their
-benchmarks) for coding, bug fixing, refactoring, code translation, tests, validation scripts,
-documentation, and this paper's text and English. This is what has made it feasible to build the
-ecosystem envisioned by the submitting author. The reference outputs used in validation are
+been used across the whole ecosystem (framework, satellite packages and benchmarks) for coding, bug fixing, refactoring, code translation, tests, validation scripts,
+documentation, and this paper's text. This made the ecosystem envisioned by the submitting author feasible. The reference outputs used in validation are
 produced by TerraME itself, running the model files in a container; AI-assisted changes to those
 files were checked to leave the outputs unchanged. The scientific design — TerraME compatibility
 contract, executor pattern, dual-substrate architecture, validation methodology — is the

@@ -27,7 +27,7 @@ affiliations:
     city: São Luís
     state: MA
     country: Brazil
-date: 7 October 2026
+date: 8 October 2026
 bibliography: paper.bib
 ---
 
@@ -121,7 +121,7 @@ Bezerra et al. [@Bezerra2013] and extended in @Bezerra2025BM, co-authored by D.S
 submitting author, who are also responsible for the DisSModel reimplementation.
 `brmangue-dissmodel` [@BRMangue] validates the raster implementation against a TerraME 2.0
 adaptation of the published model [@BRMangueTerraME] over the Maranhão Island dataset (50,496 cells);
-fidelity to the thesis is documented in the repository. Figures refer to v0.3.0, which fixed border neighbor counting and the shared flood/mangrove snapshot. Match percentage suits categorical outputs [@PontiusEtAl2011]. In the baseline scenario (19 steps) land use and soil match
+fidelity to the thesis is documented in the repository. Figures refer to `brmangue-dissmodel` v0.5.0. Match percentage suits categorical outputs [@PontiusEtAl2011]. In the baseline scenario (19 steps) land use and soil match
 exactly at every checkpoint and elevation matches on 97.4% of cells within 1 mm (MAE 0.00038 m;
 maximum error 0.10 m). In the flooding scenario (laboratory parameters) TerraME floods 2,469 non-sea
 cells by step 11 and the Python model 2,467; soil matches exactly, land use differs in 4 cells
@@ -129,8 +129,8 @@ cells by step 11 and the Python model 2,467; soil matches exactly, land use diff
 come from exact ties in elevation: the flux rule compares accumulated elevations with `<=`, so a
 ~1e-16 difference in summation order (sequential in TerraME, per direction in NumPy) can flip a
 comparison and, near the flooding threshold, a cell's class. They are floating-point effects, not a
-difference in the rules. Both scenarios are reproducible with the validation executor and the adaptation's
-headless driver [@BRMangueTerraME].
+difference in the rules. Both scenarios are reproducible with the validation executor against golden
+files shipped with the package, which the adaptation's headless driver regenerates [@BRMangueTerraME].
 
 Cross-substrate equivalence (60×60 synthetic grid, 10 steps) gives 100% match for land use, soil
 and elevation within a 5 cm tolerance (MAE 0.0011 m, max 0.024 m; floating-point rounding), with raster at 2.0 ms/step against 76.4 ms/step for vector (37.4×; the vector port

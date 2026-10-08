@@ -50,15 +50,16 @@ GeoPandas and PySAL — but these tools target static analysis. Dynamic spatial 
 how landscapes evolve over time, has historically required specialized platforms. In Brazil, TerraME
 [@Carneiro2013] and Dinamica EGO [@SoaresFilho2002; @SoaresFilho2013] are the most widely adopted
 general-purpose frameworks, while narrower allocation models such as CLUE and CLUE-S
-[@Veldkamp1996; @Verburg2002] are used elsewhere. Researchers must choose between a Lua-based
-toolchain and single-purpose implementations with no shared contract.
+[@Veldkamp1996; @Verburg2002] are used elsewhere. Researchers working in Python thus lack a
+general-purpose option: the established frameworks are Lua- or GUI-based, and allocation models
+are usually standalone implementations without a shared interface.
 
 TerraME is conceptually robust, but its reliance on Lua — far less common in data science than
 Python — is a barrier, and the framework has seen no new release since August 2020. General-purpose
 simulation libraries, meanwhile, lack native synchronization between a time-stepped clock and the
 state of a GeoDataFrame. DisSModel fills this gap with a lightweight scheduler coupled to vector and
-raster spatial state: a Pythonic, actively maintained implementation of the TerraME paradigm and,
-through its satellite packages, of allocation models like CLUE and CLUE-S.
+raster spatial state: an actively maintained Python implementation of the TerraME paradigm and,
+through its satellite package `disslucc`, of LuccME's CLUE-like and CLUE-S-like allocation components.
 
 Reproducibility is a first-class concern: the `executor` module provides a
 standardized lifecycle — `validate → load → run → save` — capturing provenance
@@ -88,8 +89,8 @@ reproducible executor lifecycle. DisSModel builds on GeoPandas, following the di
 
 DisSModel is organized into five modules with strict separation of concerns, extensible through
 class inheritance. **Core** manages the simulation clock: the `Environment` orchestrates time, and
-spatial models auto-register at instantiation, receiving ticks through `setup / pre_execute /
-execute / post_execute` hooks. **Geo** provides the dual-substrate design: a vector substrate
+models auto-register at instantiation, run `setup` once, and receive each tick through
+`pre_execute / execute / post_execute` hooks. **Geo** provides the dual-substrate design: a vector substrate
 (`SpatialModel`, `CellularAutomaton`) on GeoDataFrame with libpysal neighborhoods [@Rey2021], and a
 raster substrate (`RasterModel`, `RasterCellularAutomaton`) on NumPy arrays with vectorized
 operations (`shift2d`, `focal_sum`, `neighbor_contact`) replacing cell-by-cell loops. **Executor**
@@ -159,17 +160,18 @@ the benchmark as its components land.
 
 ## Research Impact Statement
 
-DisSModel's scientific lineage is rooted in the TerraME/LuccME research program at INPE. The
-submitting author conducted doctoral research there under Prof. Gilberto Câmara and Dr. Ana Paula
-Dutra Aguiar — principal architects of TerraME/LuccME — and has co-authored the modeling program
-since 2009 [@Moreira2009; @Costa2009]; `disslucc` reimplements in Python the continuous and
-discrete allocation components of that lineage [@LuccME]. DisSModel was presented at a seminar of INPE's Applied Computing graduate program (CAP) on 7 May
-2026 [@Costa2026INPE].
+DisSModel's scientific lineage is rooted in the TerraME/LuccME research program at INPE, where
+TerraME was developed by Tiago Carneiro [@Carneiro2013] and LuccME by Ana Paula Dutra Aguiar
+[@LuccME], both former doctoral students of Prof. Gilberto Câmara. The submitting author conducted
+doctoral research in the same program, under Câmara and Aguiar, and has co-authored its modeling
+work since 2009 [@Moreira2009; @Costa2009]; `disslucc` reimplements in Python the continuous and
+discrete allocation components of that lineage. DisSModel was presented at a seminar of INPE's
+Applied Computing graduate program (CAP) on 7 May 2026 [@Costa2026INPE].
 
 The framework is in use across two UFMA research groups. Within LambdaGeo, `brmangue-dissmodel`
-builds on the reference implementation by co-author F.M.S. Co-author D.S.B. (UFMA, former INPE),
-whose doctoral work founded BR-MANGUE [@Bezerra2013], also adopts the DisSModel reimplementation in
-his coastal dynamics projects (UFMA PVCBS4959-2025 and PVCBS4960-2025), a collaboration predating
+builds on the reference implementation by co-author F.M.S. Co-author D.S.B. (former INPE), co-leader
+of UFMA's Geotechnologies and Environmental Sciences Laboratory (GEOTAM), whose doctoral work founded
+BR-MANGUE [@Bezerra2013], also adopts the DisSModel reimplementation in his coastal dynamics projects (UFMA PVCBS4959-2025 and PVCBS4960-2025), a collaboration predating
 DisSModel itself [@Bezerra2025BM].
 
 Since September 2026, four undergraduate research fellows (UFMA, CNPq) are being trained on the
@@ -178,9 +180,10 @@ project; the stabilized `ModelExecutor` contract lets each own an independent re
 to TerraME's `fillCellularSpace`) — without core changes.
 
 A roadmap toward DisSModel 1.0 (May 2027) includes an open textbook, *Geospatial Modeling with
-Python* (https://lambdageo.github.io/geospatial-modeling-python/), already in progress. This
-positions DisSModel as a candidate simulation layer in the Brazilian Earth Observation stack,
-complementary to SITS [@Simoes2021] and the Brazil Data Cube [@Ferreira2020].
+Python* (https://lambdageo.github.io/geospatial-modeling-python/), already in progress. On the data
+side, `disscube` already reads Brazil Data Cube collections through their STAC catalog
+[@Ferreira2020], so DisSModel models can run on the same Earth observation data used by SITS
+[@Simoes2021].
 
 ## Author Contributions
 

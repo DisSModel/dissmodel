@@ -52,7 +52,7 @@ DisSModel is the synthesis: a Python-native, FAIR-aligned, cloud-ready simulatio
 ## 🌟 Key Features
 
 - **Dual substrate** — same model logic runs on vector (`GeoDataFrame`) and raster (`RasterBackend`/NumPy).
-- **Lightweight scheduler** — pure-Python time-stepped engine; models auto-register at instantiation and receive clock ticks via `setup / pre_execute / execute / post_execute` lifecycle hooks.
+- **Lightweight scheduler** — pure-Python time-stepped engine; models auto-register at instantiation, run `setup` once and receive each clock tick via `pre_execute / execute / post_execute` lifecycle hooks.
 - **Executor pattern** — strict separation between science (models) and infrastructure (I/O, CLI, reproducible execution).
 - **Experiment tracking** — every run generates an immutable `ExperimentRecord` with SHA-256 checksums, TOML snapshot, and full provenance.
 - **Storage-agnostic I/O** — `dissmodel.io` handles local paths and `s3://` URIs transparently.

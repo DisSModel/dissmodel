@@ -110,28 +110,27 @@ contract, an explicit Python counterpart to TerraME/LuccME.
 All benchmarks ran on an Intel Core i7-7700T @ 2.90GHz, 15 GB RAM (Ubuntu, Python 3.12.3,
 NumPy 2.4.6, GeoPandas 1.1.3); absolute timings vary by hardware.
 
-**Conway's Game of Life** confirms equivalence across substrates: at 100×100 cells the vectorized
+**Conway's Game of Life** compares the two substrates: at 100×100 cells the vectorized
 raster rule takes 0.41 ms/step against 7,069 ms/step for a per-cell vector rule, and the raster
-scales to 10⁶ cells at 30.6 ms/step (per-cell versus vectorized rule).
+scales to 10⁶ cells at 30.6 ms/step.
 
 **BR-MANGUE coastal dynamics.** The coupled mangrove–flood model was established by
 Bezerra et al. [@Bezerra2013] and extended in @Bezerra2025BM, co-authored by D.S.B., F.M.S. and the
 submitting author, who are also responsible for the DisSModel reimplementation.
 `brmangue-dissmodel` [@BRMangue] validates the raster implementation against TerraME over the
-Maranhão Island dataset (50,496 cells). In the baseline scenario (19 steps) land use and soil match
+Maranhão Island dataset (50,496 cells); figures are for v0.3.0, after fixing border neighbor counting and the shared flood/mangrove snapshot. In the baseline scenario (19 steps) land use and soil match
 exactly at every checkpoint and elevation matches on 97.4% of cells within 1 mm (MAE 0.00038 m;
 maximum error 0.10 m); match percentage suits categorical outputs
 [@PontiusEtAl2011]. In the flooding scenario (laboratory parameters) TerraME floods 2,469 non-sea
 cells by step 11 and the Python model 2,467; soil matches exactly, land use differs in 4 cells
-(0.008%), and elevation matches on 94.4% of cells (MAE 0.008 m, maximum error 1.0 m). The residuals
+(0.008%), and at step 11 elevation matches on 94.4% of cells (MAE 0.008 m, maximum error 1.0 m). The residuals
 come from exact ties in elevation: the flux rule compares accumulated elevations with `<=`, so a
 ~1e-16 difference in summation order (sequential in TerraME, per direction in NumPy) can flip a
 comparison and, near the flooding threshold, a cell's class. They are floating-point effects, not a
-difference in the rules. Both are reproducible with its validation executor.
+difference in the rules; both scenarios are reproducible with the validation executor.
 
 Cross-substrate equivalence (60×60 synthetic grid, 10 steps) gives 100% match for land use, soil
-and elevation under tolerance (MAE 0.0011 m, max 0.024 m; floating-point rounding, not algorithmic
-disagreement), with raster at 2.0 ms/step against 76.4 ms/step for vector (37.4×; the vector port
+and elevation under tolerance (MAE 0.0011 m, max 0.024 m; floating-point rounding), with raster at 2.0 ms/step against 76.4 ms/step for vector (37.4×; the vector port
 follows TerraME's per-cell loops).
 
 **disslucc as a second case.** `disslucc` [@DisSLUCC], built on DisSModel, reimplements the LuccME
@@ -206,13 +205,12 @@ code and text: the `disslucc-benchmark` repository (scenarios, comparison and ti
 differential test against the original Lua code); the reorganization of `disslucc`; in
 `brmangue-dissmodel`, the diagnosis and correction of two discrepancies with TerraME (neighbor
 counting at borders; the snapshot shared by the flood and mangrove models) with tests, a headless
-driver for regenerating TerraME outputs, and documentation; and the revision of this paper's
-validation text. The reference results come from the original TerraME/LuccME code run unmodified in
-a container (for BR-MANGUE, unmodified model files with a new headless driver), so they do not
-depend on AI-written code. AI also assisted with English writing. The scientific design — TerraME
+driver for regenerating TerraME outputs, and documentation; and this paper's validation text. The reference results come from the original TerraME/LuccME code run unmodified in
+a container; the reference model files are unmodified and, for BR-MANGUE, only the headless
+driver that runs them is AI-written. AI also assisted with English writing. The scientific design — TerraME
 compatibility contract, executor pattern, dual-substrate architecture, validation methodology —
 predates this phase and traces to the submitting author's doctoral research at INPE. The authors
-made the design decisions and chose the validation criteria; AI-generated code and text were
-reviewed, tested, and run by the authors.
+made the design decisions and chose the validation criteria, and reviewed, tested and ran all
+AI-generated code and text.
 
 ## References

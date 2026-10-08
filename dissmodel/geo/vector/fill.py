@@ -251,10 +251,43 @@ def _fill_min_distance(
     attr_name : str, optional
         Name of the column to store the distances, by default
         ``"min_distance"``.
+
+    Notes
+    -----
+    Uses the spatial index of ``to_gdf`` (an STRtree) to find, for each
+    row, the nearest target geometry and then measures that one pair, so
+    the cost grows roughly as N log M instead of N × M. The distances are
+    the same as a brute-force minimum over all targets. Rows with a
+    missing or empty geometry, or an empty ``to_gdf``, get ``NaN``.
     """
-    from_gdf[attr_name] = from_gdf.geometry.apply(
-        lambda geom: to_gdf.geometry.distance(geom).min()
-    )
+    import warnings
+
+    import shapely
+
+    if (
+        from_gdf.crs is not None
+        and to_gdf.crs is not None
+        and not from_gdf.crs.equals(to_gdf.crs)
+    ):
+        warnings.warn(
+            "CRS mismatch between from_gdf and to_gdf "
+            f"({from_gdf.crs.to_string()} != {to_gdf.crs.to_string()}); "
+            "distances are computed in raw coordinates. "
+            "Use to_crs() to align them.",
+            UserWarning,
+            stacklevel=3,
+        )
+
+    result = np.full(len(from_gdf), np.nan)
+    if len(from_gdf) and len(to_gdf):
+        # (positions in from_gdf, positions in to_gdf) of each nearest pair;
+        # rows with missing/empty geometries produce no pair and stay NaN.
+        src_pos, tgt_pos = to_gdf.sindex.nearest(from_gdf.geometry, return_all=False)
+        result[src_pos] = shapely.distance(
+            from_gdf.geometry.values[src_pos],
+            to_gdf.geometry.values[tgt_pos],
+        )
+    from_gdf[attr_name] = result
 
 
 # ---------------------------------------------------------------------------

@@ -6,6 +6,7 @@
 [![PyPI version](https://badge.fury.io/py/dissmodel.svg)](https://pypi.org/project/dissmodel/)
 [![Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen.svg)](https://github.com/DisSModel/dissmodel/actions)
 [![DisSModel](https://img.shields.io/badge/LambdaGeo-Research-green.svg)](https://github.com/DisSModel)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23246106.svg)](https://doi.org/10.5281/zenodo.23246106)
 [![JOSS Status](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec/status.svg)](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec)
 
 > *"Science should not need to be rewritten to go into production."*  

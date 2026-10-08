@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 706" width="100%" role="img" font-family="Outfit, sans-serif">
   <rect width="1120" height="706" fill="#ffffff"/>
   <title>DisSModel ecosystem map</title>
-  <desc>DisSModel mirrors the TerraME ecosystem from INPE as an independent Python alternative: TerraME is the conceptual basis for the dissmodel core; TerraME's cellular automata, system dynamics and agent-based packages correspond to dissmodel-ca, dissmodel-sysdyn and dissmodel-abm; LuccME corresponds to disslucc; fillCell corresponds to disscube. haloexec and dissmodel-platform are new infrastructure for scale and reproducible execution.</desc>
+  <desc>DisSModel mirrors the TerraME ecosystem from INPE as an independent Python alternative: TerraME is the conceptual basis for the dissmodel core; TerraME's cellular automata, system dynamics and agent-based packages correspond to dissmodel-ca, dissmodel-sysdyn and dissmodel-abm; LuccME corresponds to disslucc, and brmangue-dissmodel reimplements the BR-MANGUE coastal model; fillCell corresponds to disscube. haloexec and dissmodel-platform are new infrastructure for scale and reproducible execution.</desc>
   <defs>
     <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -68,10 +68,15 @@
   <text class="note" x="310" y="317" text-anchor="middle">alternative</text>
   <path d="M266 330 L352 330" fill="none" stroke="#9fb0c6" stroke-dasharray="4 4" stroke-width="1.4" marker-end="url(#ah)"/>
 
-  <rect x="360" y="282" width="474" height="72" rx="10" fill="#e8f4e8" stroke="#bfdcbf"/>
-  <circle class="early" cx="818" cy="298" r="5"/>
+  <rect x="360" y="282" width="228" height="72" rx="10" fill="#e8f4e8" stroke="#bfdcbf"/>
+  <circle class="ok" cx="572" cy="298" r="5"/>
   <text class="nm" x="376" y="312">disslucc</text>
-  <text class="ds" x="376" y="336">Land use &amp; cover change · Demand · Potential · Allocation</text>
+  <text class="ds" x="376" y="336">Land use &amp; cover change</text>
+
+  <rect x="606" y="282" width="228" height="72" rx="10" fill="#e8f4e8" stroke="#bfdcbf"/>
+  <circle class="ok" cx="818" cy="298" r="5"/>
+  <text class="nm" x="622" y="312">brmangue-dissmodel</text>
+  <text class="ds" x="622" y="336">Coastal flooding · mangroves</text>
 
   <!-- Row D: data preparation -->
   <text class="lbl" x="360" y="388">DATA PREPARATION · CELLULAR SPACES</text>
@@ -83,7 +88,7 @@
   <path d="M266 442 L352 442" fill="none" stroke="#9fb0c6" stroke-dasharray="4 4" stroke-width="1.4" marker-end="url(#ah)"/>
 
   <rect x="360" y="400" width="474" height="72" rx="10" fill="#ffffff" stroke="#dde4ee" stroke-width="1.5"/>
-  <circle class="early" cx="818" cy="416" r="5"/>
+  <circle class="ok" cx="818" cy="416" r="5"/>
   <text class="nm" x="376" y="430">disscube</text>
   <text class="ds" x="376" y="454">Chunked raster cubes · grid alignment · cell filling</text>
 
@@ -107,8 +112,8 @@
 
   <!-- Legend -->
   <line x1="40" y1="634" x2="1080" y2="634" stroke="#dde4ee"/>
-  <circle class="ok" cx="46" cy="658" r="5"/><text class="ds" x="58" y="662">More mature</text>
-  <circle class="early" cx="166" cy="658" r="5"/><text class="ds" x="178" y="662">Early stage · in development</text>
+  <circle class="ok" cx="46" cy="658" r="5"/><text class="ds" x="58" y="662">Checked against TerraME / LuccME</text>
+  <circle class="early" cx="296" cy="658" r="5"/><text class="ds" x="308" y="662">In development</text>
   <text class="note" x="1080" y="662" text-anchor="end">All packages build on the dissmodel core.</text>
-  <text class="note" x="40" y="690">An early snapshot: most packages are just getting started, and boundaries and APIs will change. Feedback is very welcome.</text>
+  <text class="note" x="40" y="690">Packages evolve at different speeds, and feedback is very welcome.</text>
 </svg>

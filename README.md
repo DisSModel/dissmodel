@@ -7,7 +7,7 @@
 [![Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen.svg)](https://github.com/DisSModel/dissmodel/actions)
 [![DisSModel](https://img.shields.io/badge/LambdaGeo-Research-green.svg)](https://github.com/DisSModel)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23246106.svg)](https://doi.org/10.5281/zenodo.23246106)
-[![JOSS Status](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec/status.svg)](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec)
+[![JOSS Status](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec/status.svg)](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec) [![PyPI Downloads](https://static.pepy.tech/personalized-badge/dissmodel?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/dissmodel)
 
 > *"Science should not need to be rewritten to go into production."*  
 > *(A ciência não deve ser reescrita para ir para a produção.)*

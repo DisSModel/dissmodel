@@ -258,6 +258,8 @@ DisSModel is a core framework. To maintain a clean and specialized environment, 
 
 The map below shows how the pieces fit together, and how each one relates to its counterpart in INPE's TerraME ecosystem, which DisSModel takes as its conceptual basis. It is an early snapshot: the `dissmodel` core is the most mature piece, and the other packages are still taking shape.
 
+> **🗺 Repository map.** Beyond the packages, the ecosystem includes the TerraME/LuccME reference outputs, the benchmarks that check the packages against them, study cases, an end-to-end workflow and a book, hosted in the [LambdaGeo](https://github.com/LambdaGeo) organization. The **[repository map](https://dissmodel.github.io/repository-map.html)** shows how all of them connect.
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/DisSModel/dissmodel/main/docs/assets/images/dissmodel_ecosystem.svg" alt="DisSModel ecosystem map: TerraME is the conceptual basis for the dissmodel core; TerraME's CA, system dynamics and agent-based packages correspond to dissmodel-ca, dissmodel-sysdyn and dissmodel-abm; LuccME corresponds to disslucc; fillCell corresponds to disscube; haloexec and dissmodel-platform are new infrastructure with no TerraME counterpart" width="100%">
 </p>

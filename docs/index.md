@@ -61,7 +61,7 @@ env.run(30)
 
 ---
 
-## 📦 Model Ecosystem
+## Model libraries
 
 To keep the core framework lean, we maintain specialized libraries containing ready-to-use models. These are excellent starting points for your own research:
 
@@ -71,6 +71,15 @@ To keep the core framework lean, we maintain specialized libraries containing re
 ---
 
 
-## License
+## The DisSModel ecosystem
 
-MIT © 2026 Sérgio Costa & Nerval Santos Junior — [LambdaGeo/UFMA](https://github.com/DisSModel)
+| Package | Role | Documentation |
+|:---|:---|:---|
+| [**dissmodel**](https://github.com/DisSModel/dissmodel) | Core framework: clock, spatial substrates, executor, I/O, visualization | [dissmodel.github.io/dissmodel](https://dissmodel.github.io/dissmodel/) |
+| [**disscube**](https://github.com/DisSModel/disscube) | Declarative pipelines that turn raster and vector sources into model-ready grids | [dissmodel.github.io/disscube](https://dissmodel.github.io/disscube/) |
+| [**disslucc**](https://github.com/DisSModel/disslucc) | Land use and cover change: demand, potential and allocation | [dissmodel.github.io/disslucc](https://dissmodel.github.io/disslucc/) |
+| [dissmodel-ca](https://github.com/DisSModel/dissmodel-ca), [dissmodel-sysdyn](https://github.com/DisSModel/dissmodel-sysdyn), [dissmodel-abm](https://github.com/DisSModel/dissmodel-abm) | Ready-to-use cellular automata, system dynamics and agent-based models | GitHub |
+
+Developed by the [LambdaGeo](https://github.com/LambdaGeo) group at the Federal University of Maranhão (UFMA). MIT licence.
+
+Copyright © 2026 Sérgio Costa & Nerval Santos Junior.

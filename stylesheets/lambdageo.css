@@ -1,0 +1,481 @@
+/*
+ * LambdaGeo — identidade visual para livros MkDocs Material
+ * Paleta oficial, tipografia Inter, componentes modernizados.
+ * Toda a personalização do tema vive neste arquivo; nenhum arquivo
+ * interno do tema é sobrescrito.
+ */
+
+/* Fonte Inter — pesos 400/500/600/700 (regular + itálico no peso base) */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
+
+/* ---------------------------------------------------------------- *
+ * 1. Variáveis de marca
+ * ---------------------------------------------------------------- */
+:root {
+  --lg-primary: #1565c0;      /* Azul */
+  --lg-secondary: #2e7d32;    /* Verde */
+  --lg-accent: #00acc1;       /* Ciano */
+  --lg-dark: #263238;         /* Grafite */
+  --lg-light: #fafafa;        /* Branco */
+
+  /* Tons derivados, usados em hover/estados e no modo escuro */
+  --lg-primary-light: #5e92f3;
+  --lg-primary-dark: #003c8f;
+  --lg-secondary-light: #60ad5e;
+  --lg-secondary-dark: #005005;
+  --lg-accent-light: #5ddef4;
+  --lg-accent-dark: #007c91;
+  --lg-dark-light: #4f5b62;
+  --lg-dark-dark: #000a12;
+
+  /* Escala tipográfica (pesos Inter: 400/500/600/700) */
+  --lg-font-body: 400;
+  --lg-font-medium: 500;
+  --lg-font-semibold: 600;
+  --lg-font-bold: 700;
+
+  /* Ritmo vertical / largura de leitura */
+  --lg-reading-width: 46rem;
+  --lg-radius: 10px;
+  --lg-radius-sm: 6px;
+}
+
+/* ---------------------------------------------------------------- *
+ * 2. Tipografia — Inter em toda a documentação
+ * ---------------------------------------------------------------- */
+:root,
+[data-md-color-scheme] {
+  --md-text-font: "Inter", "-apple-system", "Helvetica Neue", Arial, sans-serif;
+  /* Fonte monoespaçada do sistema: evita uma segunda requisição de fonte externa */
+  --md-code-font: ui-monospace, "SFMono-Regular", "Menlo", "Consolas",
+    "Liberation Mono", monospace;
+}
+
+.md-typeset {
+  font-weight: var(--lg-font-body);
+  line-height: 1.7;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4,
+.md-typeset h5,
+.md-typeset h6 {
+  font-family: var(--md-text-font);
+  letter-spacing: -0.01em;
+  color: var(--lg-dark);
+}
+
+[data-md-color-scheme="slate"] .md-typeset h1,
+[data-md-color-scheme="slate"] .md-typeset h2,
+[data-md-color-scheme="slate"] .md-typeset h3,
+[data-md-color-scheme="slate"] .md-typeset h4,
+[data-md-color-scheme="slate"] .md-typeset h5,
+[data-md-color-scheme="slate"] .md-typeset h6 {
+  color: var(--lg-light);
+}
+
+.md-typeset h1 {
+  font-weight: var(--lg-font-bold);
+  font-size: 2.1rem;
+  margin-bottom: 1.4rem;
+}
+
+.md-typeset h2 {
+  font-weight: var(--lg-font-semibold);
+  font-size: 1.55rem;
+  margin-top: 2.4rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.md-typeset h3 {
+  font-weight: var(--lg-font-semibold);
+  font-size: 1.2rem;
+  margin-top: 1.9rem;
+}
+
+.md-typeset h4 {
+  font-weight: var(--lg-font-medium);
+  font-size: 1.05rem;
+}
+
+.md-typeset p,
+.md-typeset ul,
+.md-typeset ol {
+  margin-bottom: 1.1rem;
+}
+
+/* Navegação lateral, breadcrumbs e TOC usam peso médio para hierarquia clara */
+.md-nav {
+  font-weight: var(--lg-font-medium);
+  font-size: 0.7rem;
+}
+
+.md-nav__title {
+  font-weight: var(--lg-font-semibold);
+}
+
+.md-nav__item .md-nav__link--active,
+.md-nav__link:focus,
+.md-nav__link:hover {
+  color: var(--lg-primary);
+}
+
+[data-md-color-scheme="slate"] .md-nav__item .md-nav__link--active {
+  color: var(--lg-accent-light);
+}
+
+/* ---------------------------------------------------------------- *
+ * 3. Paleta — modo claro
+ * ---------------------------------------------------------------- */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: var(--lg-primary);
+  --md-primary-fg-color--light: var(--lg-primary-light);
+  --md-primary-fg-color--dark: var(--lg-primary-dark);
+  --md-primary-bg-color: var(--lg-light);
+  --md-primary-bg-color--light: var(--lg-light);
+
+  --md-accent-fg-color: var(--lg-accent);
+  --md-accent-fg-color--transparent: rgba(0, 172, 193, 0.1);
+  --md-accent-bg-color: var(--lg-light);
+
+  --md-default-bg-color: var(--lg-light);
+  --md-default-fg-color: var(--lg-dark);
+  --md-default-fg-color--light: #445056;
+  --md-default-fg-color--lighter: #78878e;
+  --md-default-fg-color--lightest: #e3e8ea;
+
+  --md-typeset-color: var(--lg-dark);
+  --md-typeset-a-color: var(--lg-primary);
+
+  --md-footer-bg-color: var(--lg-dark);
+  --md-footer-bg-color--dark: var(--lg-dark-dark);
+  --md-footer-fg-color: var(--lg-light);
+  --md-footer-fg-color--light: rgba(250, 250, 250, 0.7);
+}
+
+/* ---------------------------------------------------------------- *
+ * 4. Paleta — modo escuro (alto contraste sobre grafite)
+ * ---------------------------------------------------------------- */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: var(--lg-dark);
+  --md-primary-fg-color--light: var(--lg-dark-light);
+  --md-primary-fg-color--dark: var(--lg-dark-dark);
+  --md-primary-bg-color: var(--lg-light);
+
+  --md-accent-fg-color: var(--lg-accent-light);
+  --md-accent-fg-color--transparent: rgba(93, 222, 244, 0.15);
+
+  --md-default-bg-color: #1b2529;
+  --md-default-fg-color: #eceff1;
+  --md-default-fg-color--light: #cfd8dc;
+  --md-default-fg-color--lighter: #90a4ae;
+  --md-default-fg-color--lightest: #37474f;
+
+  --md-typeset-color: #eceff1;
+  --md-typeset-a-color: #7aa9ff;
+
+  --md-code-bg-color: #0f1719;
+  --md-code-fg-color: #eceff1;
+
+  --md-footer-bg-color: #14181a;
+  --md-footer-bg-color--dark: #0c0e0f;
+}
+
+/* ---------------------------------------------------------------- *
+ * 5. Cabeçalho — sem logotipo, apenas título/subtítulo
+ * ---------------------------------------------------------------- */
+.md-header__title {
+  font-weight: var(--lg-font-semibold);
+}
+
+.md-header__button.md-logo {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- *
+ * 6. Largura de leitura e espaçamento
+ * ---------------------------------------------------------------- */
+.md-grid {
+  max-width: 76rem;
+}
+
+.md-typeset {
+  max-width: var(--lg-reading-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Tabelas, blocos de código e admonitions podem usar a largura toda do artigo */
+.md-typeset table:not([class]),
+.md-typeset pre,
+.md-typeset .admonition,
+.md-typeset .tabbed-set,
+.md-typeset .grid {
+  max-width: 100%;
+}
+
+@media screen and (max-width: 76.1875em) {
+  .md-typeset {
+    max-width: none;
+  }
+}
+
+/* ---------------------------------------------------------------- *
+ * 7. Admonitions — cores consistentes com a marca
+ * ---------------------------------------------------------------- */
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: var(--lg-radius-sm);
+  border-width: 1px;
+}
+
+/* Note → azul da marca */
+.md-typeset .admonition.note,
+.md-typeset details.note {
+  border-color: var(--lg-primary);
+}
+.md-typeset .note > .admonition-title,
+.md-typeset .note > summary {
+  background-color: rgba(21, 101, 192, 0.08);
+}
+.md-typeset .note > .admonition-title::before,
+.md-typeset .note > summary::before {
+  background-color: var(--lg-primary);
+}
+
+/* Tip / Success → verde da marca */
+.md-typeset .admonition.tip,
+.md-typeset details.tip,
+.md-typeset .admonition.success,
+.md-typeset details.success {
+  border-color: var(--lg-secondary);
+}
+.md-typeset .tip > .admonition-title,
+.md-typeset .tip > summary,
+.md-typeset .success > .admonition-title,
+.md-typeset .success > summary {
+  background-color: rgba(46, 125, 50, 0.08);
+}
+.md-typeset .tip > .admonition-title::before,
+.md-typeset .tip > summary::before,
+.md-typeset .success > .admonition-title::before,
+.md-typeset .success > summary::before {
+  background-color: var(--lg-secondary);
+}
+
+/* Question / Info → ciano da marca (complementa nota/dica) */
+.md-typeset .admonition.question,
+.md-typeset details.question,
+.md-typeset .admonition.info,
+.md-typeset details.info {
+  border-color: var(--lg-accent);
+}
+.md-typeset .question > .admonition-title,
+.md-typeset .question > summary,
+.md-typeset .info > .admonition-title,
+.md-typeset .info > summary {
+  background-color: rgba(0, 172, 193, 0.08);
+}
+.md-typeset .question > .admonition-title::before,
+.md-typeset .question > summary::before,
+.md-typeset .info > .admonition-title::before,
+.md-typeset .info > summary::before {
+  background-color: var(--lg-accent);
+}
+
+/* Warning e Danger permanecem no padrão do Material (laranja / vermelho) */
+
+/* ---------------------------------------------------------------- *
+ * 8. Blocos de código
+ * ---------------------------------------------------------------- */
+.md-typeset pre > code,
+.md-typeset .highlight {
+  border-radius: var(--lg-radius);
+}
+
+.md-typeset pre {
+  border-radius: var(--lg-radius);
+  padding: 0.2rem 0.2rem;
+}
+
+.md-typeset code {
+  border-radius: 4px;
+  font-weight: var(--lg-font-medium);
+}
+
+.md-typeset .highlighttable,
+.md-typeset .highlight pre {
+  border-radius: var(--lg-radius);
+}
+
+.md-clipboard {
+  border-radius: 4px;
+}
+
+.md-clipboard:hover {
+  color: var(--lg-accent);
+}
+
+/* ---------------------------------------------------------------- *
+ * 9. Tabelas
+ * ---------------------------------------------------------------- */
+.md-typeset table:not([class]) {
+  border-radius: var(--lg-radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--lg-primary);
+  color: var(--lg-light);
+  font-weight: var(--lg-font-semibold);
+}
+
+.md-typeset table:not([class]) tr:nth-child(even) {
+  background-color: rgba(21, 101, 192, 0.035);
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tr:nth-child(even) {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* ---------------------------------------------------------------- *
+ * 10. Links, botões, abas
+ * ---------------------------------------------------------------- */
+.md-typeset a {
+  font-weight: var(--lg-font-medium);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.md-typeset a:hover {
+  color: var(--lg-accent);
+}
+
+.md-typeset .md-button {
+  border-radius: var(--lg-radius-sm);
+  font-weight: var(--lg-font-semibold);
+  border-color: var(--lg-primary);
+  color: var(--lg-primary);
+}
+
+.md-typeset .md-button:hover,
+.md-typeset .md-button--primary:hover {
+  background-color: var(--lg-primary);
+  border-color: var(--lg-primary);
+  color: var(--lg-light);
+}
+
+.md-typeset .md-button--primary {
+  background-color: var(--lg-primary);
+  border-color: var(--lg-primary);
+  color: var(--lg-light);
+}
+
+.md-typeset .tabbed-set > .tabbed-labels > label {
+  font-weight: var(--lg-font-medium);
+  border-radius: var(--lg-radius-sm) var(--lg-radius-sm) 0 0;
+}
+
+.md-typeset .tabbed-set > input:checked + label {
+  color: var(--lg-primary);
+  border-color: var(--lg-primary);
+}
+
+/* ---------------------------------------------------------------- *
+ * 11. Cards e grids (pymdownx / Material "grid cards")
+ * ---------------------------------------------------------------- */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border-radius: var(--lg-radius);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--lg-accent);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* ---------------------------------------------------------------- *
+ * 12. Badges (utilitário — para uso opcional em HTML embutido) *
+ * ---------------------------------------------------------------- */
+.lg-badge {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: var(--lg-font-semibold);
+  line-height: 1.6;
+  color: var(--lg-light);
+  background-color: var(--lg-dark-light);
+}
+
+.lg-badge--primary { background-color: var(--lg-primary); }
+.lg-badge--secondary { background-color: var(--lg-secondary); }
+.lg-badge--accent { background-color: var(--lg-accent); }
+
+/* ---------------------------------------------------------------- *
+ * 13. Rodapé
+ * ---------------------------------------------------------------- */
+.md-footer-meta {
+  background-color: var(--lg-dark-dark);
+}
+
+.md-footer__link:hover .md-footer__title,
+.md-footer__link:hover .md-footer__direction {
+  color: var(--lg-accent-light);
+}
+
+/* ---------------------------------------------------------------- *
+ * 14. Busca
+ * ---------------------------------------------------------------- */
+.md-search-result__meta {
+  color: var(--md-default-fg-color--light);
+}
+
+mark {
+  background-color: rgba(0, 172, 193, 0.35);
+  color: inherit;
+}
+
+/* ---------------------------------------------------------------- *
+ * 15. Acessibilidade — foco visível
+ * ---------------------------------------------------------------- */
+a:focus-visible,
+button:focus-visible,
+.md-nav__link:focus-visible,
+.md-tabs__link:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--lg-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------------- *
+ * 16. Responsividade fina
+ * ---------------------------------------------------------------- */
+@media screen and (max-width: 44.9375em) {
+  .md-typeset h1 { font-size: 1.7rem; }
+  .md-typeset h2 { font-size: 1.3rem; }
+  .md-typeset pre { padding: 0.1rem; }
+
+  /* Material's default mobile gutter (0.8rem) is too tight for long-form
+     reading; give the text more breathing room on phone-sized screens. */
+  .md-content__inner {
+    margin-left: 1.25rem;
+    margin-right: 1.25rem;
+  }
+}
+
+/* Wide display equations scroll sideways instead of being clipped on phones. */
+.md-typeset mjx-container[display="true"],
+.md-typeset .arithmatex {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+}

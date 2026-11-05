@@ -1,335 +1,281 @@
+# DisSModel
 
-# DisSModel 🌍
+**A Python framework for spatially explicit dynamic modeling, with
+[TerraME](http://www.terrame.org/) as its conceptual basis.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![PyPI version](https://badge.fury.io/py/dissmodel.svg)](https://pypi.org/project/dissmodel/)
-[![Coverage](https://img.shields.io/badge/coverage-83%25-yellowgreen.svg)](https://github.com/DisSModel/dissmodel/actions)
-[![DisSModel](https://img.shields.io/badge/LambdaGeo-Research-green.svg)](https://github.com/DisSModel)
+[![PyPI Downloads](https://static.pepy.tech/personalized-badge/dissmodel?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/dissmodel)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23246106.svg)](https://doi.org/10.5281/zenodo.23246106)
-[![JOSS Status](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec/status.svg)](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec) [![PyPI Downloads](https://static.pepy.tech/personalized-badge/dissmodel?period=total&units=INTERNATIONAL_SYSTEM&left_color=BLACK&right_color=GREEN&left_text=downloads)](https://pepy.tech/projects/dissmodel)
+[![JOSS Status](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec/status.svg)](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec)
 
-> *"Science should not need to be rewritten to go into production."*  
-> *(A ciência não deve ser reescrita para ir para a produção.)*
+DisSModel is the core of an ecosystem built at the
+[LambdaGeo](https://github.com/LambdaGeo) group (UFMA, Brazil). It is an
+independent, unofficial Python alternative to TerraME: the concepts are the
+same (a clock, spatial substrates, models that run step by step), and the
+stack is GeoPandas and NumPy instead of TerraLib and Lua. Models for cellular
+automata, system dynamics, agents and land use and cover change (LUCC) live in
+companion packages that build on this one.
 
----
+Three ideas run through the design:
 
-## 📖 Research Trajectory
+- **One clock, one lifecycle.** A model is a `Model` registered in an
+  `Environment`. It runs `setup` once and then receives every tick through
+  `pre_execute`, `execute` and `post_execute`.
+- **Two substrates, one way of writing models.** The vector substrate
+  (`GeoDataFrame`) fits irregular geometries and GIS joins; the raster
+  substrate (`RasterBackend`, NumPy) is vectorised and fits large grids.
+- **Reproducibility by design.** Science (the `Model`) is kept apart from
+  infrastructure (the `ModelExecutor`: input and output, command line,
+  provenance). Every run through an executor leaves an `ExperimentRecord` with
+  SHA-256 checksums, the resolved TOML specification and the code version.
 
-**DisSModel did not emerge from a blank slate.** It is the current expression of a research agenda that began in 2001 with an undergraduate thesis on geographic data interoperability using XML and open standards — a time when the central question was already forming:
+Status: version 0.6.6, on PyPI. A paper describing it is under review at the
+[Journal of Open Source Software](https://joss.theoj.org/papers/46522bc30d2dbec6b509d2dc487170ec).
 
-> *How can geospatial models be built so that others can understand, reuse, and trust them?*
-
-| Period | Project | Contribution to the Agenda |
-|--------|---------|---------------------------|
-| **2001–2002** | Terra Translator (XML, ontologies) | Foundation: geographic data needs semantics and open standards |
-| **2005** | TerraHS (Haskell + GIS) | Vision: scientific models as verifiable, executable artifacts |
-| **2007–2010** | TerraME / LuccME (INPE) | Maturity: spatially explicit dynamic models as scientific objects |
-| **2015–2024** | DbCells, Linked Data, QGIS plugins | Infrastructure: reproducibility demands rich metadata and federated access |
-| **2024–2026** | **DisSModel** (Python, FAIR, cloud-native) | Synthesis: same code runs from Jupyter to distributed cluster |
-
-Three principles unite this trajectory:
-1. 🔓 **Openness as method** — open source and open data as conditions for scientific validation.
-2. 🧩 **Interoperability as architecture** — systems designed to communicate, avoiding silos.
-3. ♻️ **Reproducibility as requirement** — publishing conditions for re-execution, not just results.
-
-DisSModel is the synthesis: a Python-native, FAIR-aligned, cloud-ready simulation framework where the same scientific code runs unchanged from a Jupyter notebook to a distributed production cluster.
-
----
-
-## 🎯 About
-
-**DisSModel** is a modular Python framework for spatially explicit dynamic simulation models. Developed by the [LambdaGeo](https://github.com/DisSModel) group at the Federal University of Maranhão (UFMA), it provides the simulation layer that connects domain models (LUCC, coastal dynamics) to a reproducible execution environment.
-
-| INPE / TerraME Ecosystem | LambdaGeo Ecosystem | Role |
-|--------------------------|---------------------|------|
-| **TerraME** | `dissmodel` | Generic framework for dynamic spatial modeling |
-| **LUCCME** | `DisSLUCC` | LUCC domain models built on dissmodel |
-| — | `brmangue-dissmodel` | Coastal domain models (BR-MANGUE) built on dissmodel |
-| **TerraLib** | `geopandas` / `rasterio` | Geographic data handling |
-
----
-
-## 🌟 Key Features
-
-- **Dual substrate** — same model logic runs on vector (`GeoDataFrame`) and raster (`RasterBackend`/NumPy).
-- **Lightweight scheduler** — pure-Python time-stepped engine; models auto-register at instantiation, run `setup` once and receive each clock tick via `pre_execute / execute / post_execute` lifecycle hooks.
-- **Executor pattern** — strict separation between science (models) and infrastructure (I/O, CLI, reproducible execution).
-- **Experiment tracking** — every run generates an immutable `ExperimentRecord` with SHA-256 checksums, TOML snapshot, and full provenance.
-- **Storage-agnostic I/O** — `dissmodel.io` handles local paths and `s3://` URIs transparently.
-- **Platform-ready contract** — the `ModelExecutor` interface is designed so the same model code can later run on the [DisSModel Platform](#-roadmap-dissmodel-platform), a separate project under development.
-
----
-
-## 🏗 Architecture
-
-```mermaid
-flowchart TB
-    subgraph science["Science layer: Model"]
-        M["FloodModel, MangroveModel, AllocationClueLike, ...<br/><i>only math, geometry and time</i>"]
-    end
-    subgraph infra["Infrastructure layer: ModelExecutor"]
-        E["BrmangueRasterExecutor, LuccContinuousExecutor, ...<br/><i>only URIs (local or s3://), column_map, parameters</i>"]
-    end
-    subgraph core_modules["Core modules"]
-        direction LR
-        core["dissmodel.core<br/>Environment, Model, SpatialModel"]
-        geo["dissmodel.geo<br/>RasterBackend, neighborhoods"]
-        exe["dissmodel.executor<br/>ModelExecutor, ExperimentRecord"]
-        io["dissmodel.io<br/>load_dataset, save_dataset"]
-        viz["dissmodel.visualization<br/>Map, RasterMap, Chart"]
-    end
-    E -- "loads data, builds and runs" --> M
-    M --> core
-    M --> geo
-    E --> exe
-    E --> io
-    M -. "optional" .-> viz
-```
-
----
-
-## 🚀 Quick Start
-
-### 1. Install
+## Installation
 
 ```bash
-pip install dissmodel
-
-# Or latest development version
-pip install "git+https://github.com/DisSModel/dissmodel.git@main"
+pip install dissmodel                      # Python 3.10+
+pip install "dissmodel[s3]"                # s3:// URIs (MinIO, AWS S3, ...)
+pip install "dissmodel[xarray]"            # NetCDF and Zarr input and output
+pip install "dissmodel[viz]"               # ipywidgets, for notebooks
 ```
 
-### 2. Write a Model
+## A model in a few lines
+
+A forest fire on a 100 × 100 raster, with one ignition at the centre. The
+model reads the state at the start of the step (`state_past`, the equivalent of
+TerraME's `cell.past`) and writes the new one:
 
 ```python
-# forest_fire_model.py
+import numpy as np
 from dissmodel.core import Environment
-from dissmodel.geo import SpatialModel, vector_grid
+from dissmodel.geo import SyncRasterModel, raster_grid
 
-# 10x10 grid where every cell starts as forest
-gdf = vector_grid(dimension=(10, 10), resolution=1.0, attrs={"state": "forest"})
+FOREST, BURNING, BURNED = 0, 1, 2
 
-class ForestFireModel(SpatialModel):
-    def setup(self, prob_spread=0.3):
+
+class ForestFire(SyncRasterModel):
+    def setup(self, backend, prob_spread=0.4, seed=42):
+        super().setup(backend)
+        self.land_use_types = ["state"]       # bands kept as state_past
         self.prob_spread = prob_spread
+        self.rng = np.random.default_rng(seed)
 
-    def execute(self):
-        # Called every step — only math here, no I/O
-        burning = self.gdf["state"] == "burning"
-        # ... apply spread logic ...
+    def execute(self):                        # once per step: only maths, no I/O
+        past = self.backend.get("state_past")
+        burning_neighbours = self.backend.focal_sum_mask(past == BURNING)
+        catch = (past == FOREST) & (
+            self.rng.random(self.shape) < 1 - (1 - self.prob_spread) ** burning_neighbours
+        )
+        state = past.copy()
+        state[catch] = BURNING
+        state[past == BURNING] = BURNED
+        self.backend.arrays["state"] = state
 
-env = Environment(end_time=50)
-ForestFireModel(gdf=gdf, prob_spread=0.4)
-env.run()
+
+if __name__ == "__main__":
+    grid = raster_grid(rows=100, cols=100, attrs={"state": FOREST})
+    grid.arrays["state"][50, 50] = BURNING
+
+    env = Environment(start_time=0, end_time=60)  # the Environment comes first
+    ForestFire(backend=grid, prob_spread=0.4)     # models register themselves
+    env.run()
+
+    print(f"{(grid.get('state') == BURNED).mean():.0%} of the forest burned")
 ```
 
-### 3. Wrap an Executor (for CLI + Provenance)
+The same seed gives the same run. To see the model while it runs, add a
+`RasterMap(backend=grid, band="state")` before `env.run()`. The vector version
+of the same idea uses `SpatialModel` and `vector_grid`; see the
+[documentation](https://dissmodel.github.io/dissmodel/) for both.
+
+## From a script to a reproducible experiment
+
+An executor wraps a model with everything that is not science: where the data
+comes from, where the result goes and what is recorded. The model stays
+untouched. Save the model above as `forest_fire_model.py` (the lines that build
+the grid and call `env.run()` go under `if __name__ == "__main__":`), and wrap
+it:
 
 ```python
 # my_executor.py
+from dissmodel.core import Environment
 from dissmodel.executor import ExperimentRecord, ModelExecutor
 from dissmodel.executor.cli import run_cli
 from dissmodel.io import load_dataset, save_dataset
 
-from forest_fire_model import ForestFireModel   # the model from step 1
+from forest_fire_model import ForestFire
+
 
 class ForestFireExecutor(ModelExecutor):
     name = "forest_fire"
-    output_suffix = ".gpkg"   # file type used when --output is a directory
+    output_suffix = ".tif"    # file type used when --output is a directory
 
     def load(self, record: ExperimentRecord):
-        gdf, checksum = load_dataset(record.source.uri)
+        (backend, _meta), checksum = load_dataset(record.source.uri)
         record.source.checksum = checksum
-        return gdf
+        return backend
 
     def run(self, data, record: ExperimentRecord):
-        from dissmodel.core import Environment
-        env = Environment(end_time=record.parameters.get("end_time", 50))
-        ForestFireModel(gdf=data, **record.parameters)
+        env = Environment(end_time=record.parameters.get("end_time", 60))
+        ForestFire(backend=data, prob_spread=record.parameters.get("prob_spread", 0.4))
         env.run()
         return data
 
     def save(self, result, record: ExperimentRecord) -> ExperimentRecord:
-        uri = record.output_path or "output.gpkg"
-        checksum = save_dataset(result, uri)
+        uri = record.output_path or "output.tif"
+        record.output_sha256 = save_dataset(result, uri)
         record.output_path = uri
-        record.output_sha256 = checksum
         record.status = "completed"
         return record
+
 
 if __name__ == "__main__":
     run_cli(ForestFireExecutor)
 ```
 
-### 4. Run via CLI
+Parameters come from a TOML file and can be overridden on the command line:
 
-```bash
-# Execute a simulation
-python my_executor.py run \
-  --input data/forest.gpkg \
-  --output data/result.gpkg \
-  --param end_time=50 \
-  --toml model.toml
-
-# Validate data contract without running
-python my_executor.py validate --input data/forest.gpkg
-
-# Show resolved parameters
-python my_executor.py show --toml model.toml
+```toml
+# model.toml
+[model.parameters]
+end_time = 60
+prob_spread = 0.4
 ```
 
-### 5. Cloud storage (s3://)
-
-Any `s3://bucket/key` URI works transparently anywhere dissmodel accepts a
-path — the CLI's `--input`/`--output`, `load_dataset`/`save_dataset`,
-`load_geotiff`/`save_geotiff` — so a model can read or write straight from
-object storage with no code changes:
-
 ```bash
-python my_executor.py run \
-  --input s3://forest-data/scenes/forest.gpkg \
-  --output s3://forest-data/results/result.gpkg \
-  --toml model.toml
+python my_executor.py run --input forest.tif --output result.tif \
+                          --toml model.toml --param prob_spread=0.5
+python my_executor.py validate --input forest.tif   # check the data, do not run
+python my_executor.py show --toml model.toml        # show the resolved parameters
 ```
 
-This is a standalone data-access feature, not tied to the rest of the
-`dissmodel-platform` stack — it works against any S3-compatible endpoint:
-a bare MinIO server you run yourself, AWS S3, or anything else that speaks
-the S3 protocol.
-
-Install the extra and configure the endpoint through environment variables:
-
-```bash
-pip install dissmodel[s3]
-
-export MINIO_ENDPOINT=localhost:9000      # host:port, no scheme
-export MINIO_ACCESS_KEY=your-access-key
-export MINIO_SECRET_KEY=your-secret-key
-export MINIO_SECURE=1                     # unset/empty for plain HTTP (e.g. local dev)
-```
-
-No further setup is required — `s3://` URIs are resolved lazily, so nothing
-above is needed for runs that only use local paths.
-
----
-
-## 📦 ExperimentRecord: Reproducibility by Design
-
-Every run produces an immutable provenance record:
+The run adds a short experiment ID to the output name (`result_83bc068f.tif`;
+`--preserve-output-name` turns that off) and writes next to it a
+`result_83bc068f.record.json` and a `profiling_83bc068f.md` with the time of
+each phase (validate, load, run, save). The record has what is needed to repeat
+the run:
 
 ```json
 {
-  "experiment_id": "abc123",
-  "model_commit": "a3f9c12",
-  "code_version": "0.5.0",
-  "resolved_spec": { "...TOML snapshot..." },
-  "source": { "uri": "s3://...", "checksum": "e3b0c44..." },
-  "artifacts": { "output": "sha256...", "profiling": "sha256..." },
-  "metrics": { "time_run_sec": 2.15, "time_total_sec": 2.34 },
+  "experiment_id": "83bc068f...",
+  "model_name": "forest_fire",
+  "model_commit": "local-cli",
+  "code_version": "0.6.6",
+  "resolved_spec": { "model": { "parameters": { "end_time": 60, "prob_spread": 0.4 } } },
+  "source": { "uri": "forest.tif", "checksum": "e6079001..." },
+  "parameters": { "end_time": 60, "prob_spread": 0.5 },
+  "output_path": "result_83bc068f.tif",
+  "artifacts": { "output": "ec900273...", "profiling": "d044b85d..." },
+  "metrics": { "time_run_sec": 0.014, "time_total_sec": 0.02 },
   "status": "completed"
 }
 ```
 
-The `record.json` written next to every output contains everything needed to
-re-run the experiment: the input URI and its SHA-256 checksum, the resolved
-parameters (TOML + CLI overrides), per-phase timings, and the output checksum.
+`model_commit` is `local-cli` for a loose script; for an executor defined in an
+installed package it records that package and its version (for example
+`disslucc==0.5.0`).
 
----
+### Cloud storage
 
-## 📊 Performance Telemetry
+Any `s3://bucket/key` URI works wherever DisSModel accepts a path: the
+`--input` and `--output` options, `load_dataset` and `save_dataset`,
+`load_geotiff` and `save_geotiff`. It talks to any S3-compatible endpoint (a
+MinIO server of your own, AWS S3, ...) and needs nothing else:
 
-Every run via the executor lifecycle generates a `profiling_{id}.md` alongside the output:
+```bash
+pip install "dissmodel[s3]"
+export MINIO_ENDPOINT=localhost:9000      # host:port, no scheme
+export MINIO_ACCESS_KEY=your-access-key
+export MINIO_SECRET_KEY=your-secret-key
+export MINIO_SECURE=1                     # unset for plain HTTP, e.g. local dev
+```
 
-| Phase | Time (s) | % Total | Memory Peak (MB) | I/O Ops |
-|-------|----------|---------|-----------------|---------|
-| **Validate** | 0.000 | 0.0% | 142 | 0 |
-| **Load** | 0.306 | 14.7% | 387 | 12 (read) |
-| **Run** | 1.025 | 49.4% | 521 | 0 |
-| **Save** | 0.746 | 35.9% | 498 | 8 (write) |
-| **Total** | **2.077** | **100%** | **521** | **20** |
+## The ecosystem
 
-
----
-
-## 🧩 Ecosystem: Models & Examples
-
-DisSModel is a core framework. To maintain a clean and specialized environment, all simulation models and implementation examples are hosted in separate repositories within the DisSModel ecosystem.
-
-The map below shows how the pieces fit together, and how each one relates to its counterpart in INPE's TerraME ecosystem, which DisSModel takes as its conceptual basis. It is an early snapshot: the `dissmodel` core is the most mature piece, and the other packages are still taking shape.
-
-> **🗺 Repository map.** Beyond the packages, the ecosystem includes the TerraME/LuccME reference outputs, the benchmarks that check the packages against them, study cases, an end-to-end workflow and a book, hosted in the [LambdaGeo](https://github.com/LambdaGeo) organization. The **[repository map](https://dissmodel.github.io/repository-map.html)** shows how all of them connect.
+DisSModel is only the core. The models, the data preparation and the land use
+components are separate packages, so each one can be installed, tested and
+cited on its own. The map shows how they relate to their counterparts in
+INPE's TerraME ecosystem.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/DisSModel/dissmodel/main/docs/assets/images/dissmodel_ecosystem.svg" alt="DisSModel ecosystem map: TerraME is the conceptual basis for the dissmodel core; TerraME's CA, system dynamics and agent-based packages correspond to dissmodel-ca, dissmodel-sysdyn and dissmodel-abm; LuccME corresponds to disslucc; fillCell corresponds to disscube; haloexec and dissmodel-platform are new infrastructure with no TerraME counterpart" width="100%">
 </p>
 
-### 🔬 Specialized Model Libraries
+| Package | What it is | TerraME counterpart | Install |
+| --- | --- | --- | --- |
+| [`disscube`](https://github.com/DisSModel/disscube) | DisSCube: declarative spatial data cubes. Sources, grid and derived variables in TOML; hands the cube to DisSModel models | `fillCell` | `pip install "disscube[dissmodel]"` |
+| [`disslucc`](https://github.com/DisSModel/disslucc) | DisSLUCC: demand, potential and allocation components for LUCC, continuous (CLUE-like) and discrete (CLUE-S-like), raster only | LuccME | `pip install disslucc` |
+| [`dissmodel-ca`](https://github.com/DisSModel/dissmodel-ca) | Cellular automata: Game of Life, forest fire, growth, ... | `ca` | `pip install "git+https://github.com/DisSModel/dissmodel-ca.git"` |
+| [`dissmodel-sysdyn`](https://github.com/DisSModel/dissmodel-sysdyn) | System dynamics: SIR, predator-prey, Lorenz, ... | `sysdyn` | `pip install "git+https://github.com/DisSModel/dissmodel-sysdyn.git"` |
+| [`dissmodel-abm`](https://github.com/DisSModel/dissmodel-abm) | Agent-based modeling in the style of TerraME (alpha) | `logo` | `pip install "git+https://github.com/DisSModel/dissmodel-abm.git"` |
+| [`brmangue-dissmodel`](https://github.com/DisSModel/brmangue-dissmodel) | BR-MANGUE: coastal flooding and mangrove succession, raster and vector | BR-MANGUE | `pip install "git+https://github.com/DisSModel/brmangue-dissmodel.git"` |
 
-| Repository | Description | Install |
-|------------|-------------|---------|
-| [`dissmodel-ca`](https://github.com/DisSModel/dissmodel-ca) | Classic Cellular Automata (Game of Life, Forest Fire, Growth) | `pip install "git+https://github.com/DisSModel/dissmodel-ca.git"` |
-| [`dissmodel-sysdyn`](https://github.com/DisSModel/dissmodel-sysdyn) | System Dynamics (SIR, Predator-Prey, Lorenz) | `pip install "git+https://github.com/DisSModel/dissmodel-sysdyn.git"` |
-| [`brmangue-dissmodel`](https://github.com/DisSModel/brmangue-dissmodel) | BR-MANGUE coastal flooding and mangrove succession model (raster + vector, validated against TerraME) | `pip install "git+https://github.com/DisSModel/brmangue-dissmodel.git"` |
-| [`disslucc`](https://github.com/DisSModel/disslucc) | Land Use and Cover Change models, continuous and discrete allocation (CLUE-inspired), raster-only | `pip install disslucc` |
-| [`disscube`](https://github.com/DisSModel/disscube) | Declarative spatial data cubes (a Python alternative to TerraME's fillCell): sources, grid and derived variables in TOML; hands the cube to DisSModel models | `pip install "disscube[dissmodel]"` |
+A typical workflow uses three of them: DisSCube builds the grid from open data,
+DisSModel runs the model, and DisSLUCC supplies the land use components.
 
-### 🛠 Implementation Templates
+### How the packages are checked
 
-Each repository demonstrates how to:
-1. **Define a Model**: Using `SpatialModel` and `Environment`.
-2. **Wrap an Executor**: Using `ModelExecutor` for I/O and provenance.
-3. **Deploy**: Running via CLI or API.
+The packages are not taken on trust: they are compared with TerraME and LuccME
+themselves. The reference outputs are kept in repositories of their own, so
+anyone can repeat the comparison:
 
----
+- [`terrame-goldens`](https://github.com/LambdaGeo/terrame-goldens): runs of the
+  TerraME `ca`, `sysdyn` and `logo` packages, for many seeds.
+- [`luccme-goldens`](https://github.com/LambdaGeo/luccme-goldens): runs of
+  TerraME and LuccME, produced with
+  [`terrame-docker`](https://github.com/LambdaGeo/terrame-docker).
+- [`disscube-benchmark`](https://github.com/LambdaGeo/disscube-benchmark) and
+  [`disslucc-benchmark`](https://github.com/LambdaGeo/disslucc-benchmark):
+  DisSCube and DisSLUCC against those reference outputs.
 
-## 🔭 Roadmap: DisSModel Platform
+The [repository map](https://dissmodel.github.io/repository-map.html) shows how
+all of these connect, from the TerraME reference to the open-data workflow.
 
-The **DisSModel Platform** is a distributed execution environment (FastAPI,
-Redis, Docker, MinIO/S3) currently under development as a **separate project**.
-It consumes the same `ModelExecutor` contract documented above — executors run
-through its job queue without any change to their scientific code, including
-remote experiment reproduction from a stored `ExperimentRecord`.
+### DisSModel Platform
 
-**The platform is not part of this package.** Everything described in this
-README works locally with `pip install dissmodel` alone.
+The DisSModel Platform (FastAPI, Redis, Docker, MinIO) is a prototype for
+running executors through a job queue. It is a separate project, it is not
+production-ready, and nothing in this README depends on it: everything here
+works locally with `pip install dissmodel`.
 
----
+## Documentation
 
-## 📚 Documentation
+- [User guide](https://dissmodel.github.io/dissmodel/)
+- [API reference](https://dissmodel.github.io/dissmodel/api/core/)
+- [Examples](https://dissmodel.github.io/dissmodel/examples/)
+- [Geospatial Modeling with Python](https://lambdageo.github.io/geospatial-modeling-python/), an open book that introduces the ecosystem step by step
+- [`CHANGELOG.md`](CHANGELOG.md)
 
-- 📘 **User Guide**: [https://dissmodel.github.io/dissmodel/](https://dissmodel.github.io/dissmodel/)
-- 🧪 **API Reference**: [https://dissmodel.github.io/dissmodel/api/core/](https://dissmodel.github.io/dissmodel/api/core/)
-- 🎓 **Examples**: [https://dissmodel.github.io/dissmodel/examples/](https://dissmodel.github.io/dissmodel/examples/)
+## Where it comes from
 
----
+DisSModel is the current chapter of a longer line of work at LambdaGeo on
+reproducible, interoperable spatial modeling: Terra Translator (2002), TerraHS
+(2005), then TerraME and LuccME at INPE (2007 to 2010), whose ideas DisSModel
+takes up in Python. More at [lambdageo.github.io](https://lambdageo.github.io/).
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting a pull request.
+Contributions are welcome. Please read the [contributing guidelines](CONTRIBUTING.md)
+and the [code of conduct](CODE_OF_CONDUCT.md). Bugs and feature requests go to
+[GitHub Issues](https://github.com/DisSModel/dissmodel/issues).
 
-- 🐛 Report bugs → [GitHub Issues](https://github.com/DisSModel/dissmodel/issues)
-- 💡 Request features → [GitHub Issues](https://github.com/DisSModel/dissmodel/issues)
-- 📝 Improve docs → Fork, edit, and submit a PR
-
----
-
-## 🎓 Citation
-
-```bibtex
-@software{dissmodel2026,
-  author = {Costa, Sérgio Souza and Santos Junior, Nerval de Jesus and Sousa, Felipe Martins and Bezerra, Denilson da Silva},
-  title = {DisSModel: A Python Framework for Spatially Explicit Dynamic Modeling},
-  year = {2026},
-  publisher = {GitHub},
-  url = {https://github.com/DisSModel/dissmodel},
-  version = {0.6.6}
-}
+```bash
+git clone https://github.com/DisSModel/dissmodel
+cd dissmodel
+pip install -e ".[dev]"
+pytest
 ```
 
----
+## Citation
 
-## ⚖️ License
+If you use DisSModel, please cite it with the metadata in
+[`CITATION.cff`](CITATION.cff) (GitHub shows it under "Cite this repository").
+Each release has its own DOI on Zenodo; the badge above points to the latest.
 
-MIT © [DisSModel — UFMA](https://github.com/DisSModel)  
-See [LICENSE](LICENSE) for details.
+## License
+
+MIT; see [`LICENSE`](LICENSE).

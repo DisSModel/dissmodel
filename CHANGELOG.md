@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and explains what to do when the executor is not registered or the module
   cannot be imported.
 - Docs: "Your first reproducible experiment" in Getting started.
+- `examples/hello_reproducible`: the walkthrough as runnable files, with a test
+  that runs it and checks that the docs and the files match.
 
 ### Fixed
 - CLI `run`: profiling report divided by zero when the total time was 0.0.

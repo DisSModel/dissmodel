@@ -1,0 +1,5 @@
+# model.toml
+[model.parameters]
+end_time = 60
+prob_spread = 0.4
+seed = 42

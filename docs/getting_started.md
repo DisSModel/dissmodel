@@ -81,6 +81,10 @@ uses a forest fire, a small cellular automaton, so you can see what a
 pip install "dissmodel>=0.7"
 ```
 
+The files below are in
+[`examples/hello_reproducible`](https://github.com/DisSModel/dissmodel/tree/main/examples/hello_reproducible) together with a `run.sh` that runs
+every command in order, and the repository tests run them.
+
 ### 1. The model: science only
 
 `forest_fire_model.py` has no file reading or writing. It says how a cell

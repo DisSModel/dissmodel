@@ -195,7 +195,8 @@ dissmodel compare result_83bc068f.tif other.tif       # identical, values_identi
 `compare` says whether two outputs agree and exits with status 1 when they do
 not. A step-by-step version, with the input file and the cases where the
 verdict is `differs`, is in
-[Getting started](https://dissmodel.github.io/dissmodel/getting_started/).
+[Getting started](https://dissmodel.github.io/dissmodel/getting_started/), and the
+runnable files are in [`examples/hello_reproducible`](https://github.com/DisSModel/dissmodel/tree/main/examples/hello_reproducible).
 
 ### Cloud storage
 

@@ -241,6 +241,13 @@ def _ensure_local_output_dir(output_path: str | None) -> None:
 # ── Commands ──────────────────────────────────────────────────────────────────
 
 def _cmd_run(executor_cls, args) -> None:
+    if getattr(args, "progress", False):
+        import logging
+        handler = logging.StreamHandler()
+        handler.setFormatter(logging.Formatter("%(message)s"))
+        lg = logging.getLogger("dissmodel.executor")
+        lg.addHandler(handler)
+        lg.setLevel(logging.INFO)
     from dissmodel.executor.runner import execute_lifecycle
     from dissmodel.io._utils import write_text
 
@@ -264,6 +271,9 @@ def _cmd_run(executor_cls, args) -> None:
     t_save  = timings["time_save_sec"]
     t_total = timings["time_total_sec"]
 
+    def _pct(part: float) -> str:
+        return f"{(part / t_total) * 100:.1f}%" if t_total > 0 else "n/a"
+
     # ── Profiling Markdown artefact ───────────────────────────────────────────
     md_report = (
         f"# Profiling Report: {getattr(executor_cls, 'name', 'Model')}\n\n"
@@ -272,10 +282,10 @@ def _cmd_run(executor_cls, args) -> None:
         "## Execution Times\n\n"
         "| Phase | Time (seconds) | % of Total |\n"
         "|---|---|---|\n"
-        f"| **Validate** | {t_val:.3f}   | {(t_val   / t_total) * 100:.1f}% |\n"
-        f"| **Load**     | {t_load:.3f}  | {(t_load  / t_total) * 100:.1f}% |\n"
-        f"| **Run**      | {t_run:.3f}   | {(t_run   / t_total) * 100:.1f}% |\n"
-        f"| **Save**     | {t_save:.3f}  | {(t_save  / t_total) * 100:.1f}% |\n"
+        f"| **Validate** | {t_val:.3f}   | {_pct(t_val)} |\n"
+        f"| **Load**     | {t_load:.3f}  | {_pct(t_load)} |\n"
+        f"| **Run**      | {t_run:.3f}   | {_pct(t_run)} |\n"
+        f"| **Save**     | {t_save:.3f}  | {_pct(t_save)} |\n"
         f"| **Total**    | **{t_total:.3f}** | **100%** |\n"
     )
 
@@ -386,6 +396,8 @@ def _build_parser():
                        help="Column mapping for vector input (repeatable)")
     run_p.add_argument("--band-map",   action="append", metavar="CANONICAL=REAL",
                        help="Band mapping for raster input (repeatable)")
+    run_p.add_argument("--progress", action="store_true",
+                       help="Print a '[progress]' line at the start of each phase")
     run_p.add_argument("--format", choices=["vector", "raster", "auto"],
                        default="auto")
     run_p.set_defaults(func=_cmd_run)

@@ -1,11 +1,26 @@
 from __future__ import annotations
 
+import logging
 import time
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from dissmodel.executor.model_executor import ModelExecutor
     from dissmodel.executor.schemas import ExperimentRecord
+
+logger = logging.getLogger("dissmodel.executor")
+
+
+def _peak_rss_mb() -> float | None:
+    """Peak resident memory of this process in MB (None where unavailable)."""
+    try:
+        import resource
+        import sys
+    except ImportError:  # Windows
+        return None
+    peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    # Linux reports KB, macOS bytes.
+    return round(peak / (1024 * 1024 if sys.platform == "darwin" else 1024), 1)
 
 
 def execute_lifecycle(
@@ -39,18 +54,22 @@ def execute_lifecycle(
         time_validate_sec, time_load_sec, time_run_sec,
         time_save_sec, time_total_sec.
     """
+    logger.info("[progress] phase=validate")
     t0 = time.perf_counter()
     executor.validate(record)
     t_val = time.perf_counter() - t0
 
+    logger.info("[progress] phase=load")
     t0 = time.perf_counter()
     data = executor.load(record)
     t_load = time.perf_counter() - t0
 
+    logger.info("[progress] phase=run")
     t0 = time.perf_counter()
     result = executor.run(data, record)
     t_run = time.perf_counter() - t0
 
+    logger.info("[progress] phase=save")
     t0 = time.perf_counter()
     record = executor.save(result, record)
     t_save = time.perf_counter() - t0
@@ -66,4 +85,13 @@ def execute_lifecycle(
     }
 
     record.metrics.update(timings)
+
+    from dissmodel.executor.environment import environment
+    # A caller that already described the environment (e.g. a worker that ran
+    # the executor elsewhere) keeps its value.
+    record.metrics.setdefault("environment", environment(type(executor)))
+    peak = _peak_rss_mb()
+    if peak is not None:
+        record.metrics["peak_rss_mb"] = peak
+    logger.info("[progress] phase=done total=%.3fs", t_total)
     return record, timings

@@ -8,6 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] — unreleased
+
+### Added
+- `metrics["environment"]`: Python, machine, GDAL/GEOS/PROJ and package
+  versions of every run (`dissmodel.executor.environment`). Also
+  `metrics["peak_rss_mb"]`.
+- `dissmodel.executor.compare`: comparison ladder (bytes, decoded values,
+  declared tolerance) with verdicts `identical`, `values_identical`,
+  `equivalent`, `differs`, plus `unverified` when a level that mattered could
+  not be checked. `equivalent` only exists when `atol` is declared. Rasters
+  also get a georeference check (transform, CRS, nodata): a moved raster is
+  `differs` even with identical values.
+- `dissmodel` command with `verify`, `compare` and `reproduce`.
+- `[progress]` log lines per phase and `run --progress`.
+- `dissmodel reproduce` looks for the executor module in the current folder
+  and explains what to do when the executor is not registered or the module
+  cannot be imported.
+- Docs: "Your first reproducible experiment" in Getting started.
+
+### Fixed
+- CLI `run`: profiling report divided by zero when the total time was 0.0.
+
 ## [0.6.6] — 2026-10-08
 
 ### Fixed

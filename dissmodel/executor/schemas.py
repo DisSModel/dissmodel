@@ -107,6 +107,10 @@ class JobResponse(BaseModel):
     output_path:   str | None = None
     output_sha256: str | None = None
     input_sha256:  str | None = None
+    code_version:  str | None = None
+    model_commit:  str | None = None
+    resolved_spec: dict | None = None
+    parameters:    dict | None = None
     logs:          list[str]  = []
 
 

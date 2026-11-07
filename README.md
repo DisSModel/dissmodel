@@ -121,7 +121,8 @@ class ForestFireExecutor(ModelExecutor):
 
     def run(self, data, record: ExperimentRecord):
         env = Environment(end_time=record.parameters.get("end_time", 60))
-        ForestFire(backend=data, prob_spread=record.parameters.get("prob_spread", 0.4))
+        p = record.parameters
+        ForestFire(backend=data, prob_spread=p.get("prob_spread", 0.4), seed=p.get("seed", 42))
         env.run()
         return data
 
@@ -144,6 +145,7 @@ Parameters come from a TOML file and can be overridden on the command line:
 [model.parameters]
 end_time = 60
 prob_spread = 0.4
+seed = 42
 ```
 
 ```bash
@@ -165,9 +167,9 @@ the run:
   "model_name": "forest_fire",
   "model_commit": "local-cli",
   "code_version": "0.6.6",
-  "resolved_spec": { "model": { "parameters": { "end_time": 60, "prob_spread": 0.4 } } },
+  "resolved_spec": { "model": { "parameters": { "end_time": 60, "prob_spread": 0.4, "seed": 42 } } },
   "source": { "uri": "forest.tif", "checksum": "e6079001..." },
-  "parameters": { "end_time": 60, "prob_spread": 0.5 },
+  "parameters": { "end_time": 60, "prob_spread": 0.5, "seed": 42 },
   "output_path": "result_83bc068f.tif",
   "artifacts": { "output": "ec900273...", "profiling": "d044b85d..." },
   "metrics": { "time_run_sec": 0.014, "time_total_sec": 0.02 },
@@ -178,6 +180,22 @@ the run:
 `model_commit` is `local-cli` for a loose script; for an executor defined in an
 installed package it records that package and its version (for example
 `disslucc==0.5.0`).
+
+### Check it and repeat it
+
+From version 0.7 the record can be used, not only kept:
+
+```bash
+dissmodel verify result_83bc068f.record.json          # is the output the one in the record?
+dissmodel reproduce result_83bc068f.record.json --module my_executor
+dissmodel compare result_83bc068f.tif other.tif       # identical, values_identical, equivalent, differs
+```
+
+`reproduce` runs the model again from the record and compares the outputs;
+`compare` says whether two outputs agree and exits with status 1 when they do
+not. A step-by-step version, with the input file and the cases where the
+verdict is `differs`, is in
+[Getting started](https://dissmodel.github.io/dissmodel/getting_started/).
 
 ### Cloud storage
 

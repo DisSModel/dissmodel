@@ -28,6 +28,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Docs: "Your first reproducible experiment" in Getting started.
 - `examples/hello_reproducible`: the walkthrough as runnable files, with a test
   that runs it and checks that the docs and the files match.
+- `execute_lifecycle(..., on_phase=None)`: callback at the start of each phase.
+
+### Fixed
+- `run` printed all four phase banners before starting, so a failure while
+  loading looked like a failure while saving. Each banner now appears when its
+  phase starts.
 
 ### Fixed
 - CLI `run`: profiling report divided by zero when the total time was 0.0.

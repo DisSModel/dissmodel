@@ -73,3 +73,37 @@ def test_walkthrough_code_blocks_are_the_example_files():
     assert set(blocks) == expected, "the walkthrough must show exactly the example files"
     for name, body in blocks.items():
         assert (EXAMPLE / name).read_text() == body, f"{name} differs between the docs and the example"
+
+
+def test_run_without_the_input_names_the_missing_file(workdir):
+    """The example needs make_input.py first; without it the error must say which file."""
+    proc = run(["my_executor.py", "run", "--input", "forest.tif", "--output", "result.tif",
+                "--toml", "model.toml"], workdir, check=False)
+    assert proc.returncode != 0
+    assert "forest.tif" in proc.stderr
+
+
+def test_example_readme_tells_to_create_the_input_first():
+    text = (EXAMPLE / "README.md").read_text()
+    assert text.index("python make_input.py") < text.index("my_executor.py run")
+
+
+def test_phase_banners_appear_when_the_phase_starts(workdir):
+    """A failing load must not have announced Running or Saving."""
+    bad = run(["my_executor.py", "run", "--input", "forest.tif", "--output", "result.tif",
+               "--toml", "model.toml"], workdir, check=False)
+    assert "Validating" in bad.stdout and "Loading" in bad.stdout
+    assert "Running" not in bad.stdout and "Saving" not in bad.stdout
+
+    run(["make_input.py"], workdir)
+    ok = run(["my_executor.py", "run", "--input", "forest.tif", "--output", "result.tif",
+              "--toml", "model.toml"], workdir)
+    order = [ok.stdout.index(w) for w in ("Validating", "Loading", "Running", "Saving")]
+    assert order == sorted(order)
+
+
+def test_docs_warn_that_ids_differ_and_input_comes_first():
+    walk = DOC.read_text()
+    assert "will not match" in walk and "Run this before step 4" in walk
+    assert "will be different" in (ROOT / "README.md").read_text()
+    assert "generated at each run" in (EXAMPLE / "README.md").read_text()

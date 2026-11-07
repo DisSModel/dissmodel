@@ -26,6 +26,7 @@ def _peak_rss_mb() -> float | None:
 def execute_lifecycle(
     executor: ModelExecutor,
     record: ExperimentRecord,
+    on_phase=None,
 ) -> tuple[ExperimentRecord, dict[str, float]]:
     """
     Canonical lifecycle orchestration for DisSModel executors.
@@ -44,6 +45,10 @@ def execute_lifecycle(
         The ExperimentRecord for this job. May be mutated in-place by
         load() (e.g. source.checksum) and save() (output_path, status).
 
+    on_phase:
+        Optional callable called with ``"validate"``, ``"load"``, ``"run"``
+        or ``"save"`` as each phase starts.
+
     Returns
     -------
     record:
@@ -55,21 +60,29 @@ def execute_lifecycle(
         time_save_sec, time_total_sec.
     """
     logger.info("[progress] phase=validate")
+    if on_phase:
+        on_phase("validate")
     t0 = time.perf_counter()
     executor.validate(record)
     t_val = time.perf_counter() - t0
 
     logger.info("[progress] phase=load")
+    if on_phase:
+        on_phase("load")
     t0 = time.perf_counter()
     data = executor.load(record)
     t_load = time.perf_counter() - t0
 
     logger.info("[progress] phase=run")
+    if on_phase:
+        on_phase("run")
     t0 = time.perf_counter()
     result = executor.run(data, record)
     t_run = time.perf_counter() - t0
 
     logger.info("[progress] phase=save")
+    if on_phase:
+        on_phase("save")
     t0 = time.perf_counter()
     record = executor.save(result, record)
     t_save = time.perf_counter() - t0

@@ -258,12 +258,17 @@ def _cmd_run(executor_cls, args) -> None:
     _apply_output_path_intelligence(record, args, executor_cls)
     _ensure_local_output_dir(record.output_path)
 
-    print("▶ Validating...")
-    print("▶ Loading...")
-    print("▶ Running...")
-    print("▶ Saving...")
-
-    record, timings = execute_lifecycle(executor, record)
+    banners = {
+        "validate": "▶ Validating...",
+        "load":     "▶ Loading...",
+        "run":      "▶ Running...",
+        "save":     "▶ Saving...",
+    }
+    # Each banner is printed when its phase starts, so a failure shows the
+    # phase that was actually running.
+    record, timings = execute_lifecycle(
+        executor, record, on_phase=lambda ph: print(banners[ph])
+    )
 
     t_val   = timings["time_validate_sec"]
     t_load  = timings["time_load_sec"]

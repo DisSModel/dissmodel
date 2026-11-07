@@ -176,6 +176,9 @@ save_dataset(grid, "forest.tif")
 python make_input.py
 ```
 
+> **Run this before step 4.** `forest.tif` does not exist until you create it,
+> and step 4 stops with `FileNotFoundError: 'forest.tif'` without it.
+
 ### 4. Run it
 
 Parameters live in a TOML file and can be overridden on the command line.
@@ -202,6 +205,11 @@ names stay fixed to keep the commands below short. The run leaves three files:
 | `result.tif` | the output |
 | `result.record.json` | the record: parameters, the resolved TOML, SHA-256 of input and output, versions, environment and timings |
 | `profiling_<id>.md` | time spent in each phase |
+
+> **Your IDs and hashes will not match the ones in this page.** The experiment
+> ID (like `83bc068f`) is generated at each run, so it is different every time,
+> and so are the timings. That is expected: what matters is that the commands
+> below say `matches the record`, `identical` and `differs` where this page does.
 
 ### 5. Check that the output is the one in the record
 

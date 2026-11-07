@@ -218,7 +218,7 @@ def test_run_profiling_report_survives_zero_total(monkeypatch, tmp_path, grid):
     from dissmodel.executor import cli
     monkeypatch.setattr(
         "dissmodel.executor.runner.execute_lifecycle",
-        lambda ex, rec: (setattr(rec, "status", "completed") or rec,
+        lambda ex, rec, on_phase=None: (setattr(rec, "status", "completed") or rec,
                          {k: 0.0 for k in ("time_validate_sec", "time_load_sec",
                                            "time_run_sec", "time_save_sec", "time_total_sec")}),
     )

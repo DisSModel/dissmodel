@@ -138,6 +138,11 @@ if __name__ == "__main__":
     run_cli(ForestFireExecutor)
 ```
 
+`forest.tif` is a raster with a `state` band (0 forest, 1 burning). The script
+[`examples/hello_reproducible/make_input.py`](https://github.com/DisSModel/dissmodel/blob/main/examples/hello_reproducible/make_input.py)
+creates one: run `python make_input.py` before the executor, or it stops
+with `FileNotFoundError: 'forest.tif'`.
+
 Parameters come from a TOML file and can be overridden on the command line:
 
 ```toml
@@ -158,8 +163,9 @@ python my_executor.py show --toml model.toml        # show the resolved paramete
 The run adds a short experiment ID to the output name (`result_83bc068f.tif`;
 `--preserve-output-name` turns that off) and writes next to it a
 `result_83bc068f.record.json` and a `profiling_83bc068f.md` with the time of
-each phase (validate, load, run, save). The record has what is needed to repeat
-the run:
+each phase (validate, load, run, save). The ID (`83bc068f` here) is generated at
+each run, so yours will be different, and so will the hashes and timings below.
+The record has what is needed to repeat the run:
 
 ```json
 {

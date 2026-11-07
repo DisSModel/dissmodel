@@ -1,0 +1,72 @@
+{
+  "experiment_id": "a630799e7abd410b8e1d25896c18b6ae",
+  "created_at": "2026-11-07T13:21:53.188002Z",
+  "model_name": "forest_fire",
+  "model_commit": "local-cli",
+  "code_version": "0.7.0",
+  "resolved_spec": {
+    "model": {
+      "parameters": {
+        "end_time": 60,
+        "prob_spread": 0.4,
+        "seed": 42
+      }
+    }
+  },
+  "source": {
+    "type": "local",
+    "uri": "forest.tif",
+    "collection": "",
+    "version": "",
+    "checksum": "e6079001415dfc547a4fc84a9ae21197ec062074ae2e1f0af2d7e6786cd197c3"
+  },
+  "input_format": "auto",
+  "column_map": {},
+  "band_map": {},
+  "parameters": {
+    "end_time": 60,
+    "prob_spread": 0.5,
+    "seed": 42
+  },
+  "period": null,
+  "output_path": "result_a630799e.tif",
+  "artifacts": {
+    "output": "ec900273538f7aba2c3ce150a211bc4f6f724855d0b8d4c37aad339005f3bbe1",
+    "profiling": "9c315d52305275981f9f3957fb4754536053b21f1b1ed86f1a1a3edb15fc3612"
+  },
+  "metrics": {
+    "time_validate_sec": 0.0,
+    "time_load_sec": 0.003,
+    "time_run_sec": 0.021,
+    "time_save_sec": 0.002,
+    "time_total_sec": 0.025,
+    "environment": {
+      "python": "3.12.3",
+      "platform": "linux",
+      "machine": "x86_64",
+      "executor": "__main__.ForestFireExecutor",
+      "executor_package": null,
+      "native": {
+        "gdal": "3.12.2",
+        "geos": "3.14.1",
+        "proj": "9.8.1"
+      },
+      "packages": {
+        "dissmodel": "0.7.0",
+        "disscube": "0.6.0",
+        "disslucc": "0.5.0",
+        "numpy": "2.5.4",
+        "rasterio": "1.5.2",
+        "shapely": "2.2.0",
+        "pyproj": "3.8.0",
+        "geopandas": "1.2.0",
+        "xarray": "2026.9.0"
+      }
+    },
+    "peak_rss_mb": 272.9
+  },
+  "status": "completed",
+  "logs": [
+    "Saved profiling artifact → ./profiling_a630799e.md"
+  ]
+}

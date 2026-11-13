@@ -47,7 +47,7 @@ how landscapes evolve over time, has historically required specialized platforms
 [@Carneiro2013] and Dinamica EGO [@SoaresFilho2002; @SoaresFilho2013] are the most widely adopted
 general-purpose frameworks, while narrower allocation models such as CLUE and CLUE-S
 [@Veldkamp1996; @Verburg2002] are used elsewhere. Researchers working in Python thus lack a
-general-purpose option: the established frameworks are Lua or GUI-based, and allocation models
+general-purpose option: the established frameworks are Lua- or GUI-based, and allocation models
 are usually standalone implementations without a shared interface.
 
 TerraME is conceptually robust, but its reliance on Lua — far less common in data science than
@@ -93,13 +93,13 @@ vectorized operations (`shift2d`, `focal_sum`, `neighbor_contact`) replacing cel
 `SyncSpatialModel` and `SyncRasterModel` mirror TerraME's `synchronize()`, so coupled models sharing
 one grid read the same start-of-step state. **Executor** defines the `ModelExecutor` four-phase
 lifecycle (`validate`, `load`, `run`, `save`); subclasses self-register, and every run produces an
-`ExperimentRecord` with input checksum, parameters, timing, and output paths. **IO** provides a
+`ExperimentRecord` with input checksums, parameters, timing, and output paths. **IO** provides a
 unified dataset abstraction across GeoDataFrame, GeoTIFF, and Xarray/Zarr, with transparent `s3://`
 resolution. **Visualization** integrates Matplotlib, Streamlit-compatible widgets, and `RasterMap`.
 
 This extensibility has produced independent domain packages: `dissmodel-ca` [@DisSModelCA]
 (Cellular Automata), `dissmodel-sysdyn` [@DisSModelSysDyn] (System Dynamics), and `disslucc`
-[@DisSLUCC], which implements LuccME's continuous and discrete Demand, Potential, and Allocation
+[@DisSLUCC], which implements LuccME's continuous and discrete demand, potential, and allocation
 components [@Veldkamp1996; @Verburg2002] on the raster substrate and the same `ModelExecutor`
 contract, an explicit Python counterpart to TerraME/LuccME.
 
@@ -118,7 +118,7 @@ vector API) and scales to $10^6$ cells at 26.6 ms/step.
 @Bezerra2014 and extended in @Bezerra2025BM, co-authored by D.S.B., F.M.S. and the
 submitting author, who are also responsible for the DisSModel reimplementation.
 `brmangue-dissmodel` [@BRMangue] validates the raster implementation against a TerraME 2.0.1
-adaptation of the published model [@BRMangueTerraME] over the Maranhão Island dataset (50,496 cells);
+adaptation [@BRMangueTerraME] of the published model [@Bezerra2014] over the Maranhão Island dataset (50,496 cells);
 fidelity to the original BR-MANGUE model is documented in the repository. Figures refer to `brmangue-dissmodel` v0.5.0. Match percentage suits categorical outputs [@PontiusEtAl2011]. In the baseline scenario (19 steps) land use and soil match
 exactly at every checkpoint and elevation matches on 97.4% of cells within 1 mm (MAE 0.00038 m;
 maximum error 0.10 m). In the flooding scenario (laboratory parameters) TerraME floods 2,469 non-sea
@@ -132,11 +132,11 @@ files shipped with the package, which the adaptation's headless driver regenerat
 
 Cross-substrate equivalence (60×60 synthetic grid, 10 steps) gives 100% match for land use, soil
 and elevation within a 5 cm tolerance (MAE 0.0011 m, max 0.024 m; floating-point rounding), with
-raster at 2.5 ms/step against 69.1 ms/step for vector (28.1×; the vector port follows TerraME's
+raster at 2.5 ms/step against 69.1 ms/step for vector (27.6×; the vector port follows TerraME's
 per-cell loops).
 
 **disslucc as a second case.** `disslucc` [@DisSLUCC], built on DisSModel, reimplements the LuccME
-demand, potential and allocation components (continuous CLUE-like [@Veldkamp1996] and discrete
+demand, potential, and allocation components (continuous CLUE-like [@Veldkamp1996] and discrete
 CLUE-S-like). It tests the `ModelExecutor` contract and the raster substrate against a second
 TerraME application, not as a result in itself. Its checks live in a separate, versioned benchmark
 [@DisSLUCCBenchmark] that compares every simulated year, iteration counts included, with per-year
@@ -153,7 +153,7 @@ counts (MAE $< 10^{-7}$).
 allocation disagreement [@PontiusMillones2011] and identical iteration counts. Overall, ten of 21 LuccME test labs and both variants match with identical iteration
 counts and differences up to $3\times10^{-6}$ (single precision); a validated lab runs in 0.11 to 0.55 s on
 the hardware above (median of five; `make timing`). The other eleven labs need potential and
-allocation components not yet implemented; student fellows are developing them, and each lab joins
+allocation components not yet implemented; undergraduate fellows are developing them, and each lab joins
 the benchmark as its components land.
 
 ## Research Impact Statement
@@ -172,7 +172,7 @@ of UFMA's Geotechnologies and Environmental Sciences Laboratory (GEOTAM), whose 
 BR-MANGUE [@Bezerra2014], also adopts the DisSModel reimplementation in his coastal dynamics projects (UFMA PVCBS4959-2025 and PVCBS4960-2025), a collaboration predating
 DisSModel itself [@Bezerra2025BM].
 
-Since September 2026, four undergraduate research fellows (UFMA, CNPq) are being trained on the
+Since September 2026, four undergraduate research fellows (UFMA, CNPq) have been trained on the
 project; the stabilized `ModelExecutor` contract lets each own an independent repository —
 `disslucc`, `brmangue-dissmodel`, or `disscube` [@DisSCube] (a data-cube layer, a Python alternative
 to TerraME's `fillCellularSpace`) — without core changes.
@@ -186,9 +186,9 @@ side, `disscube` already reads Brazil Data Cube collections through their STAC c
 ## Author Contributions
 
 CRediT roles: **S.S.C.** — Conceptualization, Software (Core, Geo, Executor, IO,
-Visualization), Methodology, Validation, Writing, Supervision, Project
+Visualization), Methodology, Validation, Writing – original draft, Writing – review & editing, Supervision, Project
 administration. **N.J.S.J.** — Conceptualization, Software (initial design),
-Validation, Writing (undergraduate thesis [@SantosJunior2025]). **D.S.B.** —
+Validation, Writing – original draft (undergraduate thesis [@SantosJunior2025]). **D.S.B.** —
 Conceptualization (domain science), Validation, Resources
 [@Bezerra2014; @Bezerra2025BM]. **F.M.S.** — Conceptualization, Software (BR-MANGUE
 reference implementation), Data curation, Validation [@Bezerra2025BM]. All authors

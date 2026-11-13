@@ -112,7 +112,7 @@ NumPy 2.5.3, GeoPandas 1.2.0); absolute timings vary by hardware.
 vector rule is a per-cell Python method querying libpysal Queen neighbors; the raster rule is one
 whole-grid focal sum; final states are compared cell by cell. At 100×100 cells the raster takes
 0.34 ms/step against 3,783 ms/step for the vector (a gap that reflects the per-cell style of the
-vector API) and scales to 10⁶ cells at 26.6 ms/step.
+vector API) and scales to $10^6$ cells at 26.6 ms/step.
 
 **BR-MANGUE coastal dynamics.** The coupled mangrove–flood model was established by
 @Bezerra2014 and extended in @Bezerra2025BM, co-authored by D.S.B., F.M.S. and the
@@ -125,7 +125,7 @@ maximum error 0.10 m). In the flooding scenario (laboratory parameters) TerraME 
 cells by step 11 and the Python model 2,467; soil matches exactly, land use differs in 4 cells
 (0.008%), and at step 11 elevation matches on 94.4% of cells (MAE 0.008 m, maximum error 1.0 m). The residuals
 come from exact ties in elevation: the flux rule compares accumulated elevations with `<=`, so a
-~10⁻¹⁶ difference in summation order (sequential in TerraME, per direction in NumPy) can flip a
+$\sim\!10^{-16}$ difference in summation order (sequential in TerraME, per direction in NumPy) can flip a
 comparison and, near the flooding threshold, a cell's class. They are floating-point effects, not a
 difference in the rules. Both scenarios are reproducible with the validation executor against golden
 files shipped with the package, which the adaptation's headless driver regenerates [@BRMangueTerraME].
@@ -148,10 +148,10 @@ suits fractional outputs [@PontiusEtAl2011; @Willmott2005].
 the final year ([0,1] scale) with `disslucc`'s defaults. The difference is one deliberate deviation: LuccME's `correctCellChange` never executes (its guard
 reads a mismatched field name), while `disslucc` runs it by default. With `cell_correction=False`
 (the benchmark's `lab01_md1643` scenario) the match holds in every year, with identical iteration
-counts (MAE < 10⁻⁷).
+counts (MAE $< 10^{-7}$).
 `lab15_md10` (discrete, 5,914 cells) reproduces the reference cell for cell, with zero quantity and
 allocation disagreement [@PontiusMillones2011] and identical iteration counts. Overall, ten of 21 LuccME test labs and both variants match with identical iteration
-counts and differences up to 3×10⁻⁶ (single precision); a validated lab runs in 0.11 to 0.55 s on
+counts and differences up to $3\times10^{-6}$ (single precision); a validated lab runs in 0.11 to 0.55 s on
 the hardware above (median of five; `make timing`). The other eleven labs need potential and
 allocation components not yet implemented; student fellows are developing them, and each lab joins
 the benchmark as its components land.

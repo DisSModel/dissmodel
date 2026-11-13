@@ -47,7 +47,7 @@ how landscapes evolve over time, has historically required specialized platforms
 [@Carneiro2013] and Dinamica EGO [@SoaresFilho2002; @SoaresFilho2013] are the most widely adopted
 general-purpose frameworks, while narrower allocation models such as CLUE and CLUE-S
 [@Veldkamp1996; @Verburg2002] are used elsewhere. Researchers working in Python thus lack a
-general-purpose option: the established frameworks are Lua or GUI-based, and allocation models
+general-purpose option: the established frameworks are Lua- or GUI-based, and allocation models
 are usually standalone implementations without a shared interface.
 
 TerraME is conceptually robust, but its reliance on Lua — far less common in data science than

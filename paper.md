@@ -93,19 +93,19 @@ vectorized operations (`shift2d`, `focal_sum`, `neighbor_contact`) replacing cel
 `SyncSpatialModel` and `SyncRasterModel` mirror TerraME's `synchronize()`, so coupled models sharing
 one grid read the same start-of-step state. **Executor** defines the `ModelExecutor` four-phase
 lifecycle (`validate`, `load`, `run`, `save`); subclasses self-register, and every run produces an
-`ExperimentRecord` with input checksum, parameters, timing, and output paths. **IO** provides a
+`ExperimentRecord` with input checksums, parameters, timing, and output paths. **IO** provides a
 unified dataset abstraction across GeoDataFrame, GeoTIFF, and Xarray/Zarr, with transparent `s3://`
 resolution. **Visualization** integrates Matplotlib, Streamlit-compatible widgets, and `RasterMap`.
 
 This extensibility has produced independent domain packages: `dissmodel-ca` [@DisSModelCA]
 (Cellular Automata), `dissmodel-sysdyn` [@DisSModelSysDyn] (System Dynamics), and `disslucc`
-[@DisSLUCC], which implements LuccME's continuous and discrete Demand, Potential, and Allocation
+[@DisSLUCC], which implements LuccME's continuous and discrete demand, potential, and allocation
 components [@Veldkamp1996; @Verburg2002] on the raster substrate and the same `ModelExecutor`
 contract, an explicit Python counterpart to TerraME/LuccME.
 
 ## Validation and Performance
 
-All benchmarks ran on an Intel Core i7-7700T @ 2.90 GHz, 15 GB RAM (Linux Mint 22.2, Python 3.12.3,
+All benchmarks ran on an Intel Core i7-7700T @ 2.90 GHz, 15 GiB RAM (Linux Mint 22.2, Python 3.12.3,
 NumPy 2.5.3, GeoPandas 1.2.0); absolute timings vary by hardware.
 
 **Conway's Game of Life** compares the two substrates with the same rule and initial state. The
@@ -115,28 +115,28 @@ whole-grid focal sum; final states are compared cell by cell. At 100×100 cells 
 vector API) and scales to $10^6$ cells at 26.6 ms/step.
 
 **BR-MANGUE coastal dynamics.** The coupled mangrove–flood model was established by
-@Bezerra2014 and extended in @Bezerra2025BM, co-authored by D.S.B., F.M.S. and the
+@Bezerra2014 and extended in @Bezerra2025BM, co-authored by D.S.B., F.M.S., and the
 submitting author, who are also responsible for the DisSModel reimplementation.
 `brmangue-dissmodel` [@BRMangue] validates the raster implementation against a TerraME 2.0.1
-adaptation of the published model [@BRMangueTerraME] over the Maranhão Island dataset (50,496 cells);
-fidelity to the original BR-MANGUE model is documented in the repository. Figures refer to `brmangue-dissmodel` v0.5.0. Match percentage suits categorical outputs [@PontiusEtAl2011]. In the baseline scenario (19 steps) land use and soil match
-exactly at every checkpoint and elevation matches on 97.4% of cells within 1 mm (MAE 0.00038 m;
-maximum error 0.10 m). In the flooding scenario (laboratory parameters) TerraME floods 2,469 non-sea
+adaptation [@BRMangueTerraME] of the published model [@Bezerra2014] over the Maranhão Island dataset (50,496 cells);
+fidelity to the original BR-MANGUE model is documented in the repository. Figures refer to `brmangue-dissmodel` v0.5.0. Match percentage suits categorical outputs [@PontiusEtAl2011]. In the baseline scenario (19 steps), land use and soil match
+exactly at every checkpoint, and elevation matches on 97.4% of cells within 1 mm (MAE 0.00038 m;
+maximum error 0.10 m). In the flooding scenario (laboratory parameters), TerraME floods 2,469 non-sea
 cells by step 11 and the Python model 2,467; soil matches exactly, land use differs in 4 cells
-(0.008%), and at step 11 elevation matches on 94.4% of cells (MAE 0.008 m, maximum error 1.0 m). The residuals
+(0.008%), and, at step 11, elevation matches on 94.4% of cells (MAE 0.008 m; maximum error 1.0 m). The residuals
 come from exact ties in elevation: the flux rule compares accumulated elevations with `<=`, so a
 $\sim\!10^{-16}$ difference in summation order (sequential in TerraME, per direction in NumPy) can flip a
 comparison and, near the flooding threshold, a cell's class. They are floating-point effects, not a
 difference in the rules. Both scenarios are reproducible with the validation executor against golden
 files shipped with the package, which the adaptation's headless driver regenerates [@BRMangueTerraME].
 
-Cross-substrate equivalence (60×60 synthetic grid, 10 steps) gives 100% match for land use, soil
+Cross-substrate equivalence (60×60 synthetic grid, 10 steps) gives 100% match for land use, soil,
 and elevation within a 5 cm tolerance (MAE 0.0011 m, max 0.024 m; floating-point rounding), with
-raster at 2.5 ms/step against 69.1 ms/step for vector (28.1×; the vector port follows TerraME's
+raster at 2.5 ms/step against 69.1 ms/step for vector (27.6×; the vector port follows TerraME's
 per-cell loops).
 
 **disslucc as a second case.** `disslucc` [@DisSLUCC], built on DisSModel, reimplements the LuccME
-demand, potential and allocation components (continuous CLUE-like [@Veldkamp1996] and discrete
+demand, potential, and allocation components (continuous CLUE-like [@Veldkamp1996] and discrete
 CLUE-S-like). It tests the `ModelExecutor` contract and the raster substrate against a second
 TerraME application, not as a result in itself. Its checks live in a separate, versioned benchmark
 [@DisSLUCCBenchmark] that compares every simulated year, iteration counts included, with per-year
@@ -147,13 +147,13 @@ suits fractional outputs [@PontiusEtAl2011; @Willmott2005].
 `lab01_md1643` (continuous, 6,574 cells, 2008–2014) differs from the reference by MAE = 0.0036 in
 the final year ([0,1] scale) with `disslucc`'s defaults. The difference is one deliberate deviation: LuccME's `correctCellChange` never executes (its guard
 reads a mismatched field name), while `disslucc` runs it by default. With `cell_correction=False`
-(the benchmark's `lab01_md1643` scenario) the match holds in every year, with identical iteration
+(the benchmark's `lab01_md1643` scenario), the match holds in every year, with identical iteration
 counts (MAE $< 10^{-7}$).
 `lab15_md10` (discrete, 5,914 cells) reproduces the reference cell for cell, with zero quantity and
 allocation disagreement [@PontiusMillones2011] and identical iteration counts. Overall, ten of 21 LuccME test labs and both variants match with identical iteration
 counts and differences up to $3\times10^{-6}$ (single precision); a validated lab runs in 0.11 to 0.55 s on
 the hardware above (median of five; `make timing`). The other eleven labs need potential and
-allocation components not yet implemented; student fellows are developing them, and each lab joins
+allocation components not yet implemented; undergraduate fellows are developing them, and each lab joins
 the benchmark as its components land.
 
 ## Research Impact Statement
@@ -172,7 +172,7 @@ of UFMA's Geotechnologies and Environmental Sciences Laboratory (GEOTAM), whose 
 BR-MANGUE [@Bezerra2014], also adopts the DisSModel reimplementation in his coastal dynamics projects (UFMA PVCBS4959-2025 and PVCBS4960-2025), a collaboration predating
 DisSModel itself [@Bezerra2025BM].
 
-Since September 2026, four undergraduate research fellows (UFMA, CNPq) are being trained on the
+Since September 2026, four undergraduate research fellows (UFMA, CNPq) have been trained on the
 project; the stabilized `ModelExecutor` contract lets each own an independent repository —
 `disslucc`, `brmangue-dissmodel`, or `disscube` [@DisSCube] (a data-cube layer, a Python alternative
 to TerraME's `fillCellularSpace`) — without core changes.
@@ -186,12 +186,12 @@ side, `disscube` already reads Brazil Data Cube collections through their STAC c
 ## Author Contributions
 
 CRediT roles: **S.S.C.** — Conceptualization, Software (Core, Geo, Executor, IO,
-Visualization), Methodology, Validation, Writing, Supervision, Project
+Visualization), Methodology, Validation, Writing – original draft, Writing – review & editing, Supervision, Project
 administration. **N.J.S.J.** — Conceptualization, Software (initial design),
-Validation, Writing (undergraduate thesis [@SantosJunior2025]). **D.S.B.** —
+Validation, Writing – original draft (undergraduate thesis [@SantosJunior2025]). **F.M.S.** — Conceptualization, Software (BR-MANGUE
+reference implementation), Data curation, Validation [@Bezerra2025BM]. **D.S.B.** —
 Conceptualization (domain science), Validation, Resources
-[@Bezerra2014; @Bezerra2025BM]. **F.M.S.** — Conceptualization, Software (BR-MANGUE
-reference implementation), Data curation, Validation [@Bezerra2025BM]. All authors
+[@Bezerra2014; @Bezerra2025BM]. All authors
 reviewed and approved the final manuscript.
 
 ## Acknowledgements
@@ -202,13 +202,13 @@ We thank José Magno Pinheiro Alves for early validation testing.
 
 The initial prototype (May–June 2025), the second author's undergraduate thesis
 [@SantosJunior2025], did not involve generative AI. From February 2026, Claude and Gemini CLI
-supported documentation, tests and refactoring of existing code. Since mid-2026, Claude Code has
-been used across the whole ecosystem (framework, satellite packages and benchmarks) for coding, bug fixing, refactoring, code translation, tests, validation scripts,
+supported documentation, tests, and refactoring of existing code. Since mid-2026, Claude Code has
+been used across the whole ecosystem (framework, satellite packages, and benchmarks) for coding, bug fixing, refactoring, code translation, tests, validation scripts,
 documentation, and this paper's text. This made the ecosystem envisioned by the submitting author feasible. The reference outputs used in validation are
 produced by TerraME itself, running the model files in a container; AI-assisted changes to those
 files were checked to leave the outputs unchanged. The scientific design — TerraME compatibility
 contract, executor pattern, dual-substrate architecture, validation methodology — is the
 authors', and traces to the submitting author's doctoral research at INPE. The authors reviewed,
-tested and ran all AI-generated code and text.
+tested, and ran all AI-generated code and text.
 
 ## References

@@ -50,9 +50,7 @@ general-purpose frameworks, while narrower allocation models such as CLUE and CL
 general-purpose option: the established frameworks are Lua- or GUI-based, and allocation models
 are usually standalone implementations without a shared interface.
 
-TerraME is conceptually robust, but its reliance on Lua — far less common in data science than
-Python — is a barrier, and the framework has seen no new release since August 2020. General-purpose
-simulation libraries, meanwhile, lack native synchronization between a time-stepped clock and the
+TerraME is conceptually robust, but its reliance on Lua — far less common in data science than Python — can be a barrier for researchers working in the Python ecosystem, and the framework has seen no new release since August 2020. General-purpose simulation libraries, meanwhile, lack native synchronization between a time-stepped clock and the
 state of a GeoDataFrame. DisSModel fills this gap with a lightweight scheduler coupled to vector and
 raster spatial state: an actively maintained Python implementation of the TerraME paradigm and,
 through its satellite package `disslucc`, of LuccME's CLUE-like and CLUE-S-like allocation components.
